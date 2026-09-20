@@ -149,14 +149,27 @@ language (see CONTEXT.md).
 
 ### Queues
 
-| Queue               | Job data        | Concurrency                 | Rate limit                        |
-| ------------------- | --------------- | --------------------------- | --------------------------------- |
-| `ingest:fetch:free` | `FetchJobData`  | 2                           | per-source limiter inside adapter |
-| `ingest:fetch:paid` | `FetchJobData`  | 1                           | conservative; keys cost money     |
-| `ingest:enrich`     | `EnrichJobData` | 2 (= `OLLAMA_NUM_PARALLEL`) | none; bounded by Ollama           |
+| Queue               | Job data        | Concurrency                                                          | Rate limit                        |
+| ------------------- | --------------- | -------------------------------------------------------------------- | --------------------------------- |
+| `ingest:fetch:free` | `FetchJobData`  | 2                                                                    | per-source limiter inside adapter |
+| `ingest:fetch:paid` | `FetchJobData`  | 1                                                                    | conservative; keys cost money     |
+| `ingest-extract`    | `EnrichJobData` | `EXTRACT_WORKER_CONCURRENCY` (default ~60% of `OLLAMA_NUM_PARALLEL`) | none; bounded by Ollama           |
+| `ingest-embed`      | `EnrichJobData` | `EMBED_WORKER_CONCURRENCY` (default `OLLAMA_NUM_PARALLEL`)           | none; bounded by Ollama           |
 
 Fetch is split by tier so a paid source's limiter never starves free sources
 and vice versa.
+
+### Ingestion tuning (`.env`)
+
+| Variable                                               | Purpose                                                                      |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `INGEST_MAX_JOBS`                                      | Cap enrich jobs per run (`0` = no cap). Fetch stops enqueueing once reached. |
+| `INGEST_SERIAL`                                        | When `true`, all worker concurrency defaults to `1` (linear per stage).      |
+| `OLLAMA_NUM_PARALLEL`                                  | Ollama container slot count; keep in sync with worker overrides.             |
+| `FETCH_*_WORKER_CONCURRENCY` / `EXTRACT_*` / `EMBED_*` | Override per queue; parallel mode uses these when `INGEST_SERIAL=false`.     |
+
+Pipeline order remains **fetch → extract → embed** (stages are separate queues;
+serial mode runs one job at a time within each queue, not globally interleaved).
 
 ### Flow of one run
 
@@ -189,6 +202,15 @@ API subscribes once per process and fans out to connected `EventSource`
 clients. This keeps workers and API decoupled and works when workers run in a
 separate process. A `heartbeat` event every 15s keeps proxies from closing the
 stream (Caddy is configured with `flush_interval -1`).
+
+| Event             | When                                | UI use                          |
+| ----------------- | ----------------------------------- | ------------------------------- |
+| `source.progress` | Fetch batch (per source)            | BA pagination line              |
+| `run.progress`    | Extract/embed batch (every 25 jobs) | Pipeline rows for Ollama stages |
+| `run.completed`   | Counters reach zero                 | Final summary                   |
+
+The web client also polls `GET /api/ingest/status` every 5s while a run is
+active to reconcile counters after SSE reconnect (ADR 0004).
 
 ### Source tiers
 

@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  fetchIngestionStatus,
-  fetchSources,
-  startIngestion,
-  stopIngestion,
-} from "./api.js";
+import { fetchIngestionStatus, fetchSources, startIngestion, stopIngestion } from "./api.js";
 
 export function useSources() {
   return useQuery({

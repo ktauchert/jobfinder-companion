@@ -14,9 +14,7 @@ export function createDrizzleSkillRepositoryFromDb(db: Database): SkillRepositor
       const rows = await db
         .select()
         .from(skills)
-        .where(
-          sql`${skills.name} = ${name} OR ${name} = ANY (${skills.aliases})`,
-        )
+        .where(sql`${skills.name} = ${name} OR ${name} = ANY (${skills.aliases})`)
         .limit(1);
       const row = rows[0];
       return row ? mapSkill(row) : null;
@@ -34,11 +32,7 @@ export function createDrizzleSkillRepositoryFromDb(db: Database): SkillRepositor
     },
 
     async createSkill(input: { name: string; label: string; aliases: string[] }) {
-      const rows = await db
-        .insert(skills)
-        .values(input)
-        .onConflictDoNothing()
-        .returning();
+      const rows = await db.insert(skills).values(input).onConflictDoNothing().returning();
 
       const inserted = rows[0];
       if (inserted) {

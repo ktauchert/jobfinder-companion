@@ -8,7 +8,7 @@ import type { GetIngestionStatusDeps } from "../application/get-ingestion-status
 import { getIngestionStatus } from "../application/get-ingestion-status.js";
 
 const HEARTBEAT_MS = 15_000;
-const MAX_CONNECTIONS = 8;
+const MAX_CONNECTIONS = 32;
 
 let openConnections = 0;
 
@@ -26,10 +26,12 @@ export function handleIngestEvents(deps: IngestSseDeps, res: Response): void {
   openConnections += 1;
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
+    "Cache-Control": "no-cache, no-transform",
     Connection: "keep-alive",
     "X-Accel-Buffering": "no",
   });
+  res.flushHeaders?.();
+  res.write(": connected\n\n");
 
   const subscriber = deps.redis.duplicate();
   let closed = false;
@@ -66,6 +68,8 @@ export function handleIngestEvents(deps: IngestSseDeps, res: Response): void {
   })();
 
   res.on("close", cleanup);
+  res.on("error", cleanup);
+  res.req.on("close", cleanup);
 
   function cleanup() {
     if (closed) {

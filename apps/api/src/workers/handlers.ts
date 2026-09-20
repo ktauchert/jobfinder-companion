@@ -13,7 +13,8 @@ export function createWorkerHandlers(ctx: AppContext) {
   return {
     onFetchFree: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers),
     onFetchPaid: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers),
-    onEnrich: (job: Job<EnrichJobData>) => handleEnrich(job, ctx),
+    onExtract: (job: Job<EnrichJobData>) => handleExtract(job, ctx),
+    onEmbed: (job: Job<EnrichJobData>) => handleEmbed(job, ctx),
   };
 }
 
@@ -35,6 +36,8 @@ async function handleFetch(
 
   const limiter = ctx.createRateLimiter(`source:${job.data.source}`);
 
+  const maxJobs = ctx.env.INGEST_MAX_JOBS > 0 ? ctx.env.INGEST_MAX_JOBS : null;
+
   await processFetch(job.data, {
     adapters: ctx.adapters,
     jobs: ctx.jobs,
@@ -43,22 +46,23 @@ async function handleFetch(
     events: ctx.events,
     limiter,
     signal: controller.signal,
+    maxJobs,
   });
 }
 
-async function handleEnrich(job: Job<EnrichJobData>, ctx: AppContext): Promise<void> {
-  if (job.name === "extract" || job.data.stage === "extract") {
-    await processExtract(job.data, {
-      jobs: ctx.jobs,
-      skills: ctx.skills,
-      extractor: ctx.extractor,
-      queue: ctx.queue,
-      runs: ctx.runs,
-      checkCompletion: checkRunCompletion,
-    });
-    return;
-  }
+async function handleExtract(job: Job<EnrichJobData>, ctx: AppContext): Promise<void> {
+  await processExtract(job.data, {
+    jobs: ctx.jobs,
+    skills: ctx.skills,
+    extractor: ctx.extractor,
+    queue: ctx.queue,
+    runs: ctx.runs,
+    events: ctx.events,
+    checkCompletion: checkRunCompletion,
+  });
+}
 
+async function handleEmbed(job: Job<EnrichJobData>, ctx: AppContext): Promise<void> {
   await processEmbed(job.data, {
     jobs: ctx.jobs,
     embeddings: ctx.embeddings,

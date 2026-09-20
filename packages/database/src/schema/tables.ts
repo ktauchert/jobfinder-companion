@@ -180,19 +180,16 @@ export const ingestionRuns = pgTable("ingestion_runs", {
     .default(sql`'{}'::text[]`),
   startedAt: timestamp("started_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   finishedAt: timestamp("finished_at", { withTimezone: true, mode: "date" }),
-  stats: jsonb("stats")
-    .$type<IngestionRunStats>()
-    .notNull()
-    .default({
-      fetched: 0,
-      inserted: 0,
-      updated: 0,
-      extracted: 0,
-      embedded: 0,
-      failed: 0,
-      pendingFetch: 0,
-      pendingEnrich: 0,
-    }),
+  stats: jsonb("stats").$type<IngestionRunStats>().notNull().default({
+    fetched: 0,
+    inserted: 0,
+    updated: 0,
+    extracted: 0,
+    embedded: 0,
+    failed: 0,
+    pendingFetch: 0,
+    pendingEnrich: 0,
+  }),
   error: text("error"),
 });
 

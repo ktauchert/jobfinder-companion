@@ -1,9 +1,4 @@
-import type {
-  EmploymentType,
-  NormalizedJob,
-  RemoteType,
-  Salary,
-} from "@jobfinder/types";
+import type { EmploymentType, NormalizedJob, RemoteType, Salary } from "@jobfinder/types";
 
 const BA_JOB_URL = "https://www.arbeitsagentur.de/jobsuche/jobdetail";
 
@@ -74,10 +69,7 @@ export function mapBaListItemToPartial(item: unknown): PartialNormalizedJob | nu
   };
 }
 
-export function mapBaDetailToNormalizedJob(
-  listItem: unknown,
-  detail: unknown,
-): NormalizedJob {
+export function mapBaDetailToNormalizedJob(listItem: unknown, detail: unknown): NormalizedJob {
   const partial = mapBaListItemToPartial(listItem);
   if (!partial) {
     throw new Error("Invalid BA list item");
@@ -90,11 +82,9 @@ export function mapBaDetailToNormalizedJob(
     ...partial,
     title: detailRow.stellenangebotsTitel?.trim() ?? partial.title,
     company: detailRow.firma?.trim() ?? partial.company,
-    location:
-      formatLocation(detailRow.stellenlokationen?.[0]?.adresse) ?? partial.location,
+    location: formatLocation(detailRow.stellenlokationen?.[0]?.adresse) ?? partial.location,
     countryCode:
-      mapCountryCode(detailRow.stellenlokationen?.[0]?.adresse?.land) ??
-      partial.countryCode,
+      mapCountryCode(detailRow.stellenlokationen?.[0]?.adresse?.land) ?? partial.countryCode,
     remoteType: mapRemoteType(detailRow.homeofficemoeglich, detailRow.homeofficetyp),
     employmentType: mapEmploymentType(detailRow),
     salary: mapSalary(detailRow) ?? partial.salary,
@@ -175,8 +165,7 @@ function mapSalary(row: BaListItem): Salary | null {
 }
 
 function mapPostedAt(row: BaListItem): string | null {
-  const date =
-    row.veroeffentlichungszeitraum?.von ?? row.datumErsteVeroeffentlichung ?? null;
+  const date = row.veroeffentlichungszeitraum?.von ?? row.datumErsteVeroeffentlichung ?? null;
   if (!date) {
     return null;
   }

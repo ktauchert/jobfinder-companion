@@ -11,10 +11,7 @@ export function createSourceAdapterRegistry(options: {
   baClientId: string;
   baDefinition: SourceDefinition;
 }): SourceAdapterRegistry {
-  const ba = createBaAdapter(
-    createBaClient({ apiKey: options.baClientId }),
-    options.baDefinition,
-  );
+  const ba = createBaAdapter(createBaClient({ apiKey: options.baClientId }), options.baDefinition);
 
   const byKey = new Map<SourceKey, SourceAdapter>([["ba", ba]]);
 

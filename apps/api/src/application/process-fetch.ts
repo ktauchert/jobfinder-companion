@@ -1,4 +1,4 @@
-import type { FetchJobData, IngestionEvent } from "@jobfinder/types";
+import type { FetchJobData, IngestionEvent, IngestionRunStats } from "@jobfinder/types";
 
 import { computeJobContentHash } from "../domain/job-content-hash.js";
 import type { JobRepository } from "../ports/job-repository.js";
@@ -22,6 +22,8 @@ export interface ProcessFetchDeps {
   events: EventPublisher;
   limiter: RateLimiter;
   signal: AbortSignal;
+  /** Max enrich jobs per run; null = no cap. */
+  maxJobs: number | null;
 }
 
 export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): Promise<void> {
@@ -70,11 +72,18 @@ export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): 
       const result = await deps.jobs.upsertFromNormalized(job, contentHash);
       fetched += 1;
 
-      if (result.inserted || result.changed) {
+      const enrichStage = result.inserted || result.changed ? "extract" : result.enrichStage;
+
+      if (result.inserted || result.changed || result.needsEnrich) {
+        const stats = await deps.runs.getStats(data.runId);
+        if (stats && isEnrichCapReached(deps.maxJobs, stats)) {
+          break;
+        }
+
         await deps.queue.enqueueEnrich({
           runId: data.runId,
           jobId: result.jobId,
-          stage: "extract",
+          stage: enrichStage,
         });
         await deps.runs.adjustPending(data.runId, { pendingEnrich: 1 });
       }
@@ -112,6 +121,14 @@ export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): 
     await deps.runs.adjustPending(data.runId, { pendingFetch: -1 });
     await checkRunCompletion(data.runId, deps);
   }
+}
+
+function isEnrichCapReached(maxJobs: number | null, stats: IngestionRunStats): boolean {
+  if (maxJobs === null || maxJobs <= 0) {
+    return false;
+  }
+
+  return stats.pendingEnrich + stats.embedded >= maxJobs;
 }
 
 async function publishProgress(

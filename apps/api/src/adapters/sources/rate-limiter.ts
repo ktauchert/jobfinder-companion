@@ -1,11 +1,9 @@
 import type { Redis } from "ioredis";
 
 /** Token bucket: 1 token per `intervalMs`, shared via Redis when provided. */
-export function createRateLimiter(options: {
-  key: string;
-  intervalMs: number;
-  redis?: Redis;
-}): { acquire(): Promise<void> } {
+export function createRateLimiter(options: { key: string; intervalMs: number; redis?: Redis }): {
+  acquire(): Promise<void>;
+} {
   if (!options.redis) {
     let lastAt = 0;
     return {

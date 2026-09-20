@@ -2,14 +2,14 @@ import { useEffect, type ReactNode } from "react";
 
 import { StatusBar } from "@/components/StatusBar.js";
 import { useIngestionStatus, useStartIngestion } from "@/lib/queries.js";
-import { useIngestionEvents } from "@/lib/use-ingestion-events.js";
+import { useIngestionProgress } from "@/lib/use-ingestion-progress.js";
 
 interface IngestionShellProps {
   children: ReactNode;
 }
 
 export function IngestionShell({ children }: IngestionShellProps) {
-  const ingestion = useIngestionEvents();
+  const progress = useIngestionProgress();
   const { data: status } = useIngestionStatus();
   const start = useStartIngestion();
   const isActive = Boolean(status?.active);
@@ -31,7 +31,7 @@ export function IngestionShell({ children }: IngestionShellProps) {
 
   return (
     <>
-      <StatusBar ingestion={ingestion} isActive={isActive} />
+      <StatusBar progress={progress} />
       {children}
     </>
   );

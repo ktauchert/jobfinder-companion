@@ -138,7 +138,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "expo", label: "Expo", aliases: [] },
   { name: "android", label: "Android", aliases: ["android development", "android sdk"] },
   { name: "ios", label: "iOS", aliases: ["ios development", "iphone development"] },
-  { name: "kotlin-multiplatform", label: "Kotlin Multiplatform", aliases: ["kmp", "kotlin multiplatform mobile"] },
+  {
+    name: "kotlin-multiplatform",
+    label: "Kotlin Multiplatform",
+    aliases: ["kmp", "kotlin multiplatform mobile"],
+  },
   { name: "maui", label: ".NET MAUI", aliases: ["maui", ".net maui"] },
 
   // ── Databases ──────────────────────────────────────────────────────────────
@@ -156,7 +160,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "influxdb", label: "InfluxDB", aliases: [] },
   { name: "timescaledb", label: "TimescaleDB", aliases: ["timescale"] },
   { name: "couchdb", label: "CouchDB", aliases: [] },
-  { name: "oracle", label: "Oracle Database", aliases: ["oracle db", "oracle database", "oracle sql"] },
+  {
+    name: "oracle",
+    label: "Oracle Database",
+    aliases: ["oracle db", "oracle database", "oracle sql"],
+  },
   { name: "sql-server", label: "SQL Server", aliases: ["mssql", "microsoft sql server", "ms sql"] },
   { name: "firestore", label: "Firestore", aliases: ["cloud firestore", "google firestore"] },
   { name: "cosmosdb", label: "Cosmos DB", aliases: ["azure cosmos db", "cosmos db"] },
@@ -170,7 +178,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
 
   // ── Cloud platforms ────────────────────────────────────────────────────────
   { name: "aws", label: "AWS", aliases: ["amazon web services", "amazon aws"] },
-  { name: "gcp", label: "Google Cloud", aliases: ["google cloud platform", "google cloud", "gcloud"] },
+  {
+    name: "gcp",
+    label: "Google Cloud",
+    aliases: ["google cloud platform", "google cloud", "gcloud"],
+  },
   { name: "azure", label: "Microsoft Azure", aliases: ["microsoft azure", "ms azure"] },
   { name: "digitalocean", label: "DigitalOcean", aliases: ["do"] },
   { name: "heroku", label: "Heroku", aliases: [] },
@@ -193,7 +205,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "aws-cognito", label: "Amazon Cognito", aliases: ["cognito"] },
   { name: "aws-sqs", label: "Amazon SQS", aliases: ["sqs"] },
   { name: "aws-sns", label: "Amazon SNS", aliases: ["sns"] },
-  { name: "aws-api-gateway", label: "Amazon API Gateway", aliases: ["api gateway", "aws api gateway"] },
+  {
+    name: "aws-api-gateway",
+    label: "Amazon API Gateway",
+    aliases: ["api gateway", "aws api gateway"],
+  },
   { name: "aws-cloudwatch", label: "Amazon CloudWatch", aliases: ["cloudwatch"] },
   { name: "aws-iam", label: "AWS IAM", aliases: ["iam", "identity and access management"] },
   { name: "aws-route53", label: "Amazon Route 53", aliases: ["route53", "route 53"] },
@@ -202,10 +218,26 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "aws-glue", label: "AWS Glue", aliases: ["glue"] },
 
   // ── GCP services ───────────────────────────────────────────────────────────
-  { name: "gke", label: "Google Kubernetes Engine", aliases: ["google kubernetes engine", "gcp gke"] },
-  { name: "gcp-cloud-functions", label: "Google Cloud Functions", aliases: ["cloud functions", "gcf"] },
-  { name: "gcp-pubsub", label: "Google Cloud Pub/Sub", aliases: ["pubsub", "pub/sub", "google pubsub"] },
-  { name: "gcp-cloud-storage", label: "Google Cloud Storage", aliases: ["gcs", "google cloud storage"] },
+  {
+    name: "gke",
+    label: "Google Kubernetes Engine",
+    aliases: ["google kubernetes engine", "gcp gke"],
+  },
+  {
+    name: "gcp-cloud-functions",
+    label: "Google Cloud Functions",
+    aliases: ["cloud functions", "gcf"],
+  },
+  {
+    name: "gcp-pubsub",
+    label: "Google Cloud Pub/Sub",
+    aliases: ["pubsub", "pub/sub", "google pubsub"],
+  },
+  {
+    name: "gcp-cloud-storage",
+    label: "Google Cloud Storage",
+    aliases: ["gcs", "google cloud storage"],
+  },
   { name: "gcp-cloud-run", label: "Google Cloud Run", aliases: ["cloud run"] },
   { name: "gcp-firestore", label: "GCP Firestore", aliases: [] },
   { name: "gcp-iam", label: "GCP IAM", aliases: ["google cloud iam"] },
@@ -216,9 +248,21 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "azure-functions", label: "Azure Functions", aliases: [] },
   { name: "aks", label: "Azure Kubernetes Service", aliases: ["azure kubernetes service", "aks"] },
   { name: "azure-sql", label: "Azure SQL", aliases: ["azure sql database"] },
-  { name: "azure-blob", label: "Azure Blob Storage", aliases: ["azure blob storage", "blob storage"] },
-  { name: "azure-ad", label: "Azure Active Directory", aliases: ["azure active directory", "entra id", "microsoft entra"] },
-  { name: "azure-arm", label: "Azure Resource Manager", aliases: ["arm templates", "azure resource manager"] },
+  {
+    name: "azure-blob",
+    label: "Azure Blob Storage",
+    aliases: ["azure blob storage", "blob storage"],
+  },
+  {
+    name: "azure-ad",
+    label: "Azure Active Directory",
+    aliases: ["azure active directory", "entra id", "microsoft entra"],
+  },
+  {
+    name: "azure-arm",
+    label: "Azure Resource Manager",
+    aliases: ["arm templates", "azure resource manager"],
+  },
   { name: "azure-service-bus", label: "Azure Service Bus", aliases: ["service bus"] },
   { name: "azure-cosmos-db", label: "Azure Cosmos DB", aliases: [] },
   { name: "azure-monitor", label: "Azure Monitor", aliases: [] },
@@ -226,7 +270,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "azure-app-service", label: "Azure App Service", aliases: ["app service"] },
 
   // ── DevOps & infrastructure ────────────────────────────────────────────────
-  { name: "docker", label: "Docker", aliases: ["container", "containerisierung", "containerization"] },
+  {
+    name: "docker",
+    label: "Docker",
+    aliases: ["container", "containerisierung", "containerization"],
+  },
   {
     name: "kubernetes",
     label: "Kubernetes",
@@ -238,7 +286,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "chef", label: "Chef", aliases: [] },
   { name: "helm", label: "Helm", aliases: ["helm charts"] },
   { name: "argocd", label: "Argo CD", aliases: ["argo cd", "argocd"] },
-  { name: "git", label: "Git", aliases: ["versionskontrolle", "versionsverwaltung", "version control"] },
+  {
+    name: "git",
+    label: "Git",
+    aliases: ["versionskontrolle", "versionsverwaltung", "version control"],
+  },
   { name: "github-actions", label: "GitHub Actions", aliases: ["gh actions", "github actions"] },
   { name: "gitlab-ci", label: "GitLab CI", aliases: ["gitlab ci/cd", "gitlab ci"] },
   { name: "jenkins", label: "Jenkins", aliases: [] },
@@ -247,7 +299,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "azure-pipelines", label: "Azure Pipelines", aliases: [] },
   { name: "prometheus", label: "Prometheus", aliases: [] },
   { name: "grafana", label: "Grafana", aliases: [] },
-  { name: "elk-stack", label: "ELK Stack", aliases: ["elk", "elastic stack", "elasticsearch logstash kibana"] },
+  {
+    name: "elk-stack",
+    label: "ELK Stack",
+    aliases: ["elk", "elastic stack", "elasticsearch logstash kibana"],
+  },
   { name: "datadog", label: "Datadog", aliases: [] },
   { name: "new-relic", label: "New Relic", aliases: ["newrelic"] },
   { name: "splunk", label: "Splunk", aliases: [] },
@@ -294,25 +350,71 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "testing-library", label: "Testing Library", aliases: ["react testing library", "rtl"] },
 
   // ── Methodologies & practices ──────────────────────────────────────────────
-  { name: "agile", label: "Agile", aliases: ["agile methoden", "agile softwareentwicklung", "agile development"] },
+  {
+    name: "agile",
+    label: "Agile",
+    aliases: ["agile methoden", "agile softwareentwicklung", "agile development"],
+  },
   { name: "scrum", label: "Scrum", aliases: ["scrum framework"] },
   { name: "kanban", label: "Kanban", aliases: [] },
   { name: "lean", label: "Lean", aliases: ["lean software development"] },
   { name: "xp", label: "Extreme Programming", aliases: ["extreme programming", "xp"] },
-  { name: "tdd", label: "Test-Driven Development", aliases: ["test driven development", "testgetriebene entwicklung"] },
-  { name: "bdd", label: "Behavior-Driven Development", aliases: ["behavior driven development", "verhaltensgetriebene entwicklung"] },
-  { name: "ddd", label: "Domain-Driven Design", aliases: ["domain driven design", "domänengetriebenes design"] },
-  { name: "ci-cd", label: "CI/CD", aliases: ["ci cd", "continuous integration", "continuous delivery", "continuous deployment", "kontinuierliche integration"] },
+  {
+    name: "tdd",
+    label: "Test-Driven Development",
+    aliases: ["test driven development", "testgetriebene entwicklung"],
+  },
+  {
+    name: "bdd",
+    label: "Behavior-Driven Development",
+    aliases: ["behavior driven development", "verhaltensgetriebene entwicklung"],
+  },
+  {
+    name: "ddd",
+    label: "Domain-Driven Design",
+    aliases: ["domain driven design", "domänengetriebenes design"],
+  },
+  {
+    name: "ci-cd",
+    label: "CI/CD",
+    aliases: [
+      "ci cd",
+      "continuous integration",
+      "continuous delivery",
+      "continuous deployment",
+      "kontinuierliche integration",
+    ],
+  },
   { name: "devops", label: "DevOps", aliases: ["dev ops"] },
-  { name: "sre", label: "Site Reliability Engineering", aliases: ["site reliability engineering", "site reliability"] },
-  { name: "microservices", label: "Microservices", aliases: ["microservice architecture", "microservice-architektur"] },
-  { name: "event-driven-architecture", label: "Event-Driven Architecture", aliases: ["eda", "event driven architecture", "ereignisgesteuerte architektur"] },
+  {
+    name: "sre",
+    label: "Site Reliability Engineering",
+    aliases: ["site reliability engineering", "site reliability"],
+  },
+  {
+    name: "microservices",
+    label: "Microservices",
+    aliases: ["microservice architecture", "microservice-architektur"],
+  },
+  {
+    name: "event-driven-architecture",
+    label: "Event-Driven Architecture",
+    aliases: ["eda", "event driven architecture", "ereignisgesteuerte architektur"],
+  },
   { name: "clean-architecture", label: "Clean Architecture", aliases: ["clean code architecture"] },
-  { name: "pair-programming", label: "Pair Programming", aliases: ["pair programming", "paarprogrammierung"] },
+  {
+    name: "pair-programming",
+    label: "Pair Programming",
+    aliases: ["pair programming", "paarprogrammierung"],
+  },
   { name: "code-review", label: "Code Review", aliases: ["code reviews", "codereview"] },
   { name: "serverless", label: "Serverless", aliases: ["serverless computing", "faas"] },
   { name: "gitops", label: "GitOps", aliases: [] },
-  { name: "platform-engineering", label: "Platform Engineering", aliases: ["platform engineering", "internal developer platform"] },
+  {
+    name: "platform-engineering",
+    label: "Platform Engineering",
+    aliases: ["platform engineering", "internal developer platform"],
+  },
 
   // ── Data, ML & AI ──────────────────────────────────────────────────────────
   { name: "pandas", label: "pandas", aliases: [] },
@@ -326,7 +428,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "dbt", label: "dbt", aliases: ["data build tool"] },
   { name: "mlflow", label: "MLflow", aliases: [] },
   { name: "kubeflow", label: "Kubeflow", aliases: [] },
-  { name: "huggingface", label: "Hugging Face", aliases: ["hugging face", "transformers", "hf transformers"] },
+  {
+    name: "huggingface",
+    label: "Hugging Face",
+    aliases: ["hugging face", "transformers", "hf transformers"],
+  },
   { name: "langchain", label: "LangChain", aliases: [] },
   { name: "openai", label: "OpenAI", aliases: ["openai api", "gpt", "chatgpt api"] },
   { name: "apache-flink", label: "Apache Flink", aliases: ["flink"] },
@@ -338,10 +444,26 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "looker", label: "Looker", aliases: ["google looker"] },
   { name: "jupyter", label: "Jupyter", aliases: ["jupyter notebook", "jupyterlab"] },
   { name: "opencv", label: "OpenCV", aliases: [] },
-  { name: "nlp", label: "Natural Language Processing", aliases: ["nlp", "natural language processing", "sprachverarbeitung"] },
-  { name: "machine-learning", label: "Machine Learning", aliases: ["ml", "maschinelles lernen", "ki", "künstliche intelligenz"] },
-  { name: "deep-learning", label: "Deep Learning", aliases: ["dl", "deep learning", "deep learning neural networks"] },
-  { name: "llm", label: "Large Language Models", aliases: ["llm", "large language models", "große sprachmodelle"] },
+  {
+    name: "nlp",
+    label: "Natural Language Processing",
+    aliases: ["nlp", "natural language processing", "sprachverarbeitung"],
+  },
+  {
+    name: "machine-learning",
+    label: "Machine Learning",
+    aliases: ["ml", "maschinelles lernen", "ki", "künstliche intelligenz"],
+  },
+  {
+    name: "deep-learning",
+    label: "Deep Learning",
+    aliases: ["dl", "deep learning", "deep learning neural networks"],
+  },
+  {
+    name: "llm",
+    label: "Large Language Models",
+    aliases: ["llm", "large language models", "große sprachmodelle"],
+  },
 
   // ── Security ───────────────────────────────────────────────────────────────
   { name: "oauth2", label: "OAuth 2.0", aliases: ["oauth", "oauth 2.0", "oauth2.0"] },
@@ -349,12 +471,24 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "saml", label: "SAML", aliases: ["saml 2.0"] },
   { name: "ldap", label: "LDAP", aliases: [] },
   { name: "openssl", label: "OpenSSL", aliases: [] },
-  { name: "penetration-testing", label: "Penetration Testing", aliases: ["pentest", "pen testing", "penetrationstest"] },
+  {
+    name: "penetration-testing",
+    label: "Penetration Testing",
+    aliases: ["pentest", "pen testing", "penetrationstest"],
+  },
   { name: "owasp", label: "OWASP", aliases: [] },
   { name: "gdpr", label: "GDPR", aliases: ["dsgvo", "general data protection regulation"] },
   { name: "soc2", label: "SOC 2", aliases: ["soc 2", "soc2 compliance"] },
-  { name: "iso27001", label: "ISO 27001", aliases: ["iso 27001", "information security management"] },
-  { name: "zero-trust", label: "Zero Trust", aliases: ["zero trust security", "zero trust architecture"] },
+  {
+    name: "iso27001",
+    label: "ISO 27001",
+    aliases: ["iso 27001", "information security management"],
+  },
+  {
+    name: "zero-trust",
+    label: "Zero Trust",
+    aliases: ["zero trust security", "zero trust architecture"],
+  },
   { name: "keycloak", label: "Keycloak", aliases: [] },
 
   // ── Tools & build ──────────────────────────────────────────────────────────
@@ -363,7 +497,11 @@ export const SKILL_SEED_ENTRIES: SkillSeedEntry[] = [
   { name: "confluence", label: "Confluence", aliases: ["atlassian confluence"] },
   { name: "slack", label: "Slack", aliases: [] },
   { name: "notion", label: "Notion", aliases: [] },
-  { name: "vscode", label: "Visual Studio Code", aliases: ["visual studio code", "vs code", "code editor"] },
+  {
+    name: "vscode",
+    label: "Visual Studio Code",
+    aliases: ["visual studio code", "vs code", "code editor"],
+  },
   { name: "intellij-idea", label: "IntelliJ IDEA", aliases: ["intellij", "idea"] },
   { name: "vim", label: "Vim", aliases: ["vi", "neovim"] },
   { name: "npm", label: "npm", aliases: ["node package manager"] },

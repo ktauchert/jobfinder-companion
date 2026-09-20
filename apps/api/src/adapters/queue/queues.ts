@@ -12,7 +12,8 @@ export const DEFAULT_JOB_OPTIONS = {
 export interface IngestQueues {
   fetchFree: Queue;
   fetchPaid: Queue;
-  enrich: Queue;
+  extract: Queue;
+  embed: Queue;
 }
 
 export function createIngestQueues(connection: Redis): IngestQueues {
@@ -21,10 +22,16 @@ export function createIngestQueues(connection: Redis): IngestQueues {
   return {
     fetchFree: new Queue(QUEUE_NAMES.fetchFree, opts),
     fetchPaid: new Queue(QUEUE_NAMES.fetchPaid, opts),
-    enrich: new Queue(QUEUE_NAMES.enrich, opts),
+    extract: new Queue(QUEUE_NAMES.extract, opts),
+    embed: new Queue(QUEUE_NAMES.embed, opts),
   };
 }
 
 export async function closeIngestQueues(queues: IngestQueues): Promise<void> {
-  await Promise.all([queues.fetchFree.close(), queues.fetchPaid.close(), queues.enrich.close()]);
+  await Promise.all([
+    queues.fetchFree.close(),
+    queues.fetchPaid.close(),
+    queues.extract.close(),
+    queues.embed.close(),
+  ]);
 }

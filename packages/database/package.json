@@ -24,10 +24,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests",
-    "generate": "node --env-file=../../.env ../../node_modules/drizzle-kit/bin.cjs generate",
-    "migrate": "tsx --env-file=../../.env src/migrate.ts",
-    "seed": "tsx --env-file=../../.env src/seed/run-skills-seed.ts",
-    "studio": "node --env-file=../../.env ../../node_modules/drizzle-kit/bin.cjs studio",
+    "generate": "tsx src/run-drizzle-kit.ts generate",
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed/run-skills-seed.ts",
+    "studio": "tsx src/run-drizzle-kit.ts studio",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {

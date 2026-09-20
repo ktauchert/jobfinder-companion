@@ -11,7 +11,8 @@ export type IngestionStage = (typeof INGESTION_STAGES)[number];
 export const QUEUE_NAMES = {
   fetchFree: "ingest-fetch-free",
   fetchPaid: "ingest-fetch-paid",
-  enrich: "ingest-enrich",
+  extract: "ingest-extract",
+  embed: "ingest-embed",
 } as const;
 export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
 
@@ -76,6 +77,14 @@ export type IngestionEvent =
     }
   | { type: "source.completed"; runId: string; source: SourceKey; at: string }
   | { type: "source.failed"; runId: string; source: SourceKey; error: string; at: string }
+  /** Run-wide stage counters (extract / embed). Complements per-source fetch progress. */
+  | {
+      type: "run.progress";
+      runId: string;
+      stats: IngestionRunStats;
+      message: string;
+      at: string;
+    }
   | { type: "run.completed"; runId: string; stats: IngestionRunStats; at: string }
   | { type: "run.cancelled"; runId: string; at: string }
   | { type: "run.failed"; runId: string; error: string; at: string }

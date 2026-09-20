@@ -12,6 +12,7 @@ import { seedSources } from "./application/seed-sources.js";
 import { loadEnv } from "./env.js";
 import { createApp } from "./http/app.js";
 import { createWorkerBootstrap, registerGracefulShutdown } from "./workers/bootstrap.js";
+import { resolveWorkerConcurrency } from "./workers/concurrency.js";
 import { createWorkerHandlers } from "./workers/handlers.js";
 
 const env = loadEnv(process.env);
@@ -63,10 +64,12 @@ if (env.WORKERS_ENABLED) {
     connection: redis,
     queues,
     logger,
+    concurrency: resolveWorkerConcurrency(env),
     handlers: {
       onFetchFree: (job) => handlers.onFetchFree(job),
       onFetchPaid: (job) => handlers.onFetchPaid(job),
-      onEnrich: (job) => handlers.onEnrich(job),
+      onExtract: (job) => handlers.onExtract(job),
+      onEmbed: (job) => handlers.onEmbed(job),
     },
   });
 

@@ -1,10 +1,6 @@
 import type { SourcesResponse } from "@jobfinder/types";
 
-import {
-  isSourceConfigured,
-  SOURCE_DEFINITIONS,
-  type SourceEnv,
-} from "./source-registry.js";
+import { isSourceConfigured, SOURCE_DEFINITIONS, type SourceEnv } from "./source-registry.js";
 import type { SourceRepository } from "../ports/source-repository.js";
 
 export interface GetSourcesDeps {

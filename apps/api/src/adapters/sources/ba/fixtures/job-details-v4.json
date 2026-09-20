@@ -1,39 +1,41 @@
 {
-  "stellenangebotsart" : "ARBEIT",
-  "stellenangebotsTitel" : "Softwareentwickler (m/w/d)",
-  "quereinstiegGeeignet" : true,
-  "stellenangebotsBeschreibung" : "## Ihre Aufgaben\n\n- Entwicklung und Weiterentwicklung unserer Shop- und Plattformsoftware im Backend und Frontend\n- Umsetzung und Optimierung von Schnittstellen zu Herstellern, Händlern und ERP-Systemen\n- Weiterentwicklung bestehender Kundenlösungen sowie Mitarbeit an der kontinuierlichen Verbesserung unseres Softwarestandards\n- Umsetzung technischer Lösungen auf Basis fachlicher Anforderungen – gemeinsam mit dem Team und unseren Kunden\n- Mitarbeit an spannenden Projekten rund um den digitalen B2B-Handel\n\n## Das bringen Sie idealerweise mit\n\n- Erste praktische Erfahrung in der Softwareentwicklung mit PHP – Kenntnisse in Laravel sind von Vorteil, aber keine Voraussetzung\n- Grundkenntnisse in Git sowie Interesse an Themen wie Docker oder CI/CD sind willkommen\n- Freude daran, sauberen und verständlichen Code zu schreiben\n- Eine selbstständige Arbeitsweise sowie Spaß an der Zusammenarbeit im Team\n- Gute Deutschkenntnisse und grundlegende Englischkenntnisse\n- Eine Ausbildung, ein Studium im IT-Bereich oder vergleichbare praktische Erfahrung sind von Vorteil – wichtiger ist uns Ihre Motivation und Ihre Begeisterung für Softwareentwicklung\n\n**Auch wenn Sie nicht alle Anforderungen erfüllen, möchten wir Sie ausdrücklich ermutigen, sich zu bewerben. Wir legen großen Wert auf Lernbereitschaft, Teamgeist und persönliches Entwicklungspotenzial.**\n\n## Das bieten wir Ihnen\n\n- Einen unbefristeten Arbeitsvertrag mit einer fairen und leistungsgerechten Vergütung\n- Eine strukturierte Einarbeitung und Unterstützung durch ein erfahrenes Entwicklerteam\n- Spannende Projekte mit direktem Einfluss auf die Weiterentwicklung einer etablierten B2B-E-Commerce-Plattform\n- Moderne Technologien und die Möglichkeit, sich kontinuierlich fachlich weiterzuentwickeln\n- Kurze Entscheidungswege und ein familiäres Arbeitsumfeld\n- Hybrides Arbeiten mit Homeoffice-Möglichkeiten und flexiblen Arbeitszeiten\n- Hochwertige Entwicklerhardware (Linux oder Mac) sowie einen modernen Arbeitsplatz in Schortens an der Nordsee\n- Regelmäßige Weiterbildungsmöglichkeiten und langfristige Entwicklungsperspektiven\n\nBewerben Sie sich jetzt und werden Sie Teil eines Teams, das Wachstum mit Sinn verbindet und gemeinsam die Zukunft digitaler Barrierefreiheit gestaltet. \n\nBewerbungen reichen Sie ein über unsere Website und klicken Sie im Menü auf \"Bewerbung einreichen\" (https://recruid.de/bewerbung-einreichen.html).",
-  "arbeitszeitVollzeit" : true,
-  "eintrittszeitraum" : {
-    "von" : "2026-09-03"
+  "stellenangebotsart": "ARBEIT",
+  "stellenangebotsTitel": "Softwareentwickler (m/w/d)",
+  "quereinstiegGeeignet": true,
+  "stellenangebotsBeschreibung": "## Ihre Aufgaben\n\n- Entwicklung und Weiterentwicklung unserer Shop- und Plattformsoftware im Backend und Frontend\n- Umsetzung und Optimierung von Schnittstellen zu Herstellern, Händlern und ERP-Systemen\n- Weiterentwicklung bestehender Kundenlösungen sowie Mitarbeit an der kontinuierlichen Verbesserung unseres Softwarestandards\n- Umsetzung technischer Lösungen auf Basis fachlicher Anforderungen – gemeinsam mit dem Team und unseren Kunden\n- Mitarbeit an spannenden Projekten rund um den digitalen B2B-Handel\n\n## Das bringen Sie idealerweise mit\n\n- Erste praktische Erfahrung in der Softwareentwicklung mit PHP – Kenntnisse in Laravel sind von Vorteil, aber keine Voraussetzung\n- Grundkenntnisse in Git sowie Interesse an Themen wie Docker oder CI/CD sind willkommen\n- Freude daran, sauberen und verständlichen Code zu schreiben\n- Eine selbstständige Arbeitsweise sowie Spaß an der Zusammenarbeit im Team\n- Gute Deutschkenntnisse und grundlegende Englischkenntnisse\n- Eine Ausbildung, ein Studium im IT-Bereich oder vergleichbare praktische Erfahrung sind von Vorteil – wichtiger ist uns Ihre Motivation und Ihre Begeisterung für Softwareentwicklung\n\n**Auch wenn Sie nicht alle Anforderungen erfüllen, möchten wir Sie ausdrücklich ermutigen, sich zu bewerben. Wir legen großen Wert auf Lernbereitschaft, Teamgeist und persönliches Entwicklungspotenzial.**\n\n## Das bieten wir Ihnen\n\n- Einen unbefristeten Arbeitsvertrag mit einer fairen und leistungsgerechten Vergütung\n- Eine strukturierte Einarbeitung und Unterstützung durch ein erfahrenes Entwicklerteam\n- Spannende Projekte mit direktem Einfluss auf die Weiterentwicklung einer etablierten B2B-E-Commerce-Plattform\n- Moderne Technologien und die Möglichkeit, sich kontinuierlich fachlich weiterzuentwickeln\n- Kurze Entscheidungswege und ein familiäres Arbeitsumfeld\n- Hybrides Arbeiten mit Homeoffice-Möglichkeiten und flexiblen Arbeitszeiten\n- Hochwertige Entwicklerhardware (Linux oder Mac) sowie einen modernen Arbeitsplatz in Schortens an der Nordsee\n- Regelmäßige Weiterbildungsmöglichkeiten und langfristige Entwicklungsperspektiven\n\nBewerben Sie sich jetzt und werden Sie Teil eines Teams, das Wachstum mit Sinn verbindet und gemeinsam die Zukunft digitaler Barrierefreiheit gestaltet. \n\nBewerbungen reichen Sie ein über unsere Website und klicken Sie im Menü auf \"Bewerbung einreichen\" (https://recruid.de/bewerbung-einreichen.html).",
+  "arbeitszeitVollzeit": true,
+  "eintrittszeitraum": {
+    "von": "2026-09-03"
   },
-  "verguetungsangabe" : "JAHRESGEHALT",
-  "artDerVerguetung" : "GEHALTSSPANNE",
-  "gehaltsspanneVon" : 42000,
-  "gehaltsspanneBis" : 60000,
-  "vertragsdauer" : "UNBEFRISTET",
-  "stellenlokationen" : [ {
-    "adresse" : {
-      "ort" : "Berlin",
-      "region" : "BERLIN",
-      "land" : "DEUTSCHLAND"
-    },
-    "breite" : 52.492683263,
-    "laenge" : 13.402575309
-  } ],
-  "homeofficemoeglich" : true,
-  "homeofficetyp" : "NACH_VEREINBARUNG",
-  "istPrivateArbeitsvermittlung" : true,
-  "veroeffentlichungszeitraum" : {
-    "von" : "2026-09-03"
+  "verguetungsangabe": "JAHRESGEHALT",
+  "artDerVerguetung": "GEHALTSSPANNE",
+  "gehaltsspanneVon": 42000,
+  "gehaltsspanneBis": 60000,
+  "vertragsdauer": "UNBEFRISTET",
+  "stellenlokationen": [
+    {
+      "adresse": {
+        "ort": "Berlin",
+        "region": "BERLIN",
+        "land": "DEUTSCHLAND"
+      },
+      "breite": 52.492683263,
+      "laenge": 13.402575309
+    }
+  ],
+  "homeofficemoeglich": true,
+  "homeofficetyp": "NACH_VEREINBARUNG",
+  "istPrivateArbeitsvermittlung": true,
+  "veroeffentlichungszeitraum": {
+    "von": "2026-09-03"
   },
-  "datumErsteVeroeffentlichung" : "2026-09-03",
-  "aenderungsdatum" : "2026-09-03T07:36:56.853",
-  "istBetreut" : false,
-  "hauptberuf" : "Softwareentwickler/in",
-  "firma" : "Laurin Stankusch Vertriebsagentur",
-  "arbeitgeberKundennummerHash" : "CL0Ddhj7kK__D-1j_J5JNgrmE82ofLbza-j6yUU6E4E=",
-  "allianzpartnerUrl" : "http://www.arbeitsagentur.de",
-  "allianzpartnerName" : "arbeitsagentur.de",
-  "referenznummer" : "10001-1003644689-S"
+  "datumErsteVeroeffentlichung": "2026-09-03",
+  "aenderungsdatum": "2026-09-03T07:36:56.853",
+  "istBetreut": false,
+  "hauptberuf": "Softwareentwickler/in",
+  "firma": "Laurin Stankusch Vertriebsagentur",
+  "arbeitgeberKundennummerHash": "CL0Ddhj7kK__D-1j_J5JNgrmE82ofLbza-j6yUU6E4E=",
+  "allianzpartnerUrl": "http://www.arbeitsagentur.de",
+  "allianzpartnerName": "arbeitsagentur.de",
+  "referenznummer": "10001-1003644689-S"
 }

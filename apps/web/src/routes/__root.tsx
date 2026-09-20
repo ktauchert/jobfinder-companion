@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { IngestionShell } from "@/components/IngestionShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { IngestionEventsProvider } from "@/lib/ingestion-events-context.js";
 
 import "../styles.css";
 
@@ -18,17 +19,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="flex min-h-screen flex-col bg-background text-foreground">
-          <Header />
-          <main className="flex-1">
-            <IngestionShell>
-              <Outlet />
-            </IngestionShell>
-          </main>
-          <Footer />
-        </div>
-      </TooltipProvider>
+      <IngestionEventsProvider>
+        <TooltipProvider>
+          <div className="flex min-h-screen flex-col bg-background text-foreground">
+            <Header />
+            <main className="flex-1">
+              <IngestionShell>
+                <Outlet />
+              </IngestionShell>
+            </main>
+            <Footer />
+          </div>
+        </TooltipProvider>
+      </IngestionEventsProvider>
     </QueryClientProvider>
   );
 }

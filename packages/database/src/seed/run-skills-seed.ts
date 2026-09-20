@@ -1,3 +1,5 @@
+import "../load-root-env.js";
+
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 

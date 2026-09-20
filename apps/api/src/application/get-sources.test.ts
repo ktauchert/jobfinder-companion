@@ -25,11 +25,11 @@ describe("getSources", () => {
 
   it("includes lastRunAt and lastRunStatus from the repository", async () => {
     const startedAt = new Date("2026-09-01T10:00:00.000Z");
-    const findLastRunBySource = vi.fn().mockImplementation((key: string) =>
-      Promise.resolve(
-        key === "ba" ? { startedAt, status: "completed" as const } : null,
-      ),
-    );
+    const findLastRunBySource = vi
+      .fn()
+      .mockImplementation((key: string) =>
+        Promise.resolve(key === "ba" ? { startedAt, status: "completed" as const } : null),
+      );
 
     const result = await getSources({
       env: { ADZUNA_APP_ID: "", ADZUNA_APP_KEY: "", APIFY_TOKEN: "" },

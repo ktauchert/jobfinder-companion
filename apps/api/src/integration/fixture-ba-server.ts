@@ -14,6 +14,12 @@ export async function startFixtureBaServer(): Promise<{ url: string; close: () =
 
   const server: Server = createServer((req, res) => {
     if (req.url?.includes("/pc/v6/jobs")) {
+      const page = Number(new URL(req.url, "http://127.0.0.1").searchParams.get("page") ?? "1");
+      if (page > 1) {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ergebnisliste: [], maxErgebnisse: 2, page }));
+        return;
+      }
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(listBody);
       return;

@@ -7,7 +7,7 @@ export async function seedSources(repo: SourceRepository): Promise<void> {
     SOURCE_DEFINITIONS.map((def) => ({
       key: def.key,
       tier: def.tier,
-      enabled: true,
+      enabled: def.key === "ba",
     })),
   );
 }

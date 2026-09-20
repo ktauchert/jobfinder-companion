@@ -33,7 +33,10 @@ export function createOllamaSkillExtractor(options: {
 }
 
 function parseSkills(raw: string): { name: string; confidence: number }[] {
-  const cleaned = raw.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
+  const cleaned = raw
+    .replace(/^```json\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
 
   try {
     const parsed = JSON.parse(cleaned) as {

@@ -37,6 +37,8 @@ describe("processFetch", () => {
             jobId: "job-1",
             inserted: false,
             changed: false,
+            needsEnrich: false,
+            enrichStage: "extract",
           }),
         },
         runs: {
@@ -50,6 +52,7 @@ describe("processFetch", () => {
         events: { publish: vi.fn() },
         limiter: { acquire: vi.fn().mockResolvedValue(undefined) },
         signal: new AbortController().signal,
+        maxJobs: null,
       },
     );
 
@@ -74,6 +77,8 @@ describe("processFetch", () => {
             jobId: "job-1",
             inserted: true,
             changed: false,
+            needsEnrich: true,
+            enrichStage: "extract",
           }),
         },
         runs: {
@@ -87,6 +92,7 @@ describe("processFetch", () => {
         events: { publish: vi.fn() },
         limiter: { acquire: vi.fn().mockResolvedValue(undefined) },
         signal: new AbortController().signal,
+        maxJobs: null,
       },
     );
 
@@ -94,6 +100,50 @@ describe("processFetch", () => {
       runId: "run-1",
       jobId: "job-1",
       stage: "extract",
+    });
+  });
+
+  it("re-enqueues embed when unchanged job was never embedded", async () => {
+    const enqueueEnrich = vi.fn();
+
+    function* jobs() {
+      yield sampleJob;
+    }
+
+    await processFetch(
+      { runId: "run-1", source: "ba", query: "dev", location: null },
+      {
+        adapters: {
+          get: vi.fn().mockReturnValue({ definition: { key: "ba" }, fetch: () => jobs() }),
+        },
+        jobs: {
+          upsertFromNormalized: vi.fn().mockResolvedValue({
+            jobId: "job-1",
+            inserted: false,
+            changed: false,
+            needsEnrich: true,
+            enrichStage: "embed",
+          }),
+        },
+        runs: {
+          incrementStats: vi.fn().mockResolvedValue({}),
+          adjustPending: vi.fn(),
+          findById: vi.fn().mockResolvedValue({ id: "run-1", status: "running" }),
+          getStats: vi.fn(),
+          updateStatus: vi.fn(),
+        },
+        queue: { enqueueEnrich },
+        events: { publish: vi.fn() },
+        limiter: { acquire: vi.fn().mockResolvedValue(undefined) },
+        signal: new AbortController().signal,
+        maxJobs: null,
+      },
+    );
+
+    expect(enqueueEnrich).toHaveBeenCalledWith({
+      runId: "run-1",
+      jobId: "job-1",
+      stage: "embed",
     });
   });
 });

@@ -3,10 +3,7 @@ import { EMBEDDING_DIMENSIONS } from "@jobfinder/database";
 import type { Embedder } from "../../ports/embedder.js";
 import type { OllamaClient } from "./client.js";
 
-export function createOllamaEmbedder(options: {
-  client: OllamaClient;
-  model: string;
-}): Embedder {
+export function createOllamaEmbedder(options: { client: OllamaClient; model: string }): Embedder {
   return {
     model: options.model,
     dimensions: EMBEDDING_DIMENSIONS,

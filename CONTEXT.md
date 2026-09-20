@@ -25,12 +25,12 @@ framework choices (those live in `docs/ARCHITECTURE.md` and `docs/adr/`).
 
 ## Pipeline
 
-| Term                    | Meaning                                                                                                         |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Run** (Ingestion run) | One triggered ingestion across selected sources. Owns a status machine and stats. One click on "Run" = one run. |
-| **Stage**               | `fetch` → `extract` → `embed`. Ordered steps of enrichment for a job within a run.                              |
-| **Progress event**      | A live signal about run or source progress, delivered to the UI as it happens.                                  |
-| **Status bar**          | The collapsible area in `Main` that renders progress events for the active run.                                 |
+| Term                    | Meaning                                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Run** (Ingestion run) | One triggered ingestion across selected sources. Owns a status machine and stats. One click on "Run" = one run.                                                     |
+| **Stage**               | `fetch` → `extract` → `embed`. Ordered steps of enrichment for a job within a run.                                                                                  |
+| **Progress event**      | A live signal about run or source progress, delivered to the UI as it happens. `source.progress` = per-source fetch; `run.progress` = run-wide extract/embed stats. |
+| **Status bar**          | The collapsible area in `Main` that renders progress events for the active run.                                                                                     |
 
 ## Design language (how we structure code)
 

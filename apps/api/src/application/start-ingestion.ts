@@ -54,10 +54,7 @@ export async function startIngestion(
   for (const source of selected) {
     const def = SOURCE_DEFINITIONS.find((d) => d.key === source);
     const tier = def?.tier ?? "free";
-    await deps.queue.enqueueFetch(
-      { runId: run.id, source, query, location },
-      tier,
-    );
+    await deps.queue.enqueueFetch({ runId: run.id, source, query, location }, tier);
   }
 
   const event: IngestionEvent = {
@@ -76,9 +73,7 @@ function resolveSources(
   enabled: Set<SourceKey>,
   env: SourceEnv,
 ): SourceKey[] {
-  const candidates = requested?.length
-    ? requested
-    : SOURCE_DEFINITIONS.map((d) => d.key);
+  const candidates = requested?.length ? requested : (["ba"] satisfies SourceKey[]);
 
   return candidates.filter((key) => {
     const def = SOURCE_DEFINITIONS.find((d) => d.key === key);

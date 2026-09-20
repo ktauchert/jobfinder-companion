@@ -7,9 +7,7 @@ export function createDrizzleJobEmbeddingRepository(databaseUrl: string): JobEmb
   return createDrizzleJobEmbeddingRepositoryFromDb(createDb(databaseUrl));
 }
 
-export function createDrizzleJobEmbeddingRepositoryFromDb(
-  db: Database,
-): JobEmbeddingRepository {
+export function createDrizzleJobEmbeddingRepositoryFromDb(db: Database): JobEmbeddingRepository {
   return {
     async upsert(jobId: string, model: string, embedding: number[]) {
       const existing = await db

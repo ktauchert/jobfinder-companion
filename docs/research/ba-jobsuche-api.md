@@ -19,14 +19,14 @@ Fixtures (recorded live):
 
 ## Sources
 
-| Source | URL | Used for |
-| --- | --- | --- |
-| OpenAPI spec (community, reverse-engineered) | [bundesAPI/jobsuche-api openapi.yaml](https://github.com/bundesAPI/jobsuche-api/blob/main/openapi.yaml) | Endpoints, query params, auth header |
-| Swagger UI mirror | [jobsuche.api.bund.dev](https://jobsuche.api.bund.dev) | Same spec, browsable |
-| Example client | [bundesAPI/jobsuche-api api_example.R](https://github.com/bundesAPI/jobsuche-api/blob/main/api_example.R) | Two-step list→detail flow, base64 encoding |
-| BA Nutzungsbedingungen | [arbeitsagentur.de/nutzungsbedingungen](https://www.arbeitsagentur.de/nutzungsbedingungen) | Copyright, robots/automation clause |
-| BA statement on API documentation (2021) | [netzpolitik.org](https://netzpolitik.org/2021/open-data-arbeitsagentur-kaempft-gegen-offene-schnittstelle/) | BA position on mass automated access |
-| Live verification | `curl` against `rest.arbeitsagentur.de` | Confirmed auth, schemas, errors (this note) |
+| Source                                       | URL                                                                                                          | Used for                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| OpenAPI spec (community, reverse-engineered) | [bundesAPI/jobsuche-api openapi.yaml](https://github.com/bundesAPI/jobsuche-api/blob/main/openapi.yaml)      | Endpoints, query params, auth header        |
+| Swagger UI mirror                            | [jobsuche.api.bund.dev](https://jobsuche.api.bund.dev)                                                       | Same spec, browsable                        |
+| Example client                               | [bundesAPI/jobsuche-api api_example.R](https://github.com/bundesAPI/jobsuche-api/blob/main/api_example.R)    | Two-step list→detail flow, base64 encoding  |
+| BA Nutzungsbedingungen                       | [arbeitsagentur.de/nutzungsbedingungen](https://www.arbeitsagentur.de/nutzungsbedingungen)                   | Copyright, robots/automation clause         |
+| BA statement on API documentation (2021)     | [netzpolitik.org](https://netzpolitik.org/2021/open-data-arbeitsagentur-kaempft-gegen-offene-schnittstelle/) | BA position on mass automated access        |
+| Live verification                            | `curl` against `rest.arbeitsagentur.de`                                                                      | Confirmed auth, schemas, errors (this note) |
 
 The BA does **not** publish an official API document or open-data licence for
 this endpoint. The bundesAPI spec describes behaviour observed from the Jobsuche
@@ -34,13 +34,13 @@ app; treat field names as empirical, not contractual.
 
 ## Base URL and authentication
 
-| Item | Value |
-| --- | --- |
-| Base URL | `https://rest.arbeitsagentur.de/jobboerse/jobsuche-service` |
-| Auth header | `X-API-Key: jobboerse-jobsuche` |
-| Env mapping | `BA_CLIENT_ID` in `apps/api/src/env.ts` (default `jobboerse-jobsuche`) |
-| Registration | None — the client id is embedded in the public Jobsuche frontend |
-| Invalid key | HTTP **403**, empty body (verified 2026-09-20) |
+| Item         | Value                                                                  |
+| ------------ | ---------------------------------------------------------------------- |
+| Base URL     | `https://rest.arbeitsagentur.de/jobboerse/jobsuche-service`            |
+| Auth header  | `X-API-Key: jobboerse-jobsuche`                                        |
+| Env mapping  | `BA_CLIENT_ID` in `apps/api/src/env.ts` (default `jobboerse-jobsuche`) |
+| Registration | None — the client id is embedded in the public Jobsuche frontend       |
+| Invalid key  | HTTP **403**, empty body (verified 2026-09-20)                         |
 
 `BA_CLIENT_ID=jobboerse-jobsuche` **still works** (list + detail both returned
 200 with this value).
@@ -70,21 +70,21 @@ Response top-level keys (v6, live): `ergebnisliste`, `maxErgebnisse`, `page`,
 
 ### Search — legacy v4 paths (avoid)
 
-| Path | Status (2026-09-20) |
-| --- | --- |
-| `GET /pc/v4/jobs` | **403** |
-| `GET /pc/v4/app/jobs` | **403** |
+| Path                  | Status (2026-09-20) |
+| --------------------- | ------------------- |
+| `GET /pc/v4/jobs`     | **403**             |
+| `GET /pc/v4/app/jobs` | **403**             |
 
 Documented in the OpenAPI spec and older examples, but blocked from this
 environment. Prefer v6 only.
 
 ### Job details — `GET /pc/v4/jobdetails/{encryptedJobCode}` (required)
 
-| Item | Value |
-| --- | --- |
+| Item       | Value                                                                                    |
+| ---------- | ---------------------------------------------------------------------------------------- |
 | Path param | `encryptedJobCode` = standard Base64 of the UTF-8 `referenznummer` (no URL-safe variant) |
-| Example | `10001-1003644689-S` → `MTAwMDEtMTAwMzY0NDY4OS1T` |
-| Returns | Full job including `stellenangebotsBeschreibung` (Markdown) |
+| Example    | `10001-1003644689-S` → `MTAwMDEtMTAwMzY0NDY4OS1T`                                        |
+| Returns    | Full job including `stellenangebotsBeschreibung` (Markdown)                              |
 
 v3 (`/pc/v3/jobdetails/…`) exists but v4 is documented as recommended
 ([openapi.yaml](https://github.com/bundesAPI/jobsuche-api/blob/main/openapi.yaml)).
@@ -107,22 +107,22 @@ Header: X-API-Key: jobboerse-jobsuche
 From [openapi.yaml](https://github.com/bundesAPI/jobsuche-api/blob/main/openapi.yaml)
 (`/pc/v6/jobs`). All optional unless noted.
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `was` | string | Job title / keyword free text |
-| `wo` | string | Location free text |
-| `berufsfeld` | string | Occupation field free text |
-| `umkreis` | integer | Radius in km around `wo` (e.g. 25, 50, 200) |
-| `page` | integer | Page number (1-based) |
-| `size` | integer | Results per page |
-| `veroeffentlichtseit` | integer | Posted within last N days (0–100) |
-| `angebotsart` | integer | `1`=Arbeit, `2`=Selbständigkeit, `4`=Ausbildung, `34`=Praktikum |
-| `arbeitszeit` | string | Semicolon-separated: `vz`, `tz`, `snw`, `ho`, `mj` |
-| `befristung` | string | `1`=befristet, `2`=unbefristet (semicolon-separated OK) |
-| `arbeitgeber` | string | Employer name filter |
-| `zeitarbeit` | boolean | Include temp-agency jobs (default true) |
-| `behinderung` | boolean | Suitable for disabled applicants |
-| `corona` | boolean | Corona-context jobs only |
+| Parameter             | Type    | Description                                                     |
+| --------------------- | ------- | --------------------------------------------------------------- |
+| `was`                 | string  | Job title / keyword free text                                   |
+| `wo`                  | string  | Location free text                                              |
+| `berufsfeld`          | string  | Occupation field free text                                      |
+| `umkreis`             | integer | Radius in km around `wo` (e.g. 25, 50, 200)                     |
+| `page`                | integer | Page number (1-based)                                           |
+| `size`                | integer | Results per page                                                |
+| `veroeffentlichtseit` | integer | Posted within last N days (0–100)                               |
+| `angebotsart`         | integer | `1`=Arbeit, `2`=Selbständigkeit, `4`=Ausbildung, `34`=Praktikum |
+| `arbeitszeit`         | string  | Semicolon-separated: `vz`, `tz`, `snw`, `ho`, `mj`              |
+| `befristung`          | string  | `1`=befristet, `2`=unbefristet (semicolon-separated OK)         |
+| `arbeitgeber`         | string  | Employer name filter                                            |
+| `zeitarbeit`          | boolean | Include temp-agency jobs (default true)                         |
+| `behinderung`         | boolean | Suitable for disabled applicants                                |
+| `corona`              | boolean | Corona-context jobs only                                        |
 
 There is **no documented sort parameter**. Result order is server-defined
 (relevance / distance when `wo`+`umkreis` are set).
@@ -145,22 +145,22 @@ Paginate until `page * size >= maxErgebnisse` or the run target is met.
 
 ## Pagination
 
-| Response field | Meaning |
-| --- | --- |
-| `maxErgebnisse` | Total hits for this query |
-| `page` | Current page (integer in v6; OpenAPI shows string for v4) |
-| `size` | Page size |
+| Response field  | Meaning                                                   |
+| --------------- | --------------------------------------------------------- |
+| `maxErgebnisse` | Total hits for this query                                 |
+| `page`          | Current page (integer in v6; OpenAPI shows string for v4) |
+| `size`          | Page size                                                 |
 
 Stop when `(page - 1) * size + len(ergebnisliste) >= maxErgebnisse` or the
 list is empty.
 
 ## Error responses
 
-| Condition | HTTP | Body |
-| --- | --- | --- |
-| Invalid / missing `X-API-Key` | 403 | Empty |
-| Unknown detail ref | Not tested | — |
-| Logo not found | 404 | Empty (per spec) |
+| Condition                     | HTTP       | Body             |
+| ----------------------------- | ---------- | ---------------- |
+| Invalid / missing `X-API-Key` | 403        | Empty            |
+| Unknown detail ref            | Not tested | —                |
+| Logo not found                | 404        | Empty (per spec) |
 
 No structured error JSON was observed. The adapter should treat non-2xx as
 transient (retry with backoff) except 403 on auth misconfiguration.
@@ -187,14 +187,14 @@ access ([netzpolitik.org](https://netzpolitik.org/2021/open-data-arbeitsagentur-
 
 ## Licensing and personal self-hosted use
 
-| Question | Finding |
-| --- | --- |
-| Open-data licence? | **No.** Not dl-de, not Creative Commons. |
-| Copyright | BA asserts copyright on portal content (Nutzungsbedingungen §3). |
-| Intended use | Arbeitsvermittlung (job placement); employers grant BA a simple usage right for placement purposes (§6b). |
-| Automation | §2a(3): robots/spiders and misuse of APIs for data collection are prohibited. |
-| Commercial use / redistribution | Not granted; storing and republishing listings beyond personal job search is legally grey. |
-| Enforcement | BA objected to public API docs in 2021 but did not threaten legal action ([netzpolitik.org](https://netzpolitik.org/2021/open-data-arbeitsagentur-kaempft-gegen-offene-schnittstelle/)). |
+| Question                        | Finding                                                                                                                                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Open-data licence?              | **No.** Not dl-de, not Creative Commons.                                                                                                                                                 |
+| Copyright                       | BA asserts copyright on portal content (Nutzungsbedingungen §3).                                                                                                                         |
+| Intended use                    | Arbeitsvermittlung (job placement); employers grant BA a simple usage right for placement purposes (§6b).                                                                                |
+| Automation                      | §2a(3): robots/spiders and misuse of APIs for data collection are prohibited.                                                                                                            |
+| Commercial use / redistribution | Not granted; storing and republishing listings beyond personal job search is legally grey.                                                                                               |
+| Enforcement                     | BA objected to public API docs in 2021 but did not threaten legal action ([netzpolitik.org](https://netzpolitik.org/2021/open-data-arbeitsagentur-kaempft-gegen-offene-schnittstelle/)). |
 
 **JobFinder context:** single-user, self-hosted, personal job matching — aligned
 with placement purpose, but still technically automated bulk fetch. Mitigations:
@@ -209,61 +209,61 @@ Target type: `packages/types/src/job.ts` (`NormalizedJob`).
 
 ### Identity and source
 
-| `NormalizedJob` | BA source | Notes |
-| --- | --- | --- |
-| `source` | constant | `"ba"` |
-| `externalId` | `referenznummer` | Stable per listing, e.g. `10001-1003644689-S`. Same value as v4 `refnr` in older schema. |
+| `NormalizedJob` | BA source        | Notes                                                                                    |
+| --------------- | ---------------- | ---------------------------------------------------------------------------------------- |
+| `source`        | constant         | `"ba"`                                                                                   |
+| `externalId`    | `referenznummer` | Stable per listing, e.g. `10001-1003644689-S`. Same value as v4 `refnr` in older schema. |
 
 ### From list (`/pc/v6/jobs` → `ergebnisliste[]`) — partial row
 
-| `NormalizedJob` | BA field (v6) | Notes |
-| --- | --- | --- |
-| `title` | `stellenangebotsTitel` | |
-| `company` | `firma` | Nullable in practice? Treat missing as `null`. |
-| `location` | `stellenlokationen[0].adresse` | Format: `{ort}, {region}` or include `plz` if present. Multiple locations → join or take first. |
-| `countryCode` | `stellenlokationen[0].adresse.land` | Map `DEUTSCHLAND` → `"DE"`. |
-| `remoteType` | `homeofficemoeglich`, `homeofficetyp` | See mapping table below. |
-| `employmentType` | `arbeitszeitVollzeit`, `arbeitszeitTeilzeit*`, `istGeringfuegigeBeschaeftigung` | See mapping table below. |
-| `salary` | `verguetungsangabe`, `gehaltsspanneVon`, `gehaltsspanneBis`, `artDerVerguetung` | See mapping table below. |
-| `postedAt` | `veroeffentlichungszeitraum.von` or `datumErsteVeroeffentlichung` | ISO date `YYYY-MM-DD` → append `T00:00:00.000Z` or parse as date-only. |
-| `url` | `externeURL` or constructed | Prefer `externeURL` when present; else `https://www.arbeitsagentur.de/jobsuche/jobdetail/{referenznummer}` |
-| `descriptionRaw` | — | **Not in list.** Fetch detail. |
-| `descriptionText` | — | **Not in list.** Fetch detail. |
+| `NormalizedJob`   | BA field (v6)                                                                   | Notes                                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `title`           | `stellenangebotsTitel`                                                          |                                                                                                            |
+| `company`         | `firma`                                                                         | Nullable in practice? Treat missing as `null`.                                                             |
+| `location`        | `stellenlokationen[0].adresse`                                                  | Format: `{ort}, {region}` or include `plz` if present. Multiple locations → join or take first.            |
+| `countryCode`     | `stellenlokationen[0].adresse.land`                                             | Map `DEUTSCHLAND` → `"DE"`.                                                                                |
+| `remoteType`      | `homeofficemoeglich`, `homeofficetyp`                                           | See mapping table below.                                                                                   |
+| `employmentType`  | `arbeitszeitVollzeit`, `arbeitszeitTeilzeit*`, `istGeringfuegigeBeschaeftigung` | See mapping table below.                                                                                   |
+| `salary`          | `verguetungsangabe`, `gehaltsspanneVon`, `gehaltsspanneBis`, `artDerVerguetung` | See mapping table below.                                                                                   |
+| `postedAt`        | `veroeffentlichungszeitraum.von` or `datumErsteVeroeffentlichung`               | ISO date `YYYY-MM-DD` → append `T00:00:00.000Z` or parse as date-only.                                     |
+| `url`             | `externeURL` or constructed                                                     | Prefer `externeURL` when present; else `https://www.arbeitsagentur.de/jobsuche/jobdetail/{referenznummer}` |
+| `descriptionRaw`  | —                                                                               | **Not in list.** Fetch detail.                                                                             |
+| `descriptionText` | —                                                                               | **Not in list.** Fetch detail.                                                                             |
 
 ### From detail (`/pc/v4/jobdetails/{base64(referenznummer)}`) — enrich text
 
-| `NormalizedJob` | BA field (detail) | Notes |
-| --- | --- | --- |
-| `descriptionRaw` | `stellenangebotsBeschreibung` | Markdown (headings, lists). Store as-is. |
-| `descriptionText` | `stellenangebotsBeschreibung` | Strip Markdown to plain text for Ollama extraction/embedding. |
-| `title` | `stellenangebotsTitel` | Prefer detail if list omitted it. |
-| `company` | `firma` | |
-| `location` | `stellenlokationen[0].adresse` | Same as list. |
-| `countryCode` | `stellenlokationen[0].adresse.land` | |
-| `remoteType` | `homeofficemoeglich`, `homeofficetyp` | |
-| `employmentType` | `arbeitszeitVollzeit`, flags | |
-| `salary` | `gehaltsspanneVon`, `gehaltsspanneBis`, `verguetungsangabe` | |
-| `postedAt` | `veroeffentlichungszeitraum.von` | |
-| `url` | — | Use list `externeURL` if detail lacks it (detail fixture has none). |
+| `NormalizedJob`   | BA field (detail)                                           | Notes                                                               |
+| ----------------- | ----------------------------------------------------------- | ------------------------------------------------------------------- |
+| `descriptionRaw`  | `stellenangebotsBeschreibung`                               | Markdown (headings, lists). Store as-is.                            |
+| `descriptionText` | `stellenangebotsBeschreibung`                               | Strip Markdown to plain text for Ollama extraction/embedding.       |
+| `title`           | `stellenangebotsTitel`                                      | Prefer detail if list omitted it.                                   |
+| `company`         | `firma`                                                     |                                                                     |
+| `location`        | `stellenlokationen[0].adresse`                              | Same as list.                                                       |
+| `countryCode`     | `stellenlokationen[0].adresse.land`                         |                                                                     |
+| `remoteType`      | `homeofficemoeglich`, `homeofficetyp`                       |                                                                     |
+| `employmentType`  | `arbeitszeitVollzeit`, flags                                |                                                                     |
+| `salary`          | `gehaltsspanneVon`, `gehaltsspanneBis`, `verguetungsangabe` |                                                                     |
+| `postedAt`        | `veroeffentlichungszeitraum.von`                            |                                                                     |
+| `url`             | —                                                           | Use list `externeURL` if detail lacks it (detail fixture has none). |
 
 ### `remoteType` mapping
 
-| BA signals | `RemoteType` |
-| --- | --- |
-| `homeofficemoeglich === false` | `onsite` |
-| `homeofficemoeglich === true` and `homeofficetyp === "VOLLSTAENDIG"` (if seen) | `remote` |
-| `homeofficemoeglich === true` (e.g. `NACH_VEREINBARUNG`) | `hybrid` |
-| Missing both | `unknown` |
+| BA signals                                                                     | `RemoteType` |
+| ------------------------------------------------------------------------------ | ------------ |
+| `homeofficemoeglich === false`                                                 | `onsite`     |
+| `homeofficemoeglich === true` and `homeofficetyp === "VOLLSTAENDIG"` (if seen) | `remote`     |
+| `homeofficemoeglich === true` (e.g. `NACH_VEREINBARUNG`)                       | `hybrid`     |
+| Missing both                                                                   | `unknown`    |
 
 ### `employmentType` mapping
 
-| BA signals | `EmploymentType` |
-| --- | --- |
-| `istGeringfuegigeBeschaeftigung === true` | `part_time` (Minijob) |
-| `arbeitszeitVollzeit === true` (and not minijob) | `full_time` |
-| Any `arbeitszeitTeilzeit*` true | `part_time` |
-| `stellenangebotsart === "ARBEIT"` with no time flags | `unknown` |
-| `angebotsart` filter excludes apprenticeships in search | — |
+| BA signals                                              | `EmploymentType`      |
+| ------------------------------------------------------- | --------------------- |
+| `istGeringfuegigeBeschaeftigung === true`               | `part_time` (Minijob) |
+| `arbeitszeitVollzeit === true` (and not minijob)        | `full_time`           |
+| Any `arbeitszeitTeilzeit*` true                         | `part_time`           |
+| `stellenangebotsart === "ARBEIT"` with no time flags    | `unknown`             |
+| `angebotsart` filter excludes apprenticeships in search | —                     |
 
 Detail response also exposes `vertragsdauer` (`UNBEFRISTET` / `BEFRISTET`) —
 does not map directly to `EmploymentType` (contract vs permanent is separate
@@ -271,11 +271,11 @@ from full/part time in `NormalizedJob`).
 
 ### `salary` mapping
 
-| BA `verguetungsangabe` | Mapping |
-| --- | --- |
-| `KEINE_ANGABEN` | `null` |
-| `JAHRESGEHALT` + `gehaltsspanneVon`/`gehaltsspanneBis` | `{ min, max, currency: "EUR", period: "year" }` |
-| Hourly / other (facet `stunde`) | `{ period: "hour", … }` if numeric fields present — verify on encounter |
+| BA `verguetungsangabe`                                 | Mapping                                                                 |
+| ------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `KEINE_ANGABEN`                                        | `null`                                                                  |
+| `JAHRESGEHALT` + `gehaltsspanneVon`/`gehaltsspanneBis` | `{ min, max, currency: "EUR", period: "year" }`                         |
+| Hourly / other (facet `stunde`)                        | `{ period: "hour", … }` if numeric fields present — verify on encounter |
 
 Fixture example: `gehaltsspanneVon: 42000`, `gehaltsspanneBis: 60000` →
 `{ min: 42000, max: 60000, currency: "EUR", period: "year" }`.
@@ -306,9 +306,9 @@ List-only ingestion is **insufficient** for skill extraction (no description).
 
 ## Fixture notes
 
-| File | Request | Recorded |
-| --- | --- | --- |
-| `jobs-list-v6.json` | `GET /pc/v6/jobs?was=softwareentwickler&wo=Berlin&umkreis=50&page=1&size=2&veroeffentlichtseit=30` | 2026-09-20 |
-| `job-details-v4.json` | `GET /pc/v4/jobdetails/MTAwMDEtMTAwMzY0NDY4OS1T` (ref `10001-1003644689-S`) | 2026-09-20 |
+| File                  | Request                                                                                            | Recorded   |
+| --------------------- | -------------------------------------------------------------------------------------------------- | ---------- |
+| `jobs-list-v6.json`   | `GET /pc/v6/jobs?was=softwareentwickler&wo=Berlin&umkreis=50&page=1&size=2&veroeffentlichtseit=30` | 2026-09-20 |
+| `job-details-v4.json` | `GET /pc/v4/jobdetails/MTAwMDEtMTAwMzY0NDY4OS1T` (ref `10001-1003644689-S`)                        | 2026-09-20 |
 
 Redact nothing — fixtures contain only public job ad data.

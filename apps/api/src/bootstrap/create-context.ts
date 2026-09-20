@@ -49,8 +49,7 @@ export function createAppContext(env: Env, redis: Redis, queues: IngestQueues): 
     extractor: createOllamaSkillExtractor({ client: ollama, model: env.OLLAMA_EXTRACT_MODEL }),
     embedder: createOllamaEmbedder({ client: ollama, model: env.OLLAMA_EMBED_MODEL }),
     eventCache,
-    createRateLimiter: (key: string) =>
-      createRateLimiter({ key, intervalMs: 1000, redis }),
+    createRateLimiter: (key: string) => createRateLimiter({ key, intervalMs: 1000, redis }),
     defaultIngestQuery: "softwareentwickler",
     defaultIngestLocation: "Berlin",
   };

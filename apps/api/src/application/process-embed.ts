@@ -1,5 +1,6 @@
 import type { EnrichJobData } from "@jobfinder/types";
 
+import { maybePublishRunProgress } from "./publish-run-progress.js";
 import type { checkRunCompletion } from "./check-run-completion.js";
 import type { Embedder } from "../ports/embedder.js";
 import type { EventPublisher } from "../ports/event-publisher.js";
@@ -30,12 +31,7 @@ export async function processEmbed(data: EnrichJobData, deps: ProcessEmbedDeps):
     throw new Error(`Job ${data.jobId} not found`);
   }
 
-  const text = [
-    row.title,
-    row.company ?? "",
-    row.skillNames.join(" "),
-    row.descriptionText,
-  ]
+  const text = [row.title, row.company ?? "", row.skillNames.join(" "), row.descriptionText]
     .filter(Boolean)
     .join(" · ")
     .slice(0, 8000);
@@ -51,5 +47,15 @@ export async function processEmbed(data: EnrichJobData, deps: ProcessEmbedDeps):
   await deps.jobs.markEmbedded(data.jobId);
   await deps.runs.incrementStats(data.runId, { embedded: 1 });
   await deps.runs.adjustPending(data.runId, { pendingEnrich: -1 });
+
+  const stats = await deps.runs.getStats(data.runId);
+  if (stats) {
+    await maybePublishRunProgress(
+      data.runId,
+      { runs: deps.runs, events: deps.events },
+      stats.embedded,
+      "Embedding jobs…",
+    );
+  }
   await deps.checkCompletion(data.runId, deps);
 }

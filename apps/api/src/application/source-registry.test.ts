@@ -19,9 +19,7 @@ describe("isSourceConfigured", () => {
     const adzuna = SOURCE_DEFINITIONS.find((d) => d.key === "adzuna");
     expect(adzuna).toBeDefined();
     expect(isSourceConfigured(adzuna!, emptyPaidEnv)).toBe(false);
-    expect(
-      isSourceConfigured(adzuna!, { ...emptyPaidEnv, ADZUNA_APP_ID: "   " }),
-    ).toBe(false);
+    expect(isSourceConfigured(adzuna!, { ...emptyPaidEnv, ADZUNA_APP_ID: "   " })).toBe(false);
   });
 
   it("returns true for adzuna when both ADZUNA_* env vars are non-empty", () => {

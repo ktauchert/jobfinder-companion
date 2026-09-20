@@ -15,14 +15,15 @@ export function createBullmqJobQueue(queues: IngestQueues): JobQueue {
     },
 
     async enqueueEnrich(data: EnrichJobData): Promise<void> {
-      await queues.enrich.add(data.stage, data, {
+      const queue = data.stage === "embed" ? queues.embed : queues.extract;
+      await queue.add(data.stage, data, {
         jobId: enrichJobId(data.jobId, data.stage),
       });
     },
 
     async removeWaitingJobsByRunId(runId: string): Promise<number> {
       let removed = 0;
-      for (const queue of [queues.fetchFree, queues.fetchPaid, queues.enrich]) {
+      for (const queue of [queues.fetchFree, queues.fetchPaid, queues.extract, queues.embed]) {
         const waiting = await queue.getJobs(["waiting", "delayed", "paused"]);
         for (const job of waiting) {
           const payload = job.data as { runId?: string };
@@ -39,7 +40,8 @@ export function createBullmqJobQueue(queues: IngestQueues): JobQueue {
       await Promise.all([
         queues.fetchFree.close(),
         queues.fetchPaid.close(),
-        queues.enrich.close(),
+        queues.extract.close(),
+        queues.embed.close(),
       ]);
     },
   };

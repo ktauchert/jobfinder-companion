@@ -12,13 +12,21 @@ export function createDrizzleJobRepositoryFromDb(db: Database): JobRepository {
   return {
     async upsertFromNormalized(job: NormalizedJob, contentHash: string): Promise<UpsertJobResult> {
       const existing = await db
-        .select({ id: jobs.id, contentHash: jobs.contentHash })
+        .select({
+          id: jobs.id,
+          contentHash: jobs.contentHash,
+          skillsExtractedAt: jobs.skillsExtractedAt,
+          embeddedAt: jobs.embeddedAt,
+        })
         .from(jobs)
         .where(sql`${jobs.source} = ${job.source} AND ${jobs.externalId} = ${job.externalId}`)
         .limit(1);
 
       const prev = existing[0];
       const changed = prev ? prev.contentHash !== contentHash : false;
+      const needsEnrich = prev ? changed || prev.embeddedAt === null : true;
+      const enrichStage =
+        prev && !changed && prev.skillsExtractedAt && !prev.embeddedAt ? "embed" : "extract";
 
       const values = {
         source: job.source,
@@ -38,15 +46,19 @@ export function createDrizzleJobRepositoryFromDb(db: Database): JobRepository {
         url: job.url,
         postedAt: job.postedAt ? new Date(job.postedAt) : null,
         contentHash,
-        ...(changed || !prev
-          ? { skillsExtractedAt: null, embeddedAt: null }
-          : {}),
+        ...(changed || !prev ? { skillsExtractedAt: null, embeddedAt: null } : {}),
         updatedAt: new Date(),
       };
 
       if (prev) {
         await db.update(jobs).set(values).where(eq(jobs.id, prev.id));
-        return { jobId: prev.id, inserted: false, changed };
+        return {
+          jobId: prev.id,
+          inserted: false,
+          changed,
+          needsEnrich,
+          enrichStage,
+        };
       }
 
       const inserted = await db.insert(jobs).values(values).returning({ id: jobs.id });
@@ -54,7 +66,13 @@ export function createDrizzleJobRepositoryFromDb(db: Database): JobRepository {
       if (!row) {
         throw new Error("Job insert failed");
       }
-      return { jobId: row.id, inserted: true, changed: true };
+      return {
+        jobId: row.id,
+        inserted: true,
+        changed: true,
+        needsEnrich: true,
+        enrichStage: "extract" as const,
+      };
     },
 
     async findDescriptionText(jobId: string): Promise<string | null> {
