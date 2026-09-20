@@ -24,9 +24,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run --passWithNoTests",
-    "generate": "drizzle-kit generate",
-    "migrate": "tsx src/migrate.ts",
-    "studio": "drizzle-kit studio",
+    "generate": "node --env-file=../../.env ../../node_modules/drizzle-kit/bin.cjs generate",
+    "migrate": "tsx --env-file=../../.env src/migrate.ts",
+    "studio": "node --env-file=../../.env ../../node_modules/drizzle-kit/bin.cjs studio",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
