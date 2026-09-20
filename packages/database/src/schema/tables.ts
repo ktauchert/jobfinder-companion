@@ -1,4 +1,10 @@
-import { EMPLOYMENT_TYPES, REMOTE_TYPES, SOURCE_KEYS, SOURCE_TIERS } from "@jobfinder/types";
+import {
+  EMPLOYMENT_TYPES,
+  REMOTE_TYPES,
+  SOURCE_KEYS,
+  SOURCE_TIERS,
+  type IngestionRunStats,
+} from "@jobfinder/types";
 import type { InferSelectModel } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import {
@@ -175,14 +181,7 @@ export const ingestionRuns = pgTable("ingestion_runs", {
   startedAt: timestamp("started_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   finishedAt: timestamp("finished_at", { withTimezone: true, mode: "date" }),
   stats: jsonb("stats")
-    .$type<{
-      fetched: number;
-      inserted: number;
-      updated: number;
-      extracted: number;
-      embedded: number;
-      failed: number;
-    }>()
+    .$type<IngestionRunStats>()
     .notNull()
     .default({
       fetched: 0,
@@ -191,6 +190,8 @@ export const ingestionRuns = pgTable("ingestion_runs", {
       extracted: 0,
       embedded: 0,
       failed: 0,
+      pendingFetch: 0,
+      pendingEnrich: 0,
     }),
   error: text("error"),
 });

@@ -1,6 +1,7 @@
 {
   "extends": "@jobfinder/config/tsconfig.node.json",
   "include": ["src"],
+  "exclude": ["src/integration"],
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",

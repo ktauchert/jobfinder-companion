@@ -35,3 +35,4 @@ reverse, or resolves a genuine trade-off. Small choices go in code comments.
 | ---- | ---------------------- | -------- |
 | 0001 | Foundational decisions | accepted |
 | 0002 | Layering and TDD       | accepted |
+| 0003 | Ingestion pipeline design | accepted |

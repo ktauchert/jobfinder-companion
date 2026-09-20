@@ -4,7 +4,7 @@ import { node } from "@jobfinder/config/eslint/node";
 export default [
   ...node,
   {
-    ignores: ["dist/**", "vitest.config.ts"],
+    ignores: ["dist/**", "vitest.config.ts", "vitest.integration.config.ts", "src/integration/**"],
   },
   {
     files: ["src/domain/**/*.ts"],

@@ -32,6 +32,11 @@ const envSchema = z.object({
   ADZUNA_APP_ID: z.string().default(""),
   ADZUNA_APP_KEY: z.string().default(""),
   APIFY_TOKEN: z.string().default(""),
+
+  WORKERS_ENABLED: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((v) => v === "true"),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -79,4 +79,8 @@ jobs:
 
       - run: npm run check
 
+      - run: npm run db:seed
+
+      - run: npm run test:integration
+
       - run: npm run build

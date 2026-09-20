@@ -9,9 +9,9 @@ export type IngestionStage = (typeof INGESTION_STAGES)[number];
 
 /** BullMQ queue names. Fetch is split by tier so each tier gets its own rate limits. */
 export const QUEUE_NAMES = {
-  fetchFree: "ingest:fetch:free",
-  fetchPaid: "ingest:fetch:paid",
-  enrich: "ingest:enrich",
+  fetchFree: "ingest-fetch-free",
+  fetchPaid: "ingest-fetch-paid",
+  enrich: "ingest-enrich",
 } as const;
 export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
 
@@ -51,6 +51,10 @@ export interface IngestionRunStats {
   extracted: number;
   embedded: number;
   failed: number;
+  /** Fetch jobs not yet settled for this run. */
+  pendingFetch: number;
+  /** Enrich jobs (extract → embed) not yet fully settled. */
+  pendingEnrich: number;
 }
 
 /**
