@@ -37,3 +37,4 @@ reverse, or resolves a genuine trade-off. Small choices go in code comments.
 | 0002 | Layering and TDD          | accepted |
 | 0003 | Ingestion pipeline design | accepted |
 | 0004 | Ingestion progress UI     | accepted |
+| 0005 | Profile-driven ingest queries | proposed |

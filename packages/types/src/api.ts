@@ -37,7 +37,7 @@ export type UpdateSourceRequest = { enabled: boolean };
 export interface StartIngestionRequest {
   /** Defaults to all enabled + configured sources. */
   sources?: SourceKey[];
-  /** Defaults to the active profile's must-have skills joined as a query. */
+  /** Upstream search text (e.g. BA `was`). Phase 2 PoC: hardcoded in UI; Phase 3: profile ingestQueries (ADR 0005). */
   query?: string;
   location?: string;
 }

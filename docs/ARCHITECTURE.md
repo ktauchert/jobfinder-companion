@@ -176,6 +176,9 @@ serial mode runs one job at a time within each queue, not globally interleaved).
 1. `POST /api/ingest/start` inserts an `ingestion_runs` row and enqueues one
    `fetch` job per selected source that is `enabled && configured`.
    Unconfigured paid sources are skipped and reported in `run.started`.
+   **Phase 2 PoC:** the web Header passes a fixed `query` / `location`; the
+   API also accepts them in the request body. **Phase 3 (ADR 0005):** default
+   from the profile’s `ingestQueries` (one fetch job per term per source).
 2. **Fetch worker** streams `NormalizedJob`s from the adapter, upserts them by
    `(source, external_id)` and, for every inserted or materially changed row,
    enqueues `extract`. Publishes `source.progress` every N jobs.

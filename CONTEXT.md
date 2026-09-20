@@ -10,6 +10,7 @@ framework choices (those live in `docs/ARCHITECTURE.md` and `docs/adr/`).
 | Term                | Meaning                                                                                                                                                                       |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Profile**         | The user's search intent: must-have skills, exclude skills, optional filters (remote type, country, min salary) and a free-text summary. Single-user, but stored as a record. |
+| **Ingest query**    | An upstream search term passed to a Source at fetch time (e.g. BA `was=softwareentwickler`). Distinct from must-haves (rank) and search `q` (ad-hoc embedding blend). Phase 2 PoC uses a hardcoded ingest query; Phase 3 adds profile-backed **ingest queries** (see ADR 0005). |
 | **Must-have**       | A skill in the profile that should appear in a job. Drives _ranking_, does not filter.                                                                                        |
 | **Exclude** (No-Go) | A skill in the profile that _hard-filters_ a job out of results. Deterministic.                                                                                               |
 | **Source**          | An upstream provider of jobs (BA, Greenhouse, Lever, Adzuna, Apify). Identified by a `SourceKey`.                                                                             |
