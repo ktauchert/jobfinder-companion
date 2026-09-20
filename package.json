@@ -31,7 +31,9 @@
     "infra:reset": "docker compose down -v",
     "db:generate": "npm run generate -w @jobfinder/database",
     "db:migrate": "npm run migrate -w @jobfinder/database",
-    "db:studio": "npm run studio -w @jobfinder/database"
+    "db:seed": "npm run seed -w @jobfinder/database",
+    "db:studio": "npm run studio -w @jobfinder/database",
+    "test:integration": "npm run test:integration -w @jobfinder/api"
   },
   "devDependencies": {
     "prettier": "^3.9.8",

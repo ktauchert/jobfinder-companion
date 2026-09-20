@@ -1,0 +1,1 @@
+ALTER TABLE "ingestion_runs" ALTER COLUMN "stats" SET DEFAULT '{"fetched":0,"inserted":0,"updated":0,"extracted":0,"embedded":0,"failed":0,"pendingFetch":0,"pendingEnrich":0}'::jsonb;

@@ -4,15 +4,22 @@ import type { IncomingMessage } from "node:http";
 import type { Logger } from "pino";
 import { pinoHttp } from "pino-http";
 
+import type { Redis } from "ioredis";
+
 import type { GetHealthDeps } from "../application/get-health.js";
+import type { AppContext } from "../bootstrap/context.js";
 import type { Env } from "../env.js";
 import { createErrorHandler } from "./error-handler.js";
 import { createHealthRouter } from "./routes/health.js";
+import { createIngestRouter } from "./routes/ingest.js";
+import { createSourcesRouter } from "./routes/sources.js";
 
 export interface CreateAppOptions {
   env: Env;
   logger: Logger;
   health: GetHealthDeps;
+  ctx: AppContext;
+  redis: Redis;
 }
 
 export function createApp(options: CreateAppOptions) {
@@ -35,6 +42,25 @@ export function createApp(options: CreateAppOptions) {
   );
 
   app.use("/api", createHealthRouter(options.health));
+  app.use(
+    "/api",
+    createSourcesRouter({
+      env: {
+        ADZUNA_APP_ID: options.env.ADZUNA_APP_ID,
+        ADZUNA_APP_KEY: options.env.ADZUNA_APP_KEY,
+        APIFY_TOKEN: options.env.APIFY_TOKEN,
+      },
+      sources: options.ctx.sources,
+    }),
+  );
+  app.use(
+    "/api",
+    createIngestRouter({
+      ctx: options.ctx,
+      redis: options.redis,
+      eventCache: options.ctx.eventCache,
+    }),
+  );
 
   app.use(createErrorHandler(options.logger));
 

@@ -4,9 +4,16 @@ import { fileURLToPath } from "node:url";
 
 import pino from "pino";
 
+import { createAppContext } from "./bootstrap/create-context.js";
 import { createHealthChecks } from "./adapters/health/create-health-checks.js";
+import { createRedisConnection } from "./adapters/queue/connection.js";
+import { createIngestQueues } from "./adapters/queue/queues.js";
+import { seedSources } from "./application/seed-sources.js";
 import { loadEnv } from "./env.js";
 import { createApp } from "./http/app.js";
+import { createWorkerBootstrap, registerGracefulShutdown } from "./workers/bootstrap.js";
+import { resolveWorkerConcurrency } from "./workers/concurrency.js";
+import { createWorkerHandlers } from "./workers/handlers.js";
 
 const env = loadEnv(process.env);
 
@@ -23,6 +30,11 @@ const logger = pino({
 });
 
 const version = readPackageVersion();
+const redis = createRedisConnection(env.REDIS_URL);
+const queues = createIngestQueues(redis);
+const ctx = createAppContext(env, redis, queues);
+
+await seedSources(ctx.sources);
 
 const healthChecks = createHealthChecks({
   databaseUrl: env.DATABASE_URL,
@@ -37,11 +49,38 @@ const app = createApp({
     checks: healthChecks,
     version,
   },
+  ctx,
+  redis,
 });
 
-app.listen(env.API_PORT, () => {
+const server = app.listen(env.API_PORT, () => {
   logger.info({ port: env.API_PORT }, "API listening");
 });
+
+if (env.WORKERS_ENABLED) {
+  const handlers = createWorkerHandlers(ctx);
+
+  const workerBootstrap = createWorkerBootstrap({
+    connection: redis,
+    queues,
+    logger,
+    concurrency: resolveWorkerConcurrency(env),
+    handlers: {
+      onFetchFree: (job) => handlers.onFetchFree(job),
+      onFetchPaid: (job) => handlers.onFetchPaid(job),
+      onExtract: (job) => handlers.onExtract(job),
+      onEmbed: (job) => handlers.onEmbed(job),
+    },
+  });
+
+  workerBootstrap.start();
+  registerGracefulShutdown(workerBootstrap, logger, async () => {
+    await ctx.queue.close();
+    await new Promise<void>((resolve, reject) => {
+      server.close((err) => (err ? reject(err) : resolve()));
+    });
+  });
+}
 
 function readPackageVersion(): string {
   try {

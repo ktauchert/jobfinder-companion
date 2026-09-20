@@ -20,6 +20,19 @@ export default defineConfig({
   server: {
     port: Number(process.env.WEB_PORT ?? 5173),
     proxy: {
+      "/api/ingest/events": {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            proxyReq.setHeader("Accept", "text/event-stream");
+          });
+          proxy.on("proxyRes", (proxyRes) => {
+            proxyRes.headers["cache-control"] = "no-cache, no-transform";
+            proxyRes.headers["content-type"] = "text/event-stream";
+          });
+        },
+      },
       "/api": {
         target: apiProxyTarget,
         changeOrigin: true,

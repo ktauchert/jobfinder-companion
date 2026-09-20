@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 import type { ApiError } from "@jobfinder/types";
 import type { Logger } from "pino";
 
+import { ConflictError, NotFoundError } from "../application/errors.js";
+
 export class AppError extends Error {
   readonly code: string;
   readonly status: number;
@@ -24,6 +26,20 @@ export interface MappedApiError {
 }
 
 export function toApiError(err: unknown): MappedApiError {
+  if (err instanceof NotFoundError) {
+    return {
+      status: 404,
+      body: { error: { code: err.code, message: err.message } },
+    };
+  }
+
+  if (err instanceof ConflictError) {
+    return {
+      status: 409,
+      body: { error: { code: err.code, message: err.message } },
+    };
+  }
+
   if (err instanceof AppError) {
     const error: ApiError["error"] = {
       code: err.code,

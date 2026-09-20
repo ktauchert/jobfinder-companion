@@ -21,6 +21,21 @@ const envSchema = z.object({
   OLLAMA_BASE_URL: z.string().url(),
   OLLAMA_EMBED_MODEL: z.string().min(1),
   OLLAMA_EXTRACT_MODEL: z.string().min(1),
+  /** Match `OLLAMA_NUM_PARALLEL` on the Ollama container (docker-compose). */
+  OLLAMA_NUM_PARALLEL: z.coerce.number().int().positive().default(6),
+  /** BullMQ extract workers; defaults to ~60% of OLLAMA_NUM_PARALLEL. */
+  EXTRACT_WORKER_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  /** BullMQ embed workers; defaults to OLLAMA_NUM_PARALLEL (embed is cheaper). */
+  EMBED_WORKER_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  FETCH_FREE_WORKER_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  FETCH_PAID_WORKER_CONCURRENCY: z.coerce.number().int().positive().optional(),
+  /** When true, default all worker concurrency to 1 unless overridden above. */
+  INGEST_SERIAL: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+  /** Max jobs to enqueue for enrich per run; 0 = no cap. */
+  INGEST_MAX_JOBS: z.coerce.number().int().nonnegative().default(0),
 
   API_PORT: z.coerce.number().int().positive(),
   API_BASE_URL: z.string().url(),
@@ -32,6 +47,11 @@ const envSchema = z.object({
   ADZUNA_APP_ID: z.string().default(""),
   ADZUNA_APP_KEY: z.string().default(""),
   APIFY_TOKEN: z.string().default(""),
+
+  WORKERS_ENABLED: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((v) => v === "true"),
 });
 
 export type Env = z.infer<typeof envSchema>;

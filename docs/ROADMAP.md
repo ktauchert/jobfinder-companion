@@ -50,8 +50,9 @@ Goal: one full run for one free source, observable from the UI.
 - UI: Header "Run" button with state, minimal status bar consuming SSE.
 
 Exit criteria: pressing Run ingests ≥ 200 BA jobs; every job has skills and an
-embedding; the status bar shows live progress; a failed Ollama call retries
-and surfaces in `run.failed` without crashing the API.
+embedding; the status bar shows live progress for **fetch, extract, and embed**
+(see ADR 0004); a failed Ollama call retries and surfaces in `run.failed`
+without crashing the API.
 
 ## Phase 2 – Deterministic + Vector Search
 
