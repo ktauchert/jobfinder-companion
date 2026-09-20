@@ -11,15 +11,15 @@ GitHub, and the five triage labels exist in the repo.
 
 ## Recommended: use from day one
 
-| Skill                      | Why it fits                                                                                                                                                                                                               | When                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `setup-matt-pocock-skills` | Wires the other skills to GitHub issues, our triage labels and `CONTEXT.md` / `docs/adr/`. Choose **GitHub**, default labels, **single-context** domain docs.                                                             | Once, first session.                                                          |
-| `grill-with-docs`          | Every phase has real design branches (adapter interface, cancellation semantics, score weights, shortcut model). It interviews you and updates `CONTEXT.md` and ADRs inline, which is exactly how this repo is organised. | Before starting each milestone and before any issue labelled `needs-design`.  |
-| `to-tickets`               | Turns the grilled plan into tracer-bullet GitHub issues with blocking links. Matches the "vertical slices" rule in `AGENTS.md`.                                                                                           | Right after `grill-with-docs`.                                                |
-| `tdd`                      | Adapters (fixture-based), the skill canonicaliser, the score function and the search SQL builder are all highly testable pure seams. Red-green-refactor keeps the LLM-adjacent code honest.                               | During implementation of every issue that touches `apps/api` or `packages/*`. |
-| `implement`                | Drives `/tdd` at agreed seams and finishes with `/code-review`. The standard way to work an issue.                                                                                                                        | Per issue.                                                                    |
-| `code-review`              | Two-axis review (standards vs spec). Our standards are in `AGENTS.md`; the spec is the issue. Catches the classic failures: sidebars, hand-written boilerplate, tables outside Drizzle.                                   | Before every commit/PR.                                                       |
-| `handoff`                  | Sessions will be long (ingestion pipeline, UI work). A handoff doc keeps the next session from re-deriving state.                                                                                                         | End of every session.                                                         |
+| Skill                      | Why it fits                                                                                                                                                                                                               | When                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `setup-matt-pocock-skills` | Wires the other skills to GitHub issues, our triage labels and `CONTEXT.md` / `docs/adr/`. Choose **GitHub**, default labels, **single-context** domain docs.                                                             | Once, first session.                                                         |
+| `grill-with-docs`          | Every phase has real design branches (adapter interface, cancellation semantics, score weights, shortcut model). It interviews you and updates `CONTEXT.md` and ADRs inline, which is exactly how this repo is organised. | Before starting each milestone and before any issue labelled `needs-design`. |
+| `to-tickets`               | Turns the grilled plan into tracer-bullet GitHub issues with blocking links. Matches the "vertical slices" rule in `AGENTS.md`.                                                                                           | Right after `grill-with-docs`.                                               |
+| `tdd`                      | **Mandatory** for `domain/` and `application/` (ADR 0002). Always red-first. Adapters get fixture/contract tests the same way.                                                                                            | During `/implement` for every issue that touches `apps/api` or `packages/*`. |
+| `implement`                | Drives `/tdd` at the ports (agreed seams) and finishes with `/code-review`.                                                                                                                                               | Per issue.                                                                   |
+| `code-review`              | Two-axis review (standards vs spec). Standards include ADR 0002 layer rules and red-first. Catches sidebars, hand-written boilerplate, tables outside Drizzle, domain importing adapters.                                 | Before every commit/PR.                                                      |
+| `handoff`                  | Sessions will be long (ingestion pipeline, UI work). A handoff doc keeps the next session from re-deriving state.                                                                                                         | End of every session.                                                        |
 
 ## Useful: situational
 
@@ -27,7 +27,7 @@ GitHub, and the five triage labels exist in the repo.
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | `diagnosing-bugs`           | BullMQ retries, SSE disconnects and LLM output parsing produce bugs that need a reproducible red test before a fix.                       | Any non-trivial bug.                             |
 | `domain-modeling`           | Model-invoked companion to `grill-with-docs`. Keeps `CONTEXT.md` sharp as terms like _run_, _stage_, _match_ evolve.                      | Whenever a new noun shows up in a discussion.    |
-| `codebase-design`           | Deep modules behind small interfaces: `SourceAdapter`, `OllamaClient`, `searchJobs()`. Worth reading before designing those seams.        | Phase 1 and 2 kickoff.                           |
+| `codebase-design`           | Deep modules behind small interfaces — the vocabulary behind ADR 0002 ports. Read before designing a new port.                            | When adding a port or aggregate.                 |
 | `prototype`                 | Score-weight tuning and the tag-bar interaction are best explored as throwaway HTML variants before committing to shadcn components.      | Phase 2/3 UI questions.                          |
 | `research`                  | Upstream API behaviour (BA API pagination, Adzuna limits, Ollama JSON mode quirks) should be captured as cited notes in `docs/research/`. | Before each new adapter.                         |
 | `triage`                    | Only pays off once issues arrive from outside your own head. Labels are already created.                                                  | When the backlog grows beyond what you remember. |
@@ -62,6 +62,9 @@ are the failure modes most likely in this project:
 - UI creeping toward a sidebar or multi-page layout.
 - Hand-written TanStack/Vite/shadcn scaffolding instead of the CLI.
 - Tables or indexes created outside Drizzle migrations.
-- External HTTP or Ollama calls inside an Express handler.
+- Business rules in `http/` or `workers/` instead of use cases / domain.
+- `domain/` or `application/` importing an adapter or I/O library.
+- A port with a single implementation and no test fake (violates ADR 0002 D3).
+- New behaviour shipped without a preceding red test.
 - Upstream API payload types leaking out of an adapter module.
 - A paid source hard-failing when its key is missing.

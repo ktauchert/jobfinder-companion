@@ -45,16 +45,17 @@ containerised in Phase 4.
 
 Turborepo with native npm workspaces (`apps/*`, `packages/*`).
 
-| Workspace           | Package               | Responsibility                                                                  |
-| ------------------- | --------------------- | ------------------------------------------------------------------------------- |
-| `apps/web`          | `@jobfinder/web`      | SPA. Created with the official TanStack Router + Vite CLI.                      |
-| `apps/api`          | `@jobfinder/api`      | HTTP API, BullMQ producers and workers, source adapters, Ollama client.         |
-| `packages/types`    | `@jobfinder/types`    | Pure shared types: `NormalizedJob`, `Profile`, `IngestionEvent`, API contracts. |
-| `packages/database` | `@jobfinder/database` | Drizzle schema, migrations, DB client, pgvector query helpers.                  |
-| `packages/config`   | `@jobfinder/config`   | Shared `tsconfig.*.json` and ESLint flat configs.                               |
+| Workspace           | Package               | Responsibility                                                       |
+| ------------------- | --------------------- | -------------------------------------------------------------------- |
+| `apps/web`          | `@jobfinder/web`      | SPA. Created with the official TanStack Router + Vite CLI.           |
+| `apps/api`          | `@jobfinder/api`      | HTTP + workers; domain / application / ports / adapters (ADR 0002).  |
+| `packages/types`    | `@jobfinder/types`    | Pure shared types: domain shapes + API contracts.                    |
+| `packages/database` | `@jobfinder/database` | Drizzle schema, migrations, DB client only (no repository adapters). |
+| `packages/config`   | `@jobfinder/config`   | Shared `tsconfig.*.json` and ESLint flat configs.                    |
 
-Dependency direction: `web -> types`, `api -> types + database`,
-`database -> types`. Nothing depends on `web` or `api`.
+Dependency direction: `web -> types`, `api -> types + database` (adapters
+only; domain does not import database), `database -> types`. Nothing depends
+on `web` or `api`.
 
 Turbo tasks: `build`, `dev` (persistent), `lint`, `typecheck`, `test`,
 `generate`/`migrate` (database, uncached). `^build` ordering ensures
@@ -88,37 +89,37 @@ Footer   [/] Search  [r] Refresh  [i] Ingest  [j/k] Move  [Enter] Open  [h] Hide
 
 ## 4. Backend API (`apps/api`)
 
-Express 5 with a small, explicit structure:
+Express 5, structured as ports & adapters (ADR 0002). HTTP and workers are
+equal entry points; both call application use cases.
 
 ```
 src/
-  index.ts              boot: env, db, redis, queues, http, workers (dev)
-  env.ts                Zod-validated process.env
+  index.ts                 boot: env, wire adapters → ports, http, workers (dev)
+  env.ts                   Zod-validated process.env
+  domain/                  pure: IngestionRun, Job, Profile, Match, skill canonicalise
+  application/             use cases: StartRun, ProcessFetch, ProcessExtract,
+                           ProcessEmbed, CompleteRun, SearchJobs, UpdateProfile, …
+  ports/                   JobRepository, RunRepository, JobQueue, SourcePort,
+                           SkillExtractor, Embedder, EventPublisher, …
+  adapters/
+    db/                    Drizzle implementations of repository ports
+    queue/                 BullMQ JobQueue + queue name constants
+    events/                Redis pub/sub EventPublisher
+    ollama/                SkillExtractor + Embedder
+    sources/               ba/, greenhouse/, lever/, adzuna/, apify/
+                           (mapper + fixtures per source; registry)
   http/
-    app.ts              express app, middleware, error handler
-    routes/             health, sources, ingest, profile, jobs
-    sse.ts              SSE relay: Redis subscribe -> res.write
-  queues/
-    names.ts            QUEUE_NAMES from @jobfinder/types
-    producers.ts        startRun(), enqueueEnrich()
-    workers/
-      fetch.worker.ts   runs a source adapter, upserts jobs, enqueues enrich
-      enrich.worker.ts  extract | embed stage for one job
-    events.ts           publish(IngestionEvent) -> Redis channel
-  sources/
-    registry.ts         SourceDefinition[] + configured() check from env
-    ba/ greenhouse/ lever/ adzuna/ apify/
-      adapter.ts        fetch(query) -> AsyncIterable<NormalizedJob>
-      mapper.ts         upstream payload -> NormalizedJob
-      fixtures/         recorded responses for tests
-  ai/
-    ollama.ts           thin client (embed, chat with JSON format)
-    extract-skills.ts   prompt + parse + canonicalise skills
-    embed.ts            text -> vector(768)
-  search/
-    query.ts            hybrid search SQL builder
-    score.ts            matchScore = f(similarity, mustHaveCoverage)
+    app.ts                 express app, middleware, error handler
+    routes/                thin: validate → use case → respond
+    sse.ts                 SSE relay of progress events
+  workers/
+    fetch.worker.ts        BullMQ → ProcessFetch use case
+    enrich.worker.ts       BullMQ → ProcessExtract | ProcessEmbed
 ```
+
+Dependency rule: `domain` ← `application` ← `ports` ← `adapters`;
+`http` / `workers` → `application` only. ESLint `no-restricted-imports`
+enforces this.
 
 ### REST endpoints
 
@@ -142,7 +143,9 @@ Contracts live in `packages/types/src/api.ts`.
 ## 5. Ingestion pipeline (BullMQ + Redis)
 
 Ingestion is slow (rate limits, LLM calls) and must never block a request.
-Everything external runs in BullMQ workers.
+BullMQ is the `JobQueue` adapter; workers invoke the same use cases as HTTP
+would. Queue names and concurrency are infrastructure detail, not domain
+language (see CONTEXT.md).
 
 ### Queues
 
