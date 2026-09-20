@@ -58,23 +58,37 @@ without crashing the API.
 
 Goal: the profile drives a ranked list.
 
+**Status (2026-09-20):** Core slice merged in PR #49 (#17–#22 closed). Phase 2
+milestone stays open for remaining adapters and canonicalisation; **#23
+(Greenhouse) and #27 (search perf benchmark) are explicitly deferred** — do not
+block Phase 3 on them. Pick them up when adapters or scale demand it.
+
+### Done (#17–#22, PR #49)
+
 - Profile model + `GET/PUT /api/profile`; profile embedding refreshed on save.
 - Hybrid search query (`ARCHITECTURE.md §8`) as a Drizzle/SQL helper.
 - `matchScore` scoring, `SkillMatch` breakdown per job.
 - `GET /api/jobs` cursor pagination, `GET /api/jobs/:id`, hide/unhide.
-- UI: Tag bar (must-haves / excludes) with keyboard entry, job list with
-  cards, match score and skill chips; URL state via TanStack Router search params.
-- Additional free sources: Greenhouse and Lever (company-slug based).
-- First paid source: Adzuna, gated by `ADZUNA_APP_ID` / `ADZUNA_APP_KEY`;
-  greyed out in the UI when unconfigured.
-- Skill canonicalisation improvements (alias table seed, trigram matching).
+- UI: Tag bar (must-haves / excludes), job list with cards, match score and
+  skill chips; URL state via TanStack Router search params.
 
-Exit criteria: changing an exclude removes matching jobs instantly; adding a
-must-have reorders the list; p95 search latency < 100 ms on 10k jobs.
+### Remaining in milestone (not blocking Phase 3)
+
+| Issue | Scope | Notes |
+| ----- | ----- | ----- |
+| #23 | Greenhouse adapter | **Deferred** — later |
+| #24 | Lever adapter | When needed |
+| #25 | Adzuna adapter | When keys available |
+| #26 | Skill canonicalisation | Incremental |
+| #27 | Search perf benchmark (10k, p95) | **Deferred** — later |
+
+Exit criteria (core): changing an exclude removes matching jobs instantly;
+adding a must-have reorders the list — **met**. p95 search on 10k jobs (#27)
+**deferred**.
 
 **PoC note:** ingest still uses a hardcoded BA query in the Header Run button
-(`softwareentwickler`, `Berlin`). Profile-driven, multi-term ingest queries are
-deferred to Phase 3 (ADR 0005).
+(`softwareentwickler`, `Berlin`). Profile-driven, multi-term ingest queries move
+to Phase 3 (#50, ADR 0005).
 
 ## Phase 3 – UI Fine-tuning & Keyboard Shortcuts
 
@@ -111,6 +125,8 @@ Goal: run it on a home server and forget about it.
 
 ## Backlog / Ideas (not scheduled)
 
+- **Deferred from Phase 2:** #23 Greenhouse adapter, #27 search perf benchmark
+  (see Phase 2 status above).
 - Multiple profiles and quick switching.
 - Salary normalisation across currencies/periods.
 - Duplicate detection across sources (same job on BA and Adzuna).
