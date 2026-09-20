@@ -189,7 +189,7 @@ function buildFilterSql(query: SearchQuery) {
     )
     AND (
       cardinality(p.remote_types) = 0
-      OR j.remote_type = ANY (p.remote_types)
+      OR j.remote_type::text = ANY (p.remote_types)
     )
     AND (
       cardinality(p.country_codes) = 0
