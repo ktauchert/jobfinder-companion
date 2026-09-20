@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { IngestionShell } from "@/components/IngestionShell";
+import { Toaster } from "@/components/ui/sonner.js";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { IngestionEventsProvider } from "@/lib/ingestion-events-context.js";
 
@@ -29,6 +30,7 @@ function RootComponent() {
               </IngestionShell>
             </main>
             <Footer />
+            <Toaster position="bottom-center" richColors closeButton />
           </div>
         </TooltipProvider>
       </IngestionEventsProvider>

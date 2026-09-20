@@ -34,6 +34,7 @@ describe("processExtract", () => {
           }),
           findSimilar: vi.fn(),
           createSkill: vi.fn(),
+          search: vi.fn(),
         },
         extractor: {
           extract: vi.fn().mockResolvedValue([{ name: "typescript", confidence: 0.9 }]),

@@ -59,6 +59,31 @@ export function createDrizzleSkillRepositoryFromDb(db: Database): SkillRepositor
     async clearJobSkills(jobId: string) {
       await db.delete(jobSkills).where(eq(jobSkills.jobId, jobId));
     },
+
+    async search(query: string, limit: number) {
+      const trimmed = query.trim().toLowerCase();
+      if (!trimmed) {
+        const rows = await db.select().from(skills).orderBy(skills.name).limit(limit);
+        return rows.map(mapSkill);
+      }
+
+      const pattern = `%${trimmed}%`;
+      const rows = await db
+        .select()
+        .from(skills)
+        .where(
+          sql`${skills.name} ILIKE ${pattern}
+            OR ${skills.label} ILIKE ${pattern}
+            OR EXISTS (
+              SELECT 1 FROM unnest(${skills.aliases}) alias
+              WHERE alias ILIKE ${pattern}
+            )`,
+        )
+        .orderBy(sql`similarity(${skills.name}, ${trimmed}) DESC`)
+        .limit(limit);
+
+      return rows.map(mapSkill);
+    },
   };
 }
 

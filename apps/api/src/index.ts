@@ -7,7 +7,8 @@ import pino from "pino";
 import { createAppContext } from "./bootstrap/create-context.js";
 import { createHealthChecks } from "./adapters/health/create-health-checks.js";
 import { createRedisConnection } from "./adapters/queue/connection.js";
-import { createIngestQueues } from "./adapters/queue/queues.js";
+import { createAppQueues } from "./adapters/queue/queues.js";
+import { ensureDefaultProfile } from "./application/ensure-default-profile.js";
 import { seedSources } from "./application/seed-sources.js";
 import { loadEnv } from "./env.js";
 import { createApp } from "./http/app.js";
@@ -31,10 +32,11 @@ const logger = pino({
 
 const version = readPackageVersion();
 const redis = createRedisConnection(env.REDIS_URL);
-const queues = createIngestQueues(redis);
+const queues = createAppQueues(redis);
 const ctx = createAppContext(env, redis, queues);
 
 await seedSources(ctx.sources);
+await ensureDefaultProfile(ctx.profiles);
 
 const healthChecks = createHealthChecks({
   databaseUrl: env.DATABASE_URL,
@@ -70,12 +72,14 @@ if (env.WORKERS_ENABLED) {
       onFetchPaid: (job) => handlers.onFetchPaid(job),
       onExtract: (job) => handlers.onExtract(job),
       onEmbed: (job) => handlers.onEmbed(job),
+      onProfileEmbed: (job) => handlers.onProfileEmbed(job),
     },
   });
 
   workerBootstrap.start();
   registerGracefulShutdown(workerBootstrap, logger, async () => {
     await ctx.queue.close();
+    await ctx.profileQueue.close();
     await new Promise<void>((resolve, reject) => {
       server.close((err) => (err ? reject(err) : resolve()));
     });

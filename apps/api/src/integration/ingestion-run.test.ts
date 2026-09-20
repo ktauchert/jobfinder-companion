@@ -7,7 +7,7 @@ import type { Redis } from "ioredis";
 
 import { createAppContext } from "../bootstrap/create-context.js";
 import { createRedisConnection } from "../adapters/queue/connection.js";
-import { closeIngestQueues, createIngestQueues } from "../adapters/queue/queues.js";
+import { closeAppQueues, createAppQueues } from "../adapters/queue/queues.js";
 import { seedSources } from "../application/seed-sources.js";
 import { startIngestion } from "../application/start-ingestion.js";
 import { createWorkerHandlers } from "../workers/handlers.js";
@@ -69,7 +69,7 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
       APIFY_TOKEN: "",
     });
 
-    const queues = createIngestQueues(redis);
+    const queues = createAppQueues(redis);
     const ctx = createAppContext(env, redis, queues);
 
     const baDefinition = SOURCE_DEFINITIONS.find((d) => d.key === "ba");
@@ -127,6 +127,7 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
         onFetchPaid: (job) => handlers.onFetchPaid(job),
         onExtract: (job) => handlers.onExtract(job),
         onEmbed: (job) => handlers.onEmbed(job),
+        onProfileEmbed: (job) => handlers.onProfileEmbed(job),
       },
     });
     workerBootstrap.start();
@@ -182,12 +183,13 @@ async function resetIntegrationState(databaseUrl: string, connection: Redis): Pr
     sql`TRUNCATE job_skills, job_embeddings, jobs, ingestion_runs RESTART IDENTITY CASCADE`,
   );
 
-  const queues = createIngestQueues(connection);
+  const queues = createAppQueues(connection);
   await Promise.all([
     queues.fetchFree.obliterate({ force: true }),
     queues.fetchPaid.obliterate({ force: true }),
     queues.extract.obliterate({ force: true }),
     queues.embed.obliterate({ force: true }),
+    queues.profileEmbed.obliterate({ force: true }),
   ]);
-  await closeIngestQueues(queues);
+  await closeAppQueues(queues);
 }

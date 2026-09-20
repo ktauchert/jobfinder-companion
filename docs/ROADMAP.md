@@ -72,10 +72,18 @@ Goal: the profile drives a ranked list.
 Exit criteria: changing an exclude removes matching jobs instantly; adding a
 must-have reorders the list; p95 search latency < 100 ms on 10k jobs.
 
+**PoC note:** ingest still uses a hardcoded BA query in the Header Run button
+(`softwareentwickler`, `Berlin`). Profile-driven, multi-term ingest queries are
+deferred to Phase 3 (ADR 0005).
+
 ## Phase 3 – UI Fine-tuning & Keyboard Shortcuts
 
 Goal: the app is faster to use than a job board.
 
+- Profile-driven **ingest queries** (#50): persisted role likes (e.g.
+  Softwareentwickler, Fullstack, Product Developer); one fetch job per term per
+  source; Header/`i` Run uses profile defaults instead of hardcoded strings (ADR
+  0005).
 - Shortcut registry + Footer rendering: `/` search, `r` refresh, `i` ingest,
   `j`/`k` navigate, `Enter` open, `h` hide, `Esc` close, `?` help overlay.
 - Collapsible status bar with per-source progress and Stop.

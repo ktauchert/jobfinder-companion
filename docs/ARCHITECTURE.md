@@ -176,6 +176,9 @@ serial mode runs one job at a time within each queue, not globally interleaved).
 1. `POST /api/ingest/start` inserts an `ingestion_runs` row and enqueues one
    `fetch` job per selected source that is `enabled && configured`.
    Unconfigured paid sources are skipped and reported in `run.started`.
+   **Phase 2 PoC:** the web Header passes a fixed `query` / `location`; the
+   API also accepts them in the request body. **Phase 3 (ADR 0005):** default
+   from the profile’s `ingestQueries` (one fetch job per term per source).
 2. **Fetch worker** streams `NormalizedJob`s from the adapter, upserts them by
    `(source, external_id)` and, for every inserted or materially changed row,
    enqueues `extract`. Publishes `source.progress` every N jobs.
@@ -300,7 +303,7 @@ WHERE j.hidden_at IS NULL
     SELECT 1 FROM job_skills js JOIN skills s ON s.id = js.skill_id
     WHERE js.job_id = j.id AND s.name = ANY (p.exclude_skills)
   )
-  AND (cardinality(p.remote_types) = 0 OR j.remote_type = ANY (p.remote_types))
+  AND (cardinality(p.remote_types) = 0 OR j.remote_type::text = ANY (p.remote_types))
   AND (cardinality(p.country_codes) = 0 OR j.country_code = ANY (p.country_codes))
   AND (p.min_salary IS NULL OR j.salary_max IS NULL OR j.salary_max >= p.min_salary)
   AND j.fetched_at > now() - ($maxAgeDays || ' days')::interval

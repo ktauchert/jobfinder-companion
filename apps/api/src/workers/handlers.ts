@@ -1,9 +1,10 @@
-import type { EnrichJobData, FetchJobData } from "@jobfinder/types";
+import type { EnrichJobData, FetchJobData, ProfileEmbedJobData } from "@jobfinder/types";
 import type { Job } from "bullmq";
 
 import { processEmbed } from "../application/process-embed.js";
 import { processExtract } from "../application/process-extract.js";
 import { processFetch } from "../application/process-fetch.js";
+import { processProfileEmbed } from "../application/process-profile-embed.js";
 import { checkRunCompletion } from "../application/check-run-completion.js";
 import type { AppContext } from "../bootstrap/context.js";
 
@@ -15,6 +16,7 @@ export function createWorkerHandlers(ctx: AppContext) {
     onFetchPaid: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers),
     onExtract: (job: Job<EnrichJobData>) => handleExtract(job, ctx),
     onEmbed: (job: Job<EnrichJobData>) => handleEmbed(job, ctx),
+    onProfileEmbed: (job: Job<ProfileEmbedJobData>) => handleProfileEmbed(job, ctx),
   };
 }
 
@@ -70,5 +72,12 @@ async function handleEmbed(job: Job<EnrichJobData>, ctx: AppContext): Promise<vo
     runs: ctx.runs,
     events: ctx.events,
     checkCompletion: checkRunCompletion,
+  });
+}
+
+async function handleProfileEmbed(job: Job<ProfileEmbedJobData>, ctx: AppContext): Promise<void> {
+  await processProfileEmbed(job.data, {
+    profiles: ctx.profiles,
+    embedder: ctx.embedder,
   });
 }
