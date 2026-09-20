@@ -12,6 +12,7 @@ import type { Env } from "../env.js";
 import { createErrorHandler } from "./error-handler.js";
 import { createHealthRouter } from "./routes/health.js";
 import { createIngestRouter } from "./routes/ingest.js";
+import { createProfileRouter } from "./routes/profile.js";
 import { createSourcesRouter } from "./routes/sources.js";
 
 export interface CreateAppOptions {
@@ -59,6 +60,14 @@ export function createApp(options: CreateAppOptions) {
       ctx: options.ctx,
       redis: options.redis,
       eventCache: options.ctx.eventCache,
+    }),
+  );
+  app.use(
+    "/api",
+    createProfileRouter({
+      profiles: options.ctx.profiles,
+      skills: options.ctx.skills,
+      profileQueue: options.ctx.profileQueue,
     }),
   );
 

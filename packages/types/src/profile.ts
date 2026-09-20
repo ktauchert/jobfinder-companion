@@ -33,3 +33,12 @@ export type ProfileInput = Pick<
   | "countryCodes"
   | "minSalary"
 >;
+
+/** BullMQ queue for async profile embedding after a save. */
+export const PROFILE_QUEUE_NAMES = {
+  embed: "profile-embed",
+} as const;
+
+export interface ProfileEmbedJobData {
+  profileId: string;
+}

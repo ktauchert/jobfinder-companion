@@ -1,11 +1,11 @@
-import type { EnrichJobData, FetchJobData } from "@jobfinder/types";
+import type { EnrichJobData, FetchJobData, ProfileEmbedJobData } from "@jobfinder/types";
 import type { Logger } from "pino";
 import { Worker, type Job } from "bullmq";
 import type { Redis } from "ioredis";
-import { QUEUE_NAMES } from "@jobfinder/types";
+import { PROFILE_QUEUE_NAMES, QUEUE_NAMES } from "@jobfinder/types";
 
-import type { IngestQueues } from "../adapters/queue/queues.js";
-import { closeIngestQueues } from "../adapters/queue/queues.js";
+import type { AppQueues } from "../adapters/queue/queues.js";
+import { closeAppQueues } from "../adapters/queue/queues.js";
 import type { WorkerConcurrency } from "./concurrency.js";
 
 export interface WorkerBootstrap {
@@ -18,11 +18,12 @@ export interface WorkerHandlers {
   onFetchPaid: (job: Job<FetchJobData>) => Promise<void>;
   onExtract: (job: Job<EnrichJobData>) => Promise<void>;
   onEmbed: (job: Job<EnrichJobData>) => Promise<void>;
+  onProfileEmbed: (job: Job<ProfileEmbedJobData>) => Promise<void>;
 }
 
 export function createWorkerBootstrap(options: {
   connection: Redis;
-  queues: IngestQueues;
+  queues: AppQueues;
   handlers: WorkerHandlers;
   logger: Logger;
   concurrency: WorkerConcurrency;
@@ -56,6 +57,14 @@ export function createWorkerBootstrap(options: {
           connection: options.connection,
           concurrency: options.concurrency.embed,
         }),
+        new Worker<ProfileEmbedJobData>(
+          PROFILE_QUEUE_NAMES.embed,
+          (job) => options.handlers.onProfileEmbed(job),
+          {
+            connection: options.connection,
+            concurrency: 1,
+          },
+        ),
       );
 
       for (const worker of workers) {
@@ -78,7 +87,7 @@ export function createWorkerBootstrap(options: {
 
     async stop() {
       await Promise.all(workers.map((worker) => worker.close()));
-      await closeIngestQueues(options.queues);
+      await closeAppQueues(options.queues);
       await options.connection.quit();
     },
   };

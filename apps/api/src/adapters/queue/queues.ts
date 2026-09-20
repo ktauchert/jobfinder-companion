@@ -1,4 +1,4 @@
-import { QUEUE_NAMES } from "@jobfinder/types";
+import { PROFILE_QUEUE_NAMES, QUEUE_NAMES } from "@jobfinder/types";
 import { Queue, type QueueOptions } from "bullmq";
 import type { Redis } from "ioredis";
 
@@ -16,7 +16,11 @@ export interface IngestQueues {
   embed: Queue;
 }
 
-export function createIngestQueues(connection: Redis): IngestQueues {
+export interface AppQueues extends IngestQueues {
+  profileEmbed: Queue;
+}
+
+export function createAppQueues(connection: Redis): AppQueues {
   const opts: QueueOptions = { connection, defaultJobOptions: DEFAULT_JOB_OPTIONS };
 
   return {
@@ -24,7 +28,29 @@ export function createIngestQueues(connection: Redis): IngestQueues {
     fetchPaid: new Queue(QUEUE_NAMES.fetchPaid, opts),
     extract: new Queue(QUEUE_NAMES.extract, opts),
     embed: new Queue(QUEUE_NAMES.embed, opts),
+    profileEmbed: new Queue(PROFILE_QUEUE_NAMES.embed, opts),
   };
+}
+
+/** @deprecated Use createAppQueues */
+export function createIngestQueues(connection: Redis): IngestQueues {
+  const queues = createAppQueues(connection);
+  return {
+    fetchFree: queues.fetchFree,
+    fetchPaid: queues.fetchPaid,
+    extract: queues.extract,
+    embed: queues.embed,
+  };
+}
+
+export async function closeAppQueues(queues: AppQueues): Promise<void> {
+  await Promise.all([
+    queues.fetchFree.close(),
+    queues.fetchPaid.close(),
+    queues.extract.close(),
+    queues.embed.close(),
+    queues.profileEmbed.close(),
+  ]);
 }
 
 export async function closeIngestQueues(queues: IngestQueues): Promise<void> {

@@ -28,4 +28,18 @@ describe("createOllamaEmbedder", () => {
       expect.stringContaining("search_document:"),
     );
   });
+
+  it("prefixes query text for search_query", async () => {
+    const vector = Array.from({ length: EMBEDDING_DIMENSIONS }, () => 0.01);
+    const embed = vi.fn().mockResolvedValue([vector]);
+    const client = { embed } as unknown as OllamaClient;
+
+    const embedder = createOllamaEmbedder({ client, model: "nomic-embed-text" });
+    await embedder.embedQuery("Backend engineer · typescript");
+
+    expect(embed).toHaveBeenCalledWith(
+      "nomic-embed-text",
+      expect.stringContaining("search_query:"),
+    );
+  });
 });
