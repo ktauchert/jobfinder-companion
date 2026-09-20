@@ -127,5 +127,18 @@ export function createDrizzleJobRepositoryFromDb(db: Database): JobRepository {
         .set({ embeddedAt: new Date(), updatedAt: new Date() })
         .where(eq(jobs.id, jobId));
     },
+
+    async setHidden(jobId: string, hidden: boolean): Promise<boolean> {
+      const updated = await db
+        .update(jobs)
+        .set({
+          hiddenAt: hidden ? new Date() : null,
+          updatedAt: new Date(),
+        })
+        .where(eq(jobs.id, jobId))
+        .returning({ id: jobs.id });
+
+      return Boolean(updated[0]);
+    },
   };
 }

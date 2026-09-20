@@ -9,6 +9,7 @@ export function mapJobRow(row: JobRow, jobSkills: JobSkill[]): Job {
     skills: jobSkills,
     skillsExtractedAt: row.skillsExtractedAt?.toISOString() ?? null,
     embeddedAt: row.embeddedAt?.toISOString() ?? null,
+    hiddenAt: row.hiddenAt?.toISOString() ?? null,
     fetchedAt: row.fetchedAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

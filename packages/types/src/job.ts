@@ -68,6 +68,8 @@ export interface Job extends NormalizedJob {
   /** Enrichment progress flags; the UI shows partially enriched jobs greyed out. */
   skillsExtractedAt: string | null;
   embeddedAt: string | null;
+  /** When set, the job is hidden from search unless `includeHidden` is true. */
+  hiddenAt: string | null;
   fetchedAt: string;
   updatedAt: string;
 }

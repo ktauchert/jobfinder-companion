@@ -1,9 +1,15 @@
 import type {
+  HideJobResponse,
   IngestionStatusResponse,
+  ProfileResponse,
+  SearchJobsQuery,
+  SearchJobsResponse,
+  SkillsSearchResponse,
   SourcesResponse,
   StartIngestionRequest,
   StartIngestionResponse,
   StopIngestionResponse,
+  UpdateProfileRequest,
   UpdateSourceRequest,
 } from "@jobfinder/types";
 
@@ -24,6 +30,27 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+function toSearchParams(query: SearchJobsQuery): string {
+  const params = new URLSearchParams();
+  if (query.cursor) {
+    params.set("cursor", query.cursor);
+  }
+  if (query.limit != null) {
+    params.set("limit", String(query.limit));
+  }
+  if (query.q) {
+    params.set("q", query.q);
+  }
+  if (query.maxAgeDays != null) {
+    params.set("maxAgeDays", String(query.maxAgeDays));
+  }
+  if (query.includeHidden != null) {
+    params.set("includeHidden", String(query.includeHidden));
+  }
+  const serialized = params.toString();
+  return serialized ? `?${serialized}` : "";
 }
 
 export function fetchSources(): Promise<SourcesResponse> {
@@ -50,4 +77,32 @@ export function startIngestion(body: StartIngestionRequest = {}): Promise<StartI
 
 export function stopIngestion(): Promise<StopIngestionResponse> {
   return apiFetch("/api/ingest/stop", { method: "POST", body: "{}" });
+}
+
+export function fetchProfile(): Promise<ProfileResponse> {
+  return apiFetch("/api/profile");
+}
+
+export function updateProfile(body: UpdateProfileRequest): Promise<ProfileResponse> {
+  return apiFetch("/api/profile", {
+    method: "PUT",
+    body: JSON.stringify(body),
+  });
+}
+
+export function fetchJobs(query: SearchJobsQuery = {}): Promise<SearchJobsResponse> {
+  return apiFetch(`/api/jobs${toSearchParams(query)}`);
+}
+
+export function hideJob(id: string): Promise<HideJobResponse> {
+  return apiFetch(`/api/jobs/${id}/hide`, { method: "POST", body: "{}" });
+}
+
+export function unhideJob(id: string): Promise<HideJobResponse> {
+  return apiFetch(`/api/jobs/${id}/hide`, { method: "DELETE" });
+}
+
+export function searchSkills(q: string, limit = 8): Promise<SkillsSearchResponse> {
+  const params = new URLSearchParams({ q, limit: String(limit) });
+  return apiFetch(`/api/skills?${params.toString()}`);
 }

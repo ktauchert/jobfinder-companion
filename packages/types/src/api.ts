@@ -1,5 +1,5 @@
 import type { IngestionRun } from "./ingestion.js";
-import type { JobMatch } from "./job.js";
+import type { JobMatch, Skill } from "./job.js";
 import type { Profile, ProfileInput } from "./profile.js";
 import type { SourceKey, SourceStatus } from "./source.js";
 
@@ -83,3 +83,13 @@ export type JobResponse = { match: JobMatch };
 
 // POST /jobs/:id/hide, DELETE /jobs/:id/hide
 export type HideJobResponse = { id: string; hidden: boolean };
+
+// GET /skills
+export interface SkillsSearchQuery {
+  q?: string;
+  limit?: number;
+}
+
+export interface SkillsSearchResponse {
+  skills: Skill[];
+}

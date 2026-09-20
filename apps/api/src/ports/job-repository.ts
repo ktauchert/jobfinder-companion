@@ -21,4 +21,5 @@ export interface JobRepository {
   } | null>;
   markSkillsExtracted(jobId: string): Promise<void>;
   markEmbedded(jobId: string): Promise<void>;
+  setHidden(jobId: string, hidden: boolean): Promise<boolean>;
 }

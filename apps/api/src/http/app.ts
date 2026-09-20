@@ -14,6 +14,7 @@ import { createHealthRouter } from "./routes/health.js";
 import { createIngestRouter } from "./routes/ingest.js";
 import { createJobsRouter } from "./routes/jobs.js";
 import { createProfileRouter } from "./routes/profile.js";
+import { createSkillsRouter } from "./routes/skills.js";
 import { createSourcesRouter } from "./routes/sources.js";
 
 export interface CreateAppOptions {
@@ -75,8 +76,15 @@ export function createApp(options: CreateAppOptions) {
     "/api",
     createJobsRouter({
       profiles: options.ctx.profiles,
+      jobs: options.ctx.jobs,
       search: options.ctx.search,
       embedder: options.ctx.embedder,
+    }),
+  );
+  app.use(
+    "/api",
+    createSkillsRouter({
+      skills: options.ctx.skills,
     }),
   );
 
