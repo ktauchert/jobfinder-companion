@@ -1,8 +1,8 @@
 {
-  "name": "@jobfinder/types",
+  "name": "@jobfinder/database",
   "version": "0.0.0",
   "private": true,
-  "description": "Shared TypeScript types for JobFinder: jobs, profiles, sources, ingestion status, API contracts.",
+  "description": "Drizzle schema, migrations, and DB client for JobFinder.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,19 +15,32 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "drizzle"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
-    "test": "node -e \"console.log('no tests yet')\"",
+    "test": "vitest run --passWithNoTests",
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx src/migrate.ts",
+    "studio": "drizzle-kit studio",
     "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@jobfinder/types": "*",
+    "drizzle-orm": "^0.44.5",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "@jobfinder/config": "*",
+    "@types/node": "^22.10.2",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^10.11.0",
-    "typescript": "^5.9.3"
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   }
 }

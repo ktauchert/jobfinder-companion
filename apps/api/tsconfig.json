@@ -1,0 +1,9 @@
+{
+  "extends": "@jobfinder/config/tsconfig.node.json",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"]
+  }
+}

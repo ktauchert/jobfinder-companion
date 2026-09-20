@@ -16,6 +16,44 @@ jobs:
     timeout-minutes: 15
     env:
       TURBO_TELEMETRY_DISABLED: "1"
+      NODE_ENV: test
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://jobfinder:jobfinder@localhost:5432/jobfinder
+      REDIS_URL: redis://localhost:6379
+      OLLAMA_BASE_URL: http://localhost:11434
+      OLLAMA_EMBED_MODEL: nomic-embed-text
+      OLLAMA_EXTRACT_MODEL: qwen2.5:3b
+      API_PORT: "3000"
+      API_BASE_URL: http://localhost:3000
+      CORS_ORIGIN: http://localhost:5173
+      WEB_PORT: "5173"
+      BA_CLIENT_ID: jobboerse-jobsuche
+      ADZUNA_APP_ID: ""
+      ADZUNA_APP_KEY: ""
+      APIFY_TOKEN: ""
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: jobfinder
+          POSTGRES_PASSWORD: jobfinder
+          POSTGRES_DB: jobfinder
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jobfinder -d jobfinder"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +62,18 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       - run: npm ci
+
+      - name: Enable Postgres extensions
+        run: |
+          until PGPASSWORD=jobfinder psql -h localhost -U jobfinder -d jobfinder -c 'select 1' >/dev/null 2>&1; do sleep 1; done
+          # Service containers skip docker/init.sql; enable the same extensions here.
+          PGPASSWORD=jobfinder psql -h localhost -U jobfinder -d jobfinder -v ON_ERROR_STOP=1 -f docker/init.sql
+
+      - run: npm run db:migrate
 
       - run: npm run format:check
 

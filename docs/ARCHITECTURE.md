@@ -238,7 +238,8 @@ jobs             id uuid PK, source FK, external_id, title, company, location,
                  hidden_at, fetched_at, updated_at
                  UNIQUE (source, external_id)
 skills           id uuid PK, name UNIQUE (canonical), label, aliases text[]
-                 GIN index on aliases (trgm) for fuzzy canonicalisation
+                 GIN trigram indexes on name and label (pg_trgm is text-only;
+                 aliases uses a plain GIN array index for containment)
 job_skills       job_id FK, skill_id FK, confidence real, PK (job_id, skill_id)
 job_embeddings   job_id PK FK, model text, embedding vector(768), created_at
                  HNSW index (vector_cosine_ops)

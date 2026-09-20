@@ -49,10 +49,11 @@ No sidebar. No dashboard. Header, Main, Footer.
 ```bash
 git clone git@github.com:ktauchert/jobfinder-companion.git
 cd jobfinder-companion
-cp .env.example .env          # adjust if ports collide
+cp .env.example .env          # adjust if ports collide (e.g. POSTGRES_PORT)
 
 npm install                   # all workspaces
 npm run infra:up              # postgres + redis + ollama, pulls models on first run
+npm run db:migrate            # apply Drizzle migrations
 npm run dev                   # api on :3000, web on :5173
 ```
 

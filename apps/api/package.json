@@ -1,0 +1,39 @@
+{
+  "name": "@jobfinder/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "JobFinder HTTP API and workers (ports & adapters).",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../../.env src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --env-file=../../.env dist/index.js",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@jobfinder/types": "*",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "ioredis": "^5.7.0",
+    "pino": "^9.9.5",
+    "pino-http": "^10.5.0",
+    "postgres": "^3.4.7",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@jobfinder/config": "*",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.10.2",
+    "@types/supertest": "^6.0.3",
+    "eslint": "^10.11.0",
+    "pino-pretty": "^13.1.1",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
