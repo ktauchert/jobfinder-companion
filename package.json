@@ -1,0 +1,41 @@
+{
+  "name": "jobfinder-companion",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Self-hosted, keyboard-first job matching engine for developers. Ingests jobs in the background, extracts skills and embeddings with Ollama, and searches them with PostgreSQL + pgvector.",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ktauchert/jobfinder-companion.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "npm@11.13.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "check": "turbo run lint typecheck test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "turbo run clean && rm -rf node_modules/.cache",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f",
+    "infra:reset": "docker compose down -v",
+    "db:generate": "npm run generate -w @jobfinder/database",
+    "db:migrate": "npm run migrate -w @jobfinder/database",
+    "db:studio": "npm run studio -w @jobfinder/database"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.8",
+    "turbo": "^2.11.2",
+    "typescript": "^5.9.3"
+  }
+}

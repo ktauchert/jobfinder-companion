@@ -1,0 +1,30 @@
+name: Feature / task
+description: A vertical slice of work. Small enough to finish in one session.
+labels: ["type:feature", "needs-triage"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One or two sentences. What is true when this is done?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What this touches (workspaces, tables, endpoints, components).
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / links
+      description: ADRs, docs sections, upstream API references, blocking issues.

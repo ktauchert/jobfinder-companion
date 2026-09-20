@@ -1,0 +1,4 @@
+{
+  "extends": "@jobfinder/config/tsconfig.library.json",
+  "include": ["src"]
+}

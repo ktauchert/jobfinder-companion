@@ -1,0 +1,40 @@
+# JobFinder reverse proxy.
+#
+# Started with `docker compose --profile proxy up -d`.
+# Routes /api/* to the API and everything else to the web app.
+#
+# Development: api and web run on the host; Caddy reaches them through
+# `host.docker.internal` (see extra_hosts in docker-compose.yml).
+# Production (Phase 4): replace the upstreams with the container names
+# (`api:3000`, `web:80`) once apps are containerised.
+#
+# For a public domain set CADDY_DOMAIN in .env; Caddy provisions TLS
+# automatically. `localhost` uses a self-signed internal CA.
+
+{$CADDY_DOMAIN:localhost} {
+	encode zstd gzip
+
+	# Server-Sent Events must not be buffered or time out.
+	@sse path /api/ingest/events
+	handle @sse {
+		reverse_proxy host.docker.internal:{$API_PORT:3000} {
+			flush_interval -1
+			transport http {
+				read_timeout 0
+			}
+		}
+	}
+
+	handle /api/* {
+		reverse_proxy host.docker.internal:{$API_PORT:3000}
+	}
+
+	handle {
+		reverse_proxy host.docker.internal:{$WEB_PORT:5173}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

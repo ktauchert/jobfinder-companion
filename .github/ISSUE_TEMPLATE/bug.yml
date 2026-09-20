@@ -1,0 +1,35 @@
+name: Bug
+description: Something behaves differently from the docs or from what you expect.
+labels: ["type:bug", "needs-triage"]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Steps, request, or failing test. Include relevant logs.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - api
+        - web
+        - database
+        - ingestion / queue
+        - ai / ollama
+        - infra / docker
+        - docs
