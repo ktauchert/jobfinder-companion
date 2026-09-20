@@ -1,9 +1,10 @@
 import { createDb, profiles, type Database } from "@jobfinder/database";
-import type { ProfileInput } from "@jobfinder/types";
+import type { Profile, ProfileInput } from "@jobfinder/types";
 import { eq } from "drizzle-orm";
 
 import type { ProfileRepository } from "../../ports/profile-repository.js";
 import { mapProfileRow } from "./map-profile.js";
+import { parseEmbedding } from "./parse-embedding.js";
 
 const DEFAULT_PROFILE_NAME = "default";
 
@@ -51,6 +52,29 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
       }
 
       return mapProfileRow(row);
+    },
+
+    async getSearchContext() {
+      const rows = await db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.name, DEFAULT_PROFILE_NAME))
+        .limit(1);
+
+      const row = rows[0];
+      if (!row) {
+        throw new Error("Default profile not found");
+      }
+
+      return {
+        id: row.id,
+        embedding: parseEmbedding(row.embedding),
+        mustHaveSkills: row.mustHaveSkills,
+        excludeSkills: row.excludeSkills,
+        remoteTypes: row.remoteTypes as Profile["remoteTypes"],
+        countryCodes: row.countryCodes,
+        minSalary: row.minSalary,
+      };
     },
 
     async update(input: ProfileInput) {

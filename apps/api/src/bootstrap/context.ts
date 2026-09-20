@@ -8,6 +8,7 @@ import type { ProfileRepository } from "../ports/profile-repository.js";
 import type { RateLimiter } from "../ports/source-adapter.js";
 import type { SourceAdapterRegistry } from "../ports/source-adapters.js";
 import type { RunRepository } from "../ports/run-repository.js";
+import type { SearchRepository } from "../ports/search-repository.js";
 import type { SkillExtractor } from "../ports/skill-extractor.js";
 import type { SkillRepository } from "../ports/skill-repository.js";
 import type { SourceRepository } from "../ports/source-repository.js";
@@ -21,6 +22,7 @@ export interface AppContext {
   jobs: JobRepository;
   skills: SkillRepository;
   profiles: ProfileRepository;
+  search: SearchRepository;
   embeddings: JobEmbeddingRepository;
   queue: JobQueue;
   profileQueue: ProfileQueue;

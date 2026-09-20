@@ -6,6 +6,7 @@ import { createRedisEventPublisher } from "../adapters/events/redis-event-publis
 import { createDrizzleJobEmbeddingRepositoryFromDb } from "../adapters/db/drizzle-job-embedding-repository.js";
 import { createDrizzleJobRepositoryFromDb } from "../adapters/db/drizzle-job-repository.js";
 import { createDrizzleProfileRepositoryFromDb } from "../adapters/db/drizzle-profile-repository.js";
+import { createDrizzleSearchRepositoryFromDb } from "../adapters/db/drizzle-search-repository.js";
 import { createDrizzleRunRepositoryFromDb } from "../adapters/db/drizzle-run-repository.js";
 import { createDrizzleSkillRepositoryFromDb } from "../adapters/db/drizzle-skill-repository.js";
 import { createDrizzleSourceRepositoryFromDb } from "../adapters/db/drizzle-source-repository.js";
@@ -42,6 +43,7 @@ export function createAppContext(env: Env, redis: Redis, queues: AppQueues): App
     jobs: createDrizzleJobRepositoryFromDb(db),
     skills: createDrizzleSkillRepositoryFromDb(db),
     profiles: createDrizzleProfileRepositoryFromDb(db),
+    search: createDrizzleSearchRepositoryFromDb(db),
     embeddings: createDrizzleJobEmbeddingRepositoryFromDb(db),
     queue: createBullmqJobQueue(queues),
     profileQueue: createBullmqProfileQueue(queues),
