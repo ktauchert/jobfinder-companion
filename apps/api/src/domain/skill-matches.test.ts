@@ -14,7 +14,10 @@ describe("buildSkillMatches", () => {
     );
 
     expect(result).toEqual([
-      { skill: { id: "1", name: "typescript", label: "TypeScript", aliases: [] }, state: "must_have" },
+      {
+        skill: { id: "1", name: "typescript", label: "TypeScript", aliases: [] },
+        state: "must_have",
+      },
       { skill: { id: "2", name: "java", label: "Java", aliases: [] }, state: "excluded" },
       { skill: { id: "3", name: "react", label: "React", aliases: [] }, state: "neutral" },
     ]);

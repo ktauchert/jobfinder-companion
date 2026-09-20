@@ -54,12 +54,12 @@ fetch worker stops enqueueing extract/embed for new rows.
 
 ### D4. Ingest queries ≠ search `q` ≠ must-have skills
 
-| Concept | When | Purpose |
-| ------- | ---- | ------- |
-| **Ingest query** | Fetch stage | Pull candidates from upstream APIs |
-| **Must-have skill** | Search stage | Rank matches (does not filter) |
-| **Exclude** | Search stage | Hard-filter stored jobs |
-| **Search `q`** | Search stage | Ad-hoc text blended into query embedding for one request |
+| Concept             | When         | Purpose                                                  |
+| ------------------- | ------------ | -------------------------------------------------------- |
+| **Ingest query**    | Fetch stage  | Pull candidates from upstream APIs                       |
+| **Must-have skill** | Search stage | Rank matches (does not filter)                           |
+| **Exclude**         | Search stage | Hard-filter stored jobs                                  |
+| **Search `q`**      | Search stage | Ad-hoc text blended into query embedding for one request |
 
 Do not overload must-have skills as the BA `was` parameter by default — skills
 (_typescript_, _react_) and role titles (_product developer_) are different

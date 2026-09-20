@@ -65,13 +65,7 @@ interface TagBarLoadedProps {
   onSave: (input: UpdateProfileRequest) => void;
 }
 
-function TagBarLoaded({
-  profile,
-  q,
-  searchInputRef,
-  onSearchChange,
-  onSave,
-}: TagBarLoadedProps) {
+function TagBarLoaded({ profile, q, searchInputRef, onSearchChange, onSave }: TagBarLoadedProps) {
   const [draft, setDraft] = useState<SkillDraft | null>(null);
   const [novelSkills, setNovelSkills] = useState<Set<string>>(() => new Set());
 

@@ -55,9 +55,7 @@ export function createDrizzleSearchRepositoryFromDb(db: Database): SearchReposit
 
       const rows = await db.execute(buildMetricsSql(query, jobId));
 
-      const row = rows[0] as
-        | { similarity: number; must_have_coverage: number }
-        | undefined;
+      const row = rows[0] as { similarity: number; must_have_coverage: number } | undefined;
       if (!row) {
         return null;
       }

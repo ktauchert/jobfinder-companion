@@ -51,7 +51,10 @@ export function createJobsRouter(deps: JobsRouterDeps): Router {
           return;
         }
 
-        const body: SearchJobsResponse = await searchJobs(toSearchJobsQuery(parsed.data), useCaseDeps);
+        const body: SearchJobsResponse = await searchJobs(
+          toSearchJobsQuery(parsed.data),
+          useCaseDeps,
+        );
         res.status(200).json(body);
       } catch (err) {
         next(err);

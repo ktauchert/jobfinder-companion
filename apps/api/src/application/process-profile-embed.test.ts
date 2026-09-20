@@ -29,9 +29,7 @@ describe("processProfileEmbed", () => {
       },
     );
 
-    expect(embedQuery).toHaveBeenCalledWith(
-      "Backend engineer · typescript · postgresql",
-    );
+    expect(embedQuery).toHaveBeenCalledWith("Backend engineer · typescript · postgresql");
     expect(setEmbedding).toHaveBeenCalledWith("profile-1", vector);
   });
 

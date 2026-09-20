@@ -16,7 +16,8 @@ export function SkillChip({ label, state, className }: SkillChipProps) {
       variant="outline"
       className={cn(
         "gap-1 font-normal",
-        state === "must_have" && "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300",
+        state === "must_have" &&
+          "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300",
         state === "excluded" && "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300",
         className,
       )}

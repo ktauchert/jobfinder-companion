@@ -4,7 +4,10 @@ import { eq, inArray } from "drizzle-orm";
 
 import { mapJobRow } from "./map-job.js";
 
-export async function loadJobsWithSkills(db: Database, jobIds: string[]): Promise<Map<string, Job>> {
+export async function loadJobsWithSkills(
+  db: Database,
+  jobIds: string[],
+): Promise<Map<string, Job>> {
   if (jobIds.length === 0) {
     return new Map();
   }

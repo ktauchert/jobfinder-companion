@@ -49,13 +49,18 @@ export async function searchJobs(
 
   const cursor = query.cursor ? decodeJobCursor(query.cursor) : null;
   const afterCursor = cursor
-    ? ranked.filter((match) => isAfterCursor({ matchScore: match.matchScore, id: match.job.id }, cursor))
+    ? ranked.filter((match) =>
+        isAfterCursor({ matchScore: match.matchScore, id: match.job.id }, cursor),
+      )
     : ranked;
 
   const page = afterCursor.slice(0, limit);
   const last = page.at(-1);
   const hasMoreInWindow = afterCursor.length > limit;
-  const nextCursor = last && hasMoreInWindow ? encodeJobCursor({ matchScore: last.matchScore, id: last.job.id }) : null;
+  const nextCursor =
+    last && hasMoreInWindow
+      ? encodeJobCursor({ matchScore: last.matchScore, id: last.job.id })
+      : null;
 
   return {
     items: page,

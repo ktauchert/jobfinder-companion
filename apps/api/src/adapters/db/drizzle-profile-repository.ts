@@ -26,10 +26,7 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
         return mapProfileRow(row);
       }
 
-      const inserted = await db
-        .insert(profiles)
-        .values({ name: DEFAULT_PROFILE_NAME })
-        .returning();
+      const inserted = await db.insert(profiles).values({ name: DEFAULT_PROFILE_NAME }).returning();
 
       const created = inserted[0];
       if (!created) {

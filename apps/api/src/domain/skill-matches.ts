@@ -15,7 +15,11 @@ export function buildSkillMatches(skills: Skill[], profile: SkillMatchProfile): 
   }));
 }
 
-function tagSkillState(name: string, mustHave: Set<string>, excluded: Set<string>): SkillMatchState {
+function tagSkillState(
+  name: string,
+  mustHave: Set<string>,
+  excluded: Set<string>,
+): SkillMatchState {
   if (mustHave.has(name)) {
     return "must_have";
   }

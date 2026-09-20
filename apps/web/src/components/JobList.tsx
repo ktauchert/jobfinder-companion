@@ -89,8 +89,8 @@ export function JobList({
     return (
       <div className="flex flex-col items-start gap-3 px-4 py-8">
         <p className="text-sm text-muted-foreground">
-          No matching jobs yet. Press <kbd className="rounded border px-1">i</kbd> or use Run in
-          the header to ingest jobs.
+          No matching jobs yet. Press <kbd className="rounded border px-1">i</kbd> or use Run in the
+          header to ingest jobs.
         </p>
       </div>
     );
@@ -128,4 +128,3 @@ export function JobList({
     </div>
   );
 }
-
