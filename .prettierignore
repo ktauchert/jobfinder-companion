@@ -6,3 +6,6 @@ build
 coverage
 package-lock.json
 docker/data
+# Vendored agent skills (mattpocock/skills); updated via `npx skills update`
+.agents/skills
+skills-lock.json

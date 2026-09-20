@@ -29,12 +29,14 @@ deterministic filters + vector similarity, in milliseconds.
    `Main` or a keyboard-driven overlay.
 3. **Typing-first.** Every action must be reachable with the keyboard. Shortcuts
    are documented in the Footer. Mouse support is additive.
-4. **Ingestion never runs in a request handler.** Anything that talks to an
-   external job API or to Ollama goes through BullMQ (`packages`/`apps/api`
-   workers). The API only enqueues and streams progress via SSE.
+4. **Ingestion never runs in a request handler.** HTTP and workers are entry
+   points that call the same application use cases. Anything that talks to an
+   external job API or to Ollama goes through a port implemented by an adapter
+   (BullMQ queue, Ollama client, source adapters). See ADR 0002.
 5. **Schema has one owner.** Tables live in `packages/database` (Drizzle).
    `docker/init.sql` enables extensions only. Never `CREATE TABLE` outside a
-   Drizzle migration.
+   Drizzle migration. Repository _adapters_ live in `apps/api`, not in the
+   database package.
 6. **Source adapters map to `NormalizedJob`** (`packages/types`). Adapter code
    never leaks upstream payload shapes past its own module.
 7. **Paid sources are gated by configuration, not code.** A source with missing
@@ -42,20 +44,46 @@ deterministic filters + vector similarity, in milliseconds.
    it out. Never hard-fail because a key is missing.
 8. **Shared types cross boundaries via `@jobfinder/types`.** Do not duplicate
    API contracts in `apps/web`.
+9. **Always red-first.** New behaviour starts with a failing test. Domain and
+   application code without a preceding red test fails `/code-review`.
+   Characterization tests are only for refactoring untested code.
 
 ## Workspace layout
 
 ```
-apps/api            Express 5 API + BullMQ workers + source adapters
-apps/web            React SPA (Vite, TanStack Router/Query, Tailwind, shadcn/ui)
-packages/types      Shared TS types (pure, no runtime deps)
-packages/database   Drizzle schema, migrations, DB client, pgvector helpers
+apps/api            Express 5 + workers; layered per ADR 0002 (domain / application / ports / adapters)
+apps/web            React SPA (Vite, TanStack Router/Query, Tailwind, shadcn/ui) — no hexagonal layering
+packages/types      Shared TS types (domain shapes + API DTOs, pure, no runtime deps)
+packages/database   Drizzle schema, migrations, DB client only (no repository adapters)
 packages/config     Shared tsconfig + ESLint flat configs
 docker/             init.sql (extensions), Caddyfile
 docs/               ARCHITECTURE, ROADMAP, ADRs, agent skill notes
 ```
 
 Package names are `@jobfinder/<dir>`. Node >= 22, npm workspaces, Turborepo.
+
+## Design & testing (`apps/api`)
+
+Full rules: ADR 0002. Agents must follow these mechanically:
+
+- **Layers:** `domain/` → `application/` → `ports/` ← `adapters/`; entry points
+  are `http/` and `workers/`. Both call use cases; neither owns business rules.
+- **Domain is pure.** No imports of Drizzle, BullMQ, Express, Ollama, Redis, or
+  anything under `adapters/`, `http/`, `workers/`. Enforce with ESLint
+  `no-restricted-imports`.
+- **Application depends on ports only.** No adapter imports.
+- **Port kill rule.** A port exists only if it crosses I/O **or** a fake is
+  required for a domain/application test. One-implementation interfaces need
+  justification in the PR.
+- **Aggregates / VOs:** `IngestionRun`, `Job`, `Profile`, `Match`,
+  `NormalizedJob`. Skill canonicalisation is a domain service.
+- **Hybrid search:** SQL filters + vector distance in the repository adapter;
+  `Match.score` in domain.
+- **TDD:** red → green → refactor for every new behaviour. Unit tests for
+  domain/application (in-memory fakes). Fixture/contract tests for adapters
+  (no live upstream HTTP or Ollama in unit tests). Integration tests use Docker.
+- **`apps/web`:** components + TanStack Query + typed client. No ports/adapters
+  theatre on the client.
 
 ## Commands
 
@@ -81,8 +109,8 @@ Run `npm run check` before committing. CI runs the same.
   `satisfies` against `@jobfinder/types`.
 - Errors: throw typed errors, map to `ApiError` in one Express error handler.
 - Logging: structured (pino), never `console.log` in `apps/api` hot paths.
-- Tests: Vitest. Unit-test adapters against recorded fixtures (no live HTTP in
-  tests). Integration tests use the Docker services.
+- Tests: Vitest. Red-first (hard rule 9). Unit-test adapters against recorded
+  fixtures (no live HTTP in unit tests). Integration tests use Docker services.
 - Naming follows `CONTEXT.md`. If you need a new term, add it there first.
 - Comments explain _why_, not _what_. No narrating comments.
 
@@ -116,7 +144,23 @@ Run `npm run check` before committing. CI runs the same.
 
 ## Agent skills
 
-If Matt Pocock's skills are installed, use `/grill-with-docs` before large
-features, `/to-tickets` to break plans into GitHub issues, `/tdd` for
-implementation, and `/code-review` before committing. See
-`docs/agent-skills.md` for which skills fit this project and how.
+Matt Pocock's skills are installed under `.agents/skills/`. Use
+`/grill-with-docs` before large features, `/to-tickets` to break plans into
+GitHub issues, `/tdd` for implementation, and `/code-review` before committing.
+See `docs/agent-skills.md` for which skills fit this project and how.
+
+### Issue tracker
+
+Issues live in GitHub Issues (`ktauchert/jobfinder-companion`), operated via
+`gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default triage labels (`needs-triage`, `needs-info`,
+`ready-for-agent`, `ready-for-human`, `wontfix`) are used unchanged. See
+`docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` and `docs/adr/` at the repo root. See
+`docs/agents/domain.md`.
