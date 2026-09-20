@@ -130,6 +130,11 @@ Run `npm run check` before committing. CI runs the same.
 
 - Issues and milestones are on GitHub (`gh issue ...`). Every non-trivial change
   references an issue.
+- **Branch per milestone (or issue cluster), not on `main`.** When picking up a
+  milestone or a set of related issues, create a branch from up-to-date `main`
+  (e.g. `phase-1-ingestion`, `feat/issue-12-ba-adapter`) and open a PR when
+  ready. Direct commits to `main` are for tiny fixes or when the human
+  explicitly says so — Phase 0 scaffolding was an exception.
 - Labels: `area:*`, `type:*`, plus triage labels `needs-triage`, `needs-info`,
   `ready-for-agent`, `ready-for-human`, `wontfix`.
 - Prefer small vertical slices (tracer bullets) over horizontal layers.
