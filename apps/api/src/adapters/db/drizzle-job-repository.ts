@@ -1,6 +1,6 @@
 import { createDb, jobs, jobSkills, skills, type Database } from "@jobfinder/database";
 import type { NormalizedJob } from "@jobfinder/types";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNotNull, ne, sql } from "drizzle-orm";
 
 import type { JobRepository, UpsertJobResult } from "../../ports/job-repository.js";
 
@@ -82,6 +82,32 @@ export function createDrizzleJobRepositoryFromDb(db: Database): JobRepository {
         .where(eq(jobs.id, jobId))
         .limit(1);
       return rows[0]?.descriptionText ?? null;
+    },
+
+    async findContentHash(jobId: string): Promise<string | null> {
+      const rows = await db
+        .select({ contentHash: jobs.contentHash })
+        .from(jobs)
+        .where(eq(jobs.id, jobId))
+        .limit(1);
+      return rows[0]?.contentHash ?? null;
+    },
+
+    async findJobIdWithSkillsByContentHash(contentHash: string, excludeJobId: string) {
+      const rows = await db
+        .select({ id: jobs.id })
+        .from(jobs)
+        .where(
+          and(
+            eq(jobs.contentHash, contentHash),
+            ne(jobs.id, excludeJobId),
+            isNotNull(jobs.skillsExtractedAt),
+          ),
+        )
+        .orderBy(jobs.skillsExtractedAt)
+        .limit(1);
+
+      return rows[0]?.id ?? null;
     },
 
     async findTitleCompanySkills(jobId: string) {

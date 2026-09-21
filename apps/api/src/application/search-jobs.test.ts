@@ -6,6 +6,7 @@ import { searchJobs } from "./search-jobs.js";
 function makeJob(id: string, skillNames: string[]): Job {
   return {
     id,
+    contentHash: `hash-${id}`,
     source: "ba",
     externalId: id,
     title: `Job ${id}`,
@@ -88,5 +89,54 @@ describe("searchJobs", () => {
     expect(response.items.map((item: JobMatch) => item.job.id)).toEqual(["high", "low"]);
     expect(response.items[0]?.matchScore).toBeGreaterThan(response.items[1]?.matchScore ?? 0);
     expect(response.total).toBe(2);
+  });
+
+  it("returns one match per content hash when duplicates share the same posting", async () => {
+    const sharedHash = "353bdb8c4dd5";
+    const searchCandidates = vi.fn().mockResolvedValue([
+      { jobId: "dup-a", similarity: 0.5, mustHaveCoverage: 0 },
+      { jobId: "dup-b", similarity: 0.5, mustHaveCoverage: 0 },
+    ]);
+    const loadJobsByIds = vi.fn().mockImplementation((ids: string[]) =>
+      Promise.resolve(
+        ids.map((id) => ({
+          ...makeJob(id, ["php"]),
+          contentHash: sharedHash,
+        })),
+      ),
+    );
+
+    const response = await searchJobs(
+      { limit: 10 },
+      {
+        profiles: {
+          getSearchContext: vi.fn().mockResolvedValue({
+            id: "profile-1",
+            embedding: null,
+            mustHaveSkills: [],
+            excludeSkills: [],
+            remoteTypes: [],
+            countryCodes: [],
+            minSalary: null,
+          }),
+        },
+        search: {
+          searchCandidates,
+          countMatching: vi.fn().mockResolvedValue(2),
+          loadJobsByIds,
+          findEnrichedJobById: vi.fn(),
+          computeCandidateMetrics: vi.fn(),
+        },
+        embedder: {
+          embedQuery: vi.fn(),
+          embedDocument: vi.fn(),
+          model: "nomic-embed-text",
+          dimensions: 2,
+        },
+      },
+    );
+
+    expect(response.items).toHaveLength(1);
+    expect(response.items[0]?.job.contentHash).toBe(sharedHash);
   });
 });

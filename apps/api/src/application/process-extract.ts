@@ -1,5 +1,6 @@
 import type { EnrichJobData } from "@jobfinder/types";
 
+import { filterExtractedSkills } from "../domain/filter-extracted-skills.js";
 import { canonicaliseSkillName } from "./canonicalise-skill.js";
 import { maybePublishRunProgress } from "./publish-run-progress.js";
 import type { checkRunCompletion } from "./check-run-completion.js";
@@ -11,7 +12,13 @@ import type { SkillExtractor } from "../ports/skill-extractor.js";
 import type { SkillRepository } from "../ports/skill-repository.js";
 
 export interface ProcessExtractDeps {
-  jobs: Pick<JobRepository, "findDescriptionText" | "markSkillsExtracted">;
+  jobs: Pick<
+    JobRepository,
+    | "findDescriptionText"
+    | "findContentHash"
+    | "findJobIdWithSkillsByContentHash"
+    | "markSkillsExtracted"
+  >;
   skills: SkillRepository;
   extractor: SkillExtractor;
   queue: Pick<JobQueue, "enqueueEnrich">;
@@ -26,12 +33,26 @@ export async function processExtract(data: EnrichJobData, deps: ProcessExtractDe
     return;
   }
 
+  const contentHash = await deps.jobs.findContentHash(data.jobId);
+  if (!contentHash) {
+    throw new Error(`Job ${data.jobId} not found`);
+  }
+
+  const siblingJobId = await deps.jobs.findJobIdWithSkillsByContentHash(contentHash, data.jobId);
+
+  if (siblingJobId) {
+    await deps.skills.clearJobSkills(data.jobId);
+    await deps.skills.copyJobSkills(siblingJobId, data.jobId);
+    await finishExtract(data, deps);
+    return;
+  }
+
   const descriptionText = await deps.jobs.findDescriptionText(data.jobId);
   if (!descriptionText) {
     throw new Error(`Job ${data.jobId} not found`);
   }
 
-  const extracted = await deps.extractor.extract(descriptionText);
+  const extracted = filterExtractedSkills(await deps.extractor.extract(descriptionText));
   await deps.skills.clearJobSkills(data.jobId);
 
   for (const item of extracted) {
@@ -39,6 +60,10 @@ export async function processExtract(data: EnrichJobData, deps: ProcessExtractDe
     await deps.skills.upsertJobSkill(data.jobId, skill.id, item.confidence);
   }
 
+  await finishExtract(data, deps);
+}
+
+async function finishExtract(data: EnrichJobData, deps: ProcessExtractDeps): Promise<void> {
   await deps.jobs.markSkillsExtracted(data.jobId);
   await deps.runs.incrementStats(data.runId, { extracted: 1 });
 

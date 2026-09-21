@@ -64,6 +64,8 @@ export interface JobSkill {
 /** Persisted, enriched job. */
 export interface Job extends NormalizedJob {
   id: string;
+  /** sha256 of title+company+descriptionText; duplicate postings share this. */
+  contentHash: string;
   skills: JobSkill[];
   /** Enrichment progress flags; the UI shows partially enriched jobs greyed out. */
   skillsExtractedAt: string | null;

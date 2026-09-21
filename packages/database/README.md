@@ -7,6 +7,7 @@ Drizzle schema, migrations, and DB client. Repository adapters live in
 npm run db:generate   # from repo root — drizzle-kit generate
 npm run db:migrate    # apply migrations via drizzle-orm/migrator
 npm run db:seed       # canonical skills seed
+npm run db:reset-ingestion  # truncate jobs, embeddings, runs (local re-ingest)
 npm run db:studio     # Drizzle Studio
 ```
 

@@ -60,6 +60,17 @@ export function createDrizzleSkillRepositoryFromDb(db: Database): SkillRepositor
       await db.delete(jobSkills).where(eq(jobSkills.jobId, jobId));
     },
 
+    async copyJobSkills(fromJobId: string, toJobId: string) {
+      await db.execute(sql`
+        INSERT INTO job_skills (job_id, skill_id, confidence)
+        SELECT ${toJobId}, skill_id, confidence
+        FROM job_skills
+        WHERE job_id = ${fromJobId}
+        ON CONFLICT (job_id, skill_id) DO UPDATE
+        SET confidence = EXCLUDED.confidence
+      `);
+    },
+
     async search(query: string, limit: number) {
       const trimmed = query.trim().toLowerCase();
       if (!trimmed) {

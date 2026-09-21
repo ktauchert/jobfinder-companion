@@ -6,5 +6,6 @@ export interface SkillRepository {
   createSkill(input: { name: string; label: string; aliases: string[] }): Promise<Skill>;
   upsertJobSkill(jobId: string, skillId: string, confidence: number): Promise<void>;
   clearJobSkills(jobId: string): Promise<void>;
+  copyJobSkills(fromJobId: string, toJobId: string): Promise<void>;
   search(query: string, limit: number): Promise<Skill[]>;
 }

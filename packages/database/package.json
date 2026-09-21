@@ -27,6 +27,7 @@
     "generate": "tsx src/run-drizzle-kit.ts generate",
     "migrate": "tsx src/migrate.ts",
     "seed": "tsx src/seed/run-skills-seed.ts",
+    "reset-ingestion": "tsx src/reset-ingestion-data.ts",
     "studio": "tsx src/run-drizzle-kit.ts studio",
     "clean": "rm -rf dist *.tsbuildinfo"
   },

@@ -13,6 +13,12 @@ export interface UpsertJobResult {
 export interface JobRepository {
   upsertFromNormalized(job: NormalizedJob, contentHash: string): Promise<UpsertJobResult>;
   findDescriptionText(jobId: string): Promise<string | null>;
+  findContentHash(jobId: string): Promise<string | null>;
+  /** Another job with the same posting body that already has extracted skills. */
+  findJobIdWithSkillsByContentHash(
+    contentHash: string,
+    excludeJobId: string,
+  ): Promise<string | null>;
   findTitleCompanySkills(jobId: string): Promise<{
     title: string;
     company: string | null;

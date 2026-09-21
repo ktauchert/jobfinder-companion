@@ -2,6 +2,7 @@ import type { JobMatch, SearchJobsQuery, SearchJobsResponse } from "@jobfinder/t
 
 import { averageEmbeddings } from "../domain/average-embeddings.js";
 import { decodeJobCursor, encodeJobCursor, isAfterCursor } from "../domain/job-cursor.js";
+import { dedupeJobMatchesByContentHash } from "../domain/dedupe-job-matches.js";
 import { computeMatchScore } from "../domain/match-score.js";
 import { buildSkillMatches } from "../domain/skill-matches.js";
 import type { Embedder } from "../ports/embedder.js";
@@ -47,12 +48,14 @@ export async function searchJobs(
     .filter((match): match is JobMatch => match != null)
     .sort(compareJobMatches);
 
+  const deduped = dedupeJobMatchesByContentHash(ranked);
+
   const cursor = query.cursor ? decodeJobCursor(query.cursor) : null;
   const afterCursor = cursor
-    ? ranked.filter((match) =>
+    ? deduped.filter((match) =>
         isAfterCursor({ matchScore: match.matchScore, id: match.job.id }, cursor),
       )
-    : ranked;
+    : deduped;
 
   const page = afterCursor.slice(0, limit);
   const last = page.at(-1);

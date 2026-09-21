@@ -6,6 +6,7 @@ export function mapJobRow(row: JobRow, jobSkills: JobSkill[]): Job {
   return {
     ...normalized,
     id: row.id,
+    contentHash: row.contentHash,
     skills: jobSkills,
     skillsExtractedAt: row.skillsExtractedAt?.toISOString() ?? null,
     embeddedAt: row.embeddedAt?.toISOString() ?? null,

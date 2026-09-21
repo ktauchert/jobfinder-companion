@@ -18,7 +18,9 @@ export function createOllamaSkillExtractor(options: {
           {
             role: "system",
             content:
-              "Extract technical skills from the job description. Respond with JSON only matching the schema.",
+              "Extract technologies only: programming languages, frameworks, libraries, databases, DevOps tools, and explicit platforms (e.g. PHP, Laravel, Docker). " +
+              "Do not list job tasks, responsibilities, soft skills, or full sentences. " +
+              "Return at most 12 skills with confidence 0..1. Respond with JSON only matching the schema.",
           },
           {
             role: "user",
