@@ -82,24 +82,26 @@ Paid sources without keys are shown greyed out and skipped. Nothing breaks.
 
 ## Scripts
 
-| Command                   | What it does                                 |
-| ------------------------- | -------------------------------------------- |
-| `npm run dev`             | All apps in watch mode                       |
-| `npm run build`           | Build all workspaces                         |
-| `npm run check`           | Lint + typecheck + test                      |
-| `npm run format`          | Prettier                                     |
-| `npm run infra:up`        | Start Postgres, Redis, Ollama (CPU)          |
-| `npm run infra:up:gpu`    | Same, Ollama with NVIDIA GPU                 |
-| `npm run infra:down`      | Stop them (data kept)                        |
-| `npm run infra:down:gpu`  | Stop GPU stack (same containers/volumes)     |
-| `npm run infra:logs`      | Follow infra logs                            |
-| `npm run infra:logs:gpu`  | Follow infra logs (GPU compose files)        |
-| `npm run infra:reset`     | Stop and delete all volumes                  |
-| `npm run infra:reset:gpu` | Reset volumes (GPU compose files)            |
-| `npm run db:generate`     | Generate a Drizzle migration from the schema |
-| `npm run db:migrate`      | Apply migrations                             |
-| `npm run db:seed`         | Seed canonical developer skills              |
-| `npm run db:studio`       | Drizzle Studio                               |
+| Command                     | What it does                                                     |
+| --------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`               | All apps in watch mode                                           |
+| `npm run build`             | Build all workspaces                                             |
+| `npm run check`             | Full CI gate (format, lint, typecheck, test, build, integration) |
+| `npm run check:quality`     | Format, lint, typecheck, unit tests, build (no Docker)           |
+| `npm run check:integration` | Migrate, seed, integration tests (needs infra)                   |
+| `npm run format`            | Prettier                                                         |
+| `npm run infra:up`          | Start Postgres, Redis, Ollama (CPU)                              |
+| `npm run infra:up:gpu`      | Same, Ollama with NVIDIA GPU                                     |
+| `npm run infra:down`        | Stop them (data kept)                                            |
+| `npm run infra:down:gpu`    | Stop GPU stack (same containers/volumes)                         |
+| `npm run infra:logs`        | Follow infra logs                                                |
+| `npm run infra:logs:gpu`    | Follow infra logs (GPU compose files)                            |
+| `npm run infra:reset`       | Stop and delete all volumes                                      |
+| `npm run infra:reset:gpu`   | Reset volumes (GPU compose files)                                |
+| `npm run db:generate`       | Generate a Drizzle migration from the schema                     |
+| `npm run db:migrate`        | Apply migrations                                                 |
+| `npm run db:seed`           | Seed canonical developer skills                                  |
+| `npm run db:studio`         | Drizzle Studio                                                   |
 
 Reverse proxy (optional): `docker compose --profile proxy up -d` serves
 everything on `https://localhost` via Caddy.

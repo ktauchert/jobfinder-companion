@@ -26,6 +26,7 @@ import {
   snapshotJobsCache,
   type JobsInfiniteData,
 } from "./jobs-cache.js";
+import { profileSearchStamp } from "./profile-search-stamp.js";
 
 export function useSources() {
   return useQuery({
@@ -38,7 +39,13 @@ export function useIngestionStatus() {
   return useQuery({
     queryKey: ["ingestion", "status"],
     queryFn: fetchIngestionStatus,
-    refetchInterval: (query) => (query.state.data?.active ? 5000 : false),
+    retry: 1,
+    refetchInterval: (query) => {
+      if (query.state.error) {
+        return false;
+      }
+      return query.state.data?.active ? 5000 : false;
+    },
   });
 }
 
@@ -75,6 +82,7 @@ export function useUpdateProfile() {
     mutationFn: updateProfile,
     onSuccess: (data) => {
       client.setQueryData(["profile"], data);
+      void client.invalidateQueries({ queryKey: ["jobs"] });
     },
   });
 }
@@ -90,11 +98,11 @@ export function useSkillsSearch(q: string, enabled: boolean) {
 
 export function useJobsSearch(query: SearchJobsQuery) {
   const { data: profileData } = useProfile();
-  // Re-run search when profile skills/filters change (server reads profile on each request).
-  const profileStamp = profileData?.profile.updatedAt ?? "loading";
+  const profileStamp = profileSearchStamp(profileData?.profile);
 
   return useInfiniteQuery({
     queryKey: ["jobs", query, profileStamp],
+    retry: 1,
     queryFn: ({ pageParam }) => {
       const request: SearchJobsQuery = {
         ...query,

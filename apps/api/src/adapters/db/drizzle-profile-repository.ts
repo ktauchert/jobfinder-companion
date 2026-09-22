@@ -72,10 +72,10 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
       return {
         id: row.id,
         embedding: parseEmbedding(row.embedding),
-        mustHaveSkills: row.mustHaveSkills,
-        excludeSkills: row.excludeSkills,
-        remoteTypes: row.remoteTypes as Profile["remoteTypes"],
-        countryCodes: row.countryCodes,
+        mustHaveSkills: row.mustHaveSkills ?? [],
+        excludeSkills: row.excludeSkills ?? [],
+        remoteTypes: (row.remoteTypes ?? []) as Profile["remoteTypes"],
+        countryCodes: row.countryCodes ?? [],
         minSalary: row.minSalary,
       };
     },

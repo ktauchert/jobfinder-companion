@@ -6,3 +6,10 @@ export function createRedisConnection(redisUrl: string): Redis {
     maxRetriesPerRequest: null,
   });
 }
+
+/** Pub/sub connections must not run ioredis ready checks (`INFO`) while subscribed. */
+export function createRedisSubscriber(parent: Redis): Redis {
+  return parent.duplicate({
+    enableReadyCheck: false,
+  });
+}

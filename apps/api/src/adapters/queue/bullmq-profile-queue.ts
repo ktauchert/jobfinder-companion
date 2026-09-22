@@ -1,4 +1,5 @@
 import type { ProfileQueue } from "../../ports/profile-queue.js";
+import { profileEmbedJobId } from "./job-ids.js";
 import type { AppQueues } from "./queues.js";
 
 export function createBullmqProfileQueue(queues: AppQueues): ProfileQueue {
@@ -8,7 +9,7 @@ export function createBullmqProfileQueue(queues: AppQueues): ProfileQueue {
         "embed",
         { profileId },
         {
-          jobId: `profile-embed:${profileId}`,
+          jobId: profileEmbedJobId(profileId),
         },
       );
     },

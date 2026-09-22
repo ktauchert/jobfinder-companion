@@ -1,3 +1,7 @@
+/**
+ * BullMQ custom job ids: no colons, OR exactly three ':'-separated segments.
+ * Add helpers here (with tests in job-ids.test.ts); never inline ids in queue adapters.
+ */
 import type { EnrichJobData, SourceKey } from "@jobfinder/types";
 
 export function fetchJobId(runId: string, source: SourceKey, query: string): string {
@@ -13,4 +17,8 @@ export function fetchJobId(runId: string, source: SourceKey, query: string): str
 
 export function enrichJobId(jobId: string, stage: EnrichJobData["stage"]): string {
   return `enrich:${jobId}:${stage}`;
+}
+
+export function profileEmbedJobId(profileId: string): string {
+  return `profile:embed:${profileId}`;
 }
