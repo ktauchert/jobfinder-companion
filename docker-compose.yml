@@ -1,6 +1,7 @@
 # JobFinder infrastructure.
 #
-#   docker compose up -d                  # postgres + redis + ollama (+ model pull)
+#   npm run infra:up                      # postgres + redis + ollama (CPU)
+#   npm run infra:up:gpu                  # same, Ollama with NVIDIA GPU
 #   docker compose --profile proxy up -d  # additionally start Caddy
 #   docker compose down -v                # wipe all data
 #
@@ -65,15 +66,6 @@ services:
       timeout: 5s
       retries: 12
       start_period: 20s
-    # NVIDIA GPU: uncomment to pass the GPU through (requires nvidia-container-toolkit).
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
-
   # One-shot: pulls the models the pipeline needs, then exits.
   ollama-pull:
     image: ollama/ollama:latest

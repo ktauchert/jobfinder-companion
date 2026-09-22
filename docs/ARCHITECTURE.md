@@ -331,6 +331,23 @@ All configuration is environment variables (`.env`, validated in
 `apps/api/src/env.ts`). See `.env.example` for the full list. The web app
 only sees `VITE_`-prefixed variables.
 
+### Local infrastructure (Docker Compose)
+
+| File                     | Purpose                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| `docker-compose.yml`     | Default dev stack: Postgres, Redis, Ollama (CPU), optional Caddy (`--profile proxy`). |
+| `docker-compose.gpu.yml` | **Override** for NVIDIA GPU passthrough on the `ollama` service only.                 |
+
+Use the GPU stack with `npm run infra:up:gpu` (equivalent to
+`docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d`).
+Both files share the same project name, container names, and volumes — switching
+CPU ↔ GPU is `infra:down` then `infra:up` or `infra:up:gpu` (recreates Ollama with
+or without the device reservation). Requires NVIDIA drivers and Docker GPU support
+(`nvidia-container-toolkit` on Linux; Docker Desktop + WSL2 on Windows).
+
+Set `OLLAMA_NUM_PARALLEL` in `.env` to match worker concurrency when using GPU
+(see `apps/api/src/env.ts` and `docker-compose.yml`).
+
 ## 10. Deployment (Phase 4)
 
 `docker compose --profile proxy` adds Caddy with automatic TLS. Phase 4 adds

@@ -121,7 +121,8 @@ Goal: run it on a home server and forget about it.
 - Backup/restore script for Postgres; volume documentation.
 - Apify adapter (paid) and an HTML-scrape adapter template.
 - Health dashboard data in `/api/health` (queue depth, last run, model status).
-- Optional GPU passthrough docs for Ollama.
+- Prod GPU notes (dev uses `docker-compose.gpu.yml` + `infra:up:gpu`; see
+  `ARCHITECTURE.md` §9).
 
 ## Backlog / Ideas (not scheduled)
 

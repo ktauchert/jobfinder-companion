@@ -89,7 +89,8 @@ Full rules: ADR 0002. Agents must follow these mechanically:
 
 ```
 npm install                 install all workspaces
-npm run infra:up            postgres + redis + ollama (+ model pull)
+npm run infra:up            postgres + redis + ollama (CPU)
+npm run infra:up:gpu        same stack, Ollama with NVIDIA GPU (docker-compose.gpu.yml)
 npm run dev                 all apps in watch mode (turbo)
 npm run check               lint + typecheck + test across the repo
 npm run db:generate         drizzle-kit generate  (after schema change)
