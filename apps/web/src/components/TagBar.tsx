@@ -136,7 +136,7 @@ function TagBarLoaded({
         placeholder="Role search term (e.g. softwareentwickler)"
       />
       <TagField
-        label="Skills"
+        label="Require"
         tags={mustHaveSkills}
         novelSkills={novelSkills}
         onTagsChange={(mustHaveSkills) =>
