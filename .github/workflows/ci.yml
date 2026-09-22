@@ -47,11 +47,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run format:check
-
-      - run: npm run check
-
-      - run: npm run build
+      - run: npm run check:quality
 
   # Postgres + Redis service containers — mirrors local `test:integration`.
   # Ollama is NOT started in CI; integration tests mock extract/embed.
@@ -105,8 +101,4 @@ jobs:
       - name: Build packages required by integration tests
         run: npm run build --workspace @jobfinder/types --workspace @jobfinder/database
 
-      - run: npm run db:migrate
-
-      - run: npm run db:seed
-
-      - run: npm run test:integration
+      - run: npm run check:integration

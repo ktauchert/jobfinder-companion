@@ -92,13 +92,16 @@ npm install                 install all workspaces
 npm run infra:up            postgres + redis + ollama (CPU)
 npm run infra:up:gpu        same stack, Ollama with NVIDIA GPU (docker-compose.gpu.yml)
 npm run dev                 all apps in watch mode (turbo)
-npm run check               lint + typecheck + test across the repo
+npm run check               same as CI: format, lint, typecheck, unit tests, build, migrate, seed, integration tests
+npm run check:quality       format + lint + typecheck + unit tests + build (no Docker)
+npm run check:integration   migrate + seed + integration tests (needs Postgres + Redis)
 npm run db:generate         drizzle-kit generate  (after schema change)
 npm run db:migrate          apply migrations
 npm run format              prettier --write .
 ```
 
-Run `npm run check` before committing. CI runs the same.
+Run `npm run check` before committing (start infra with `npm run infra:up` first).
+CI runs the same steps via `check:quality` and `check:integration`.
 
 ## Coding conventions
 

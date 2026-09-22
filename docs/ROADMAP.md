@@ -25,7 +25,7 @@ Remaining (Step 2):
 - `apps/api` Express 5 skeleton with `/api/health`, Zod env, pino logging.
 - `packages/database` with Drizzle schema for all tables in
   `ARCHITECTURE.md §7`, first migration, `pgvector` column helper, DB client.
-- GitHub Actions CI: `npm ci`, `npm run check`, `npm run build`.
+- GitHub Actions CI: `npm ci`, `npm run check:quality`, `npm run check:integration`.
 
 Exit criteria: `npm run infra:up && npm run dev` starts web + api;
 `GET /api/health` reports all three services reachable; CI green.
