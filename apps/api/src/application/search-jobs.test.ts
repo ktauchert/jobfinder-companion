@@ -32,7 +32,7 @@ function makeJob(id: string, skillNames: string[]): Job {
 }
 
 describe("searchJobs", () => {
-  it("ranks must-have matches above equal-similarity jobs and omits excluded jobs", async () => {
+  it("ranks must-have matches above equal-similarity jobs when both survive SQL filters", async () => {
     const searchCandidates = vi.fn().mockResolvedValue([
       { jobId: "low", similarity: 0.9, mustHaveCoverage: 0 },
       { jobId: "high", similarity: 0.9, mustHaveCoverage: 1 },

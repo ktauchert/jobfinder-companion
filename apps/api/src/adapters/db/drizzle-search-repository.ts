@@ -186,6 +186,16 @@ function buildFilterSql(query: SearchQuery) {
         AND s.name = ANY (p.exclude_skills)
     )
     AND (
+      cardinality(p.must_have_skills) = 0
+      OR EXISTS (
+        SELECT 1
+        FROM job_skills js
+        JOIN skills s ON s.id = js.skill_id
+        WHERE js.job_id = j.id
+          AND s.name = ANY (p.must_have_skills)
+      )
+    )
+    AND (
       cardinality(p.remote_types) = 0
       OR j.remote_type::text = ANY (p.remote_types)
     )

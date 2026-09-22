@@ -281,10 +281,9 @@ skip re-enrichment when a source re-serves an unchanged job.
 ## 8. Hybrid search
 
 Deterministic filters run in SQL first; only the survivors are ordered by
-vector distance. Excludes are a hard filter; must-haves shape the score today
-(a refactor to hard-filter must-haves is tracked in [#56](https://github.com/ktauchert/jobfinder-companion/issues/56) — see
-`docs/SEARCH-AND-EMBEDDINGS.md` for the full pipeline, diagrams, and UX
-rationale).
+vector distance. Excludes and non-empty must-have lists are hard filters (OR
+semantics for must-haves — ADR 0006). Must-have coverage still shapes
+`matchScore` among survivors. See `docs/SEARCH-AND-EMBEDDINGS.md` for diagrams.
 
 **Deep dive:** [SEARCH-AND-EMBEDDINGS.md](./SEARCH-AND-EMBEDDINGS.md) — ingest
 vs profile embeds, the top-K vector window, `q` vs must-have behaviour, scoring.
@@ -308,6 +307,13 @@ WHERE j.hidden_at IS NULL
   AND NOT EXISTS (
     SELECT 1 FROM job_skills js JOIN skills s ON s.id = js.skill_id
     WHERE js.job_id = j.id AND s.name = ANY (p.exclude_skills)
+  )
+  AND (
+    cardinality(p.must_have_skills) = 0
+    OR EXISTS (
+      SELECT 1 FROM job_skills js JOIN skills s ON s.id = js.skill_id
+      WHERE js.job_id = j.id AND s.name = ANY (p.must_have_skills)
+    )
   )
   AND (cardinality(p.remote_types) = 0 OR j.remote_type::text = ANY (p.remote_types))
   AND (cardinality(p.country_codes) = 0 OR j.country_code = ANY (p.country_codes))

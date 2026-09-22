@@ -73,16 +73,18 @@ flowchart TD
 
 Applied to **every** job in the pool. Survivors only.
 
-| Filter             | Source  | Effect                                                      |
-| ------------------ | ------- | ----------------------------------------------------------- |
-| **Exclude skills** | Profile | Job must **not** have any listed skill in `job_skills`      |
-| Remote type        | Profile | Empty = any                                                 |
-| Country            | Profile | Empty = any                                                 |
-| Min salary         | Profile | Job `salary_max` must meet floor (or unknown salary passes) |
-| Hidden             | Request | Hidden jobs omitted unless `includeHidden`                  |
-| Max age            | Request | Optional freshness window                                   |
+| Filter               | Source  | Effect                                                              |
+| -------------------- | ------- | ------------------------------------------------------------------- |
+| **Exclude skills**   | Profile | Job must **not** have any listed skill in `job_skills`              |
+| **Must-have skills** | Profile | When non-empty: job must have **at least one** in `job_skills` (OR) |
+| Remote type          | Profile | Empty = any                                                         |
+| Country              | Profile | Empty = any                                                         |
+| Min salary           | Profile | Job `salary_max` must meet floor (or unknown salary passes)         |
+| Hidden               | Request | Hidden jobs omitted unless `includeHidden`                          |
+| Max age              | Request | Optional freshness window                                           |
 
-**Must-have skills are not applied here today** — they only enter stage C.
+**Must-have skills filter here** when the profile list is non-empty (ADR 0006).
+They also feed `mustHaveCoverage` in stage C for ranking among survivors.
 
 ### Stage B — Vector retrieval (approximate nearest neighbours)
 
@@ -136,7 +138,7 @@ flowchart LR
 | ------------------- | ----------------------------- | ------------------------------------------- |
 | Query vector        | Strongly “react”              | Full profile (summary + all must-haves)     |
 | Who enters top 60?  | Semantically react-like jobs  | Jobs similar to overall profile             |
-| Must-have filter?   | No                            | No                                          |
+| Must-have filter?   | No (unless also in profile)   | Yes (OR match on `job_skills`)              |
 | React in job_skills | Often many (visible in chips) | Only affects score if job already in window |
 | Typical UX          | Many results ~score 40        | One/few results; rest unrelated to react    |
 
@@ -171,20 +173,13 @@ semantic similarity in description text (embedded in job text), but
 
 ---
 
-## 6. Intended product direction (refactor)
+## 6. Must-have hard filter (ADR 0006)
 
-Current design (Phase 2): **Exclude filters, Must-have ranks**. That matches
-the code but **not** the Tag bar UX (Skills next to Exclude).
+Since issue #56: **non-empty must-have list → SQL `EXISTS` filter** (match at
+least one skill). Vector top-K and scoring run on the filtered pool only.
 
-Planned refactor ([#56](https://github.com/ktauchert/jobfinder-companion/issues/56)):
+**Search `q`** remains semantic focus (embedding blend), not a substitute for
+must-have rows on `job_skills`. A job can match `q=react` in embedding space
+but still be hidden if React is must-have and missing from extraction.
 
-- **Must-have → hard filter** when the list is non-empty (semantics TBD: match
-  **any** vs **all** must-haves).
-- Run vector top-K **after** skill filter, or raise K so filtered pools are not
-  truncated arbitrarily.
-- Integration tests: same fixture DB, `q=react` vs Must-have React → documented
-  expectations.
-- Update `CONTEXT.md`, ADR, and Tag bar labels.
-
-Until that lands, treat **Search `q`** as “semantic focus” and **Must-have** as
-“score boost inside a profile-shaped vector window” — not as a skill filter.
+Deferred: **AND** semantics (require all must-haves).
