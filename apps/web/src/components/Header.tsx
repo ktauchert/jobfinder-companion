@@ -21,11 +21,7 @@ export function Header() {
         <p className="text-sm text-muted-foreground">
           Ingestion: {isActive ? (progressHint ? `${progressHint}…` : "Running…") : "Idle"}
         </p>
-        <Button
-          size="sm"
-          disabled={isActive || start.isPending}
-          onClick={() => start.mutate({})}
-        >
+        <Button size="sm" disabled={isActive || start.isPending} onClick={() => start.mutate({})}>
           Run
         </Button>
         <Button

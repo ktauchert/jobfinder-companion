@@ -7,9 +7,7 @@ describe("BullMQ job ids", () => {
     expect(fetchJobId("run-1", "ba", "softwareentwickler")).toBe(
       "fetch:run-1:ba-softwareentwickler",
     );
-    expect(fetchJobId("run-1", "ba", "Product Developer")).toBe(
-      "fetch:run-1:ba-product-developer",
-    );
+    expect(fetchJobId("run-1", "ba", "Product Developer")).toBe("fetch:run-1:ba-product-developer");
   });
 
   it("builds deterministic enrich job ids", () => {

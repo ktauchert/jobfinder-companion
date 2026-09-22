@@ -118,12 +118,8 @@
           "name": "job_embeddings_job_id_jobs_id_fk",
           "tableFrom": "job_embeddings",
           "tableTo": "jobs",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -163,12 +159,8 @@
           "name": "job_skills_job_id_jobs_id_fk",
           "tableFrom": "job_skills",
           "tableTo": "jobs",
-          "columnsFrom": [
-            "job_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["job_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -176,12 +168,8 @@
           "name": "job_skills_skill_id_skills_id_fk",
           "tableFrom": "job_skills",
           "tableTo": "skills",
-          "columnsFrom": [
-            "skill_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["skill_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -189,10 +177,7 @@
       "compositePrimaryKeys": {
         "job_skills_job_id_skill_id_pk": {
           "name": "job_skills_job_id_skill_id_pk",
-          "columns": [
-            "job_id",
-            "skill_id"
-          ]
+          "columns": ["job_id", "skill_id"]
         }
       },
       "uniqueConstraints": {},
@@ -389,12 +374,8 @@
           "name": "jobs_source_sources_key_fk",
           "tableFrom": "jobs",
           "tableTo": "sources",
-          "columnsFrom": [
-            "source"
-          ],
-          "columnsTo": [
-            "key"
-          ],
+          "columnsFrom": ["source"],
+          "columnsTo": ["key"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -404,10 +385,7 @@
         "jobs_source_external_id_uidx": {
           "name": "jobs_source_external_id_uidx",
           "nullsNotDistinct": false,
-          "columns": [
-            "source",
-            "external_id"
-          ]
+          "columns": ["source", "external_id"]
         }
       },
       "policies": {},
@@ -615,9 +593,7 @@
         "skills_name_unique": {
           "name": "skills_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -670,64 +646,32 @@
     "public.employment_type": {
       "name": "employment_type",
       "schema": "public",
-      "values": [
-        "full_time",
-        "part_time",
-        "contract",
-        "freelance",
-        "internship",
-        "unknown"
-      ]
+      "values": ["full_time", "part_time", "contract", "freelance", "internship", "unknown"]
     },
     "public.ingestion_run_status": {
       "name": "ingestion_run_status",
       "schema": "public",
-      "values": [
-        "queued",
-        "running",
-        "completed",
-        "failed",
-        "cancelled"
-      ]
+      "values": ["queued", "running", "completed", "failed", "cancelled"]
     },
     "public.remote_type": {
       "name": "remote_type",
       "schema": "public",
-      "values": [
-        "remote",
-        "hybrid",
-        "onsite",
-        "unknown"
-      ]
+      "values": ["remote", "hybrid", "onsite", "unknown"]
     },
     "public.salary_period": {
       "name": "salary_period",
       "schema": "public",
-      "values": [
-        "year",
-        "month",
-        "day",
-        "hour"
-      ]
+      "values": ["year", "month", "day", "hour"]
     },
     "public.source_key": {
       "name": "source_key",
       "schema": "public",
-      "values": [
-        "ba",
-        "greenhouse",
-        "lever",
-        "adzuna",
-        "apify"
-      ]
+      "values": ["ba", "greenhouse", "lever", "adzuna", "apify"]
     },
     "public.source_tier": {
       "name": "source_tier",
       "schema": "public",
-      "values": [
-        "free",
-        "paid"
-      ]
+      "values": ["free", "paid"]
     }
   },
   "schemas": {},

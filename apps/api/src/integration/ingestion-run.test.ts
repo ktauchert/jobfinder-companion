@@ -114,6 +114,7 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
     ctx.embedder = createOllamaEmbedder({ client: mockOllama, model: "nomic-embed-text" });
 
     await seedSources(ctx.sources);
+    await ctx.profiles.ensureDefault();
 
     const testLogger = { warn: () => {}, info: () => {}, error: () => {} } as never;
     const handlers = createWorkerHandlers(ctx, testLogger);
@@ -142,6 +143,7 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
           APIFY_TOKEN: "",
         },
         sources: ctx.sources,
+        profiles: ctx.profiles,
         runs: ctx.runs,
         queue: ctx.queue,
         events: ctx.events,

@@ -6,7 +6,10 @@ import { describe, expect, it } from "vitest";
 
 import { filterExtractedSkills } from "./filter-extracted-skills.js";
 
-const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), "../adapters/sources/ba/fixtures");
+const fixturesDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../adapters/sources/ba/fixtures",
+);
 
 function laurinDescriptionText(): string {
   const detail = JSON.parse(readFileSync(join(fixturesDir, "job-details-v4.json"), "utf8")) as {
@@ -61,7 +64,10 @@ describe("filterExtractedSkills", () => {
       { name: "PHP", confidence: 0.91 },
       { name: "Laravel", confidence: 0.87 },
       { name: "Freude daran, sauberen und verständlichen Code zu schreiben", confidence: 0.65 },
-      { name: "Mitarbeit an spannenden Projekten rund um den digitalen B2B-Handel", confidence: 0.6 },
+      {
+        name: "Mitarbeit an spannenden Projekten rund um den digitalen B2B-Handel",
+        confidence: 0.6,
+      },
     ];
 
     expect(filterExtractedSkills(noisy).map((s) => s.name)).toEqual(["PHP", "Laravel"]);

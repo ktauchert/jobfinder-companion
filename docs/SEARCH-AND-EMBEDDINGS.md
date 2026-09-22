@@ -13,10 +13,10 @@ Related: `ARCHITECTURE.md` §8, `CONTEXT.md`, ADR 0005 (ingest vs search terms).
 JobFinder uses **Ollama** with `nomic-embed-text` (768 dimensions, pgvector
 HNSW index). Two embedding flows exist:
 
-| Object | When | Input text | Stored in |
-| ------ | ---- | ---------- | --------- |
-| **Job** | After ingest extract stage | `title + company + skill names + descriptionText` (document prefix) | `job_embeddings` |
-| **Profile** | After every profile save (async worker) | `summary · mustHaveSkill1 · mustHaveSkill2 …` | `profiles.embedding` |
+| Object      | When                                    | Input text                                                          | Stored in            |
+| ----------- | --------------------------------------- | ------------------------------------------------------------------- | -------------------- |
+| **Job**     | After ingest extract stage              | `title + company + skill names + descriptionText` (document prefix) | `job_embeddings`     |
+| **Profile** | After every profile save (async worker) | `summary · mustHaveSkill1 · mustHaveSkill2 …`                       | `profiles.embedding` |
 
 **Search `q`** is embedded **on the fly** per request (query prefix). It is **not**
 stored. If `q` is present, its vector is **averaged** with the profile vector for
@@ -73,14 +73,14 @@ flowchart TD
 
 Applied to **every** job in the pool. Survivors only.
 
-| Filter | Source | Effect |
-| ------ | ------ | ------ |
-| **Exclude skills** | Profile | Job must **not** have any listed skill in `job_skills` |
-| Remote type | Profile | Empty = any |
-| Country | Profile | Empty = any |
-| Min salary | Profile | Job `salary_max` must meet floor (or unknown salary passes) |
-| Hidden | Request | Hidden jobs omitted unless `includeHidden` |
-| Max age | Request | Optional freshness window |
+| Filter             | Source  | Effect                                                      |
+| ------------------ | ------- | ----------------------------------------------------------- |
+| **Exclude skills** | Profile | Job must **not** have any listed skill in `job_skills`      |
+| Remote type        | Profile | Empty = any                                                 |
+| Country            | Profile | Empty = any                                                 |
+| Min salary         | Profile | Job `salary_max` must meet floor (or unknown salary passes) |
+| Hidden             | Request | Hidden jobs omitted unless `includeHidden`                  |
+| Max age            | Request | Optional freshness window                                   |
 
 **Must-have skills are not applied here today** — they only enter stage C.
 
@@ -132,13 +132,13 @@ flowchart LR
   end
 ```
 
-| | **`q=react`** | **Must-have React** |
-| --- | --- | --- |
-| Query vector | Strongly “react” | Full profile (summary + all must-haves) |
-| Who enters top 60? | Semantically react-like jobs | Jobs similar to overall profile |
-| Must-have filter? | No | No |
+|                     | **`q=react`**                 | **Must-have React**                         |
+| ------------------- | ----------------------------- | ------------------------------------------- |
+| Query vector        | Strongly “react”              | Full profile (summary + all must-haves)     |
+| Who enters top 60?  | Semantically react-like jobs  | Jobs similar to overall profile             |
+| Must-have filter?   | No                            | No                                          |
 | React in job_skills | Often many (visible in chips) | Only affects score if job already in window |
-| Typical UX | Many results ~score 40 | One/few results; rest unrelated to react |
+| Typical UX          | Many results ~score 40        | One/few results; rest unrelated to react    |
 
 After a profile save, **`profiles.embedding` updates asynchronously** (BullMQ
 `profile-embed` worker). Until that finishes, search still uses the **old**
@@ -158,11 +158,11 @@ more paginates **within the same 60 candidates**, not the full 200.
 
 ## 5. Models and prefixes
 
-| Step | Model | Notes |
-| ---- | ----- | ----- |
-| Skill extract | `qwen2.5:3b` (env) | JSON list of `{ name, confidence }` |
-| Job + profile embed | `nomic-embed-text` | 768-dim vectors |
-| Query embed | same | `search_query:` prefix for `q` |
+| Step                | Model              | Notes                               |
+| ------------------- | ------------------ | ----------------------------------- |
+| Skill extract       | `qwen2.5:3b` (env) | JSON list of `{ name, confidence }` |
+| Job + profile embed | `nomic-embed-text` | 768-dim vectors                     |
+| Query embed         | same               | `search_query:` prefix for `q`      |
 
 Job embed text includes extracted **canonical skill names**, not raw
 description phrases. If extract missed “React”, vector search may still find

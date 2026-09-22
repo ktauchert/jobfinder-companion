@@ -66,7 +66,13 @@ interface TagBarLoadedProps {
   updateProfile: ReturnType<typeof useUpdateProfile>;
 }
 
-function TagBarLoaded({ profile, q, searchInputRef, onSearchChange, updateProfile }: TagBarLoadedProps) {
+function TagBarLoaded({
+  profile,
+  q,
+  searchInputRef,
+  onSearchChange,
+  updateProfile,
+}: TagBarLoadedProps) {
   const [draft, setDraft] = useState<ProfileDraft | null>(null);
   const [novelSkills, setNovelSkills] = useState<Set<string>>(() => new Set());
   const { mutate } = updateProfile;
