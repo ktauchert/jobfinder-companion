@@ -9,6 +9,7 @@ describe("profileInputSchema", () => {
       mustHaveSkills: [],
       excludeSkills: [],
       summary: "",
+      ingestQueries: [],
       remoteTypes: ["teleport"],
       countryCodes: ["DEU"],
       minSalary: null,

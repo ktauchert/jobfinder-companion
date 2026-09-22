@@ -24,7 +24,7 @@ export function Header() {
         <Button
           size="sm"
           disabled={isActive || start.isPending}
-          onClick={() => start.mutate({ query: "softwareentwickler", location: "Berlin" })}
+          onClick={() => start.mutate({})}
         >
           Run
         </Button>

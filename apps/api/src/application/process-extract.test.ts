@@ -55,4 +55,52 @@ describe("processExtract", () => {
       expect.objectContaining({ type: "run.progress", message: "Extracting skills…" }),
     );
   });
+
+  it("filters sentence-like skills before canonicalisation", async () => {
+    const upsertJobSkill = vi.fn();
+
+    await processExtract(
+      { runId: "run-1", jobId: "job-1", stage: "extract" },
+      {
+        jobs: {
+          findDescriptionText: vi.fn().mockResolvedValue("PHP developer"),
+          markSkillsExtracted: vi.fn(),
+        },
+        skills: {
+          clearJobSkills: vi.fn(),
+          upsertJobSkill,
+          findByNameOrAlias: vi.fn().mockResolvedValue({
+            id: "skill-1",
+            name: "php",
+            label: "PHP",
+            aliases: [],
+          }),
+          findSimilar: vi.fn(),
+          createSkill: vi.fn(),
+          search: vi.fn(),
+        },
+        extractor: {
+          extract: vi.fn().mockResolvedValue([
+            { name: "PHP", confidence: 0.9 },
+            {
+              name: "Umsetzung technischer Lösungen auf Basis fachlicher Anforderungen",
+              confidence: 0.75,
+            },
+          ]),
+        },
+        queue: { enqueueEnrich: vi.fn() },
+        runs: {
+          findById: vi.fn().mockResolvedValue({ id: "run-1", status: "running" }),
+          incrementStats: vi.fn(),
+          getStats: vi.fn().mockResolvedValue(null),
+          updateStatus: vi.fn(),
+        },
+        events: { publish: vi.fn() },
+        checkCompletion: vi.fn(),
+      },
+    );
+
+    expect(upsertJobSkill).toHaveBeenCalledOnce();
+    expect(upsertJobSkill).toHaveBeenCalledWith("job-1", "skill-1", 0.9);
+  });
 });

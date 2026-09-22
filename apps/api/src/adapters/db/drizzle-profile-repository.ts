@@ -26,7 +26,13 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
         return mapProfileRow(row);
       }
 
-      const inserted = await db.insert(profiles).values({ name: DEFAULT_PROFILE_NAME }).returning();
+      const inserted = await db
+        .insert(profiles)
+        .values({
+          name: DEFAULT_PROFILE_NAME,
+          ingestQueries: ["softwareentwickler"],
+        })
+        .returning();
 
       const created = inserted[0];
       if (!created) {
@@ -84,6 +90,7 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
           mustHaveSkills: input.mustHaveSkills,
           excludeSkills: input.excludeSkills,
           summary: input.summary,
+          ingestQueries: input.ingestQueries,
           remoteTypes: input.remoteTypes,
           countryCodes: input.countryCodes,
           minSalary: input.minSalary,

@@ -152,6 +152,10 @@ export const profiles = pgTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     summary: text("summary").notNull().default(""),
+    ingestQueries: text("ingest_queries")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
     remoteTypes: text("remote_types")
       .array()
       .notNull()

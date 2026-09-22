@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "ingest_queries" text[] DEFAULT '{}'::text[] NOT NULL;
