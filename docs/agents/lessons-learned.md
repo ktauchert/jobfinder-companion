@@ -10,16 +10,16 @@ dev with truncated jobs table, and several follow-up fixes in one session.
 
 ### Symptoms we confused with each other
 
-| Symptom | Often actually |
-| -------- | --------------- |
-| Job list empty | Zero rows in `jobs`, or zero rows with `embedded_at` set — not a search bug |
-| List empty after Require skill | Must-have SQL filter (#56) + skill not in `job_skills` (only in title text) |
-| `PUT /profile` 500 | BullMQ job id with wrong colon segment count (profile embed queue) |
-| UI "Something went wrong" / `.length` | Render assumed `skillMatches` or API arrays were always defined |
-| Endless network errors during ingest | Polling `/jobs` and `/ingest/status` under Postgres load (`ECONNRESET`) |
-| Redis `[ioredis] Unhandled error event` | Subscriber connection running ioredis ready check (`INFO`) while subscribed |
+| Symptom                                            | Often actually                                                                                                                                                          |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Job list empty                                     | Zero rows in `jobs`, or zero rows with `embedded_at` set — not a search bug                                                                                             |
+| List empty after Require skill                     | Must-have SQL filter (#56) + skill not in `job_skills` (only in title text)                                                                                             |
+| `PUT /profile` 500                                 | BullMQ job id with wrong colon segment count (profile embed queue)                                                                                                      |
+| UI "Something went wrong" / `.length`              | Render assumed `skillMatches` or API arrays were always defined                                                                                                         |
+| Endless network errors during ingest               | Polling `/jobs` and `/ingest/status` under Postgres load (`ECONNRESET`)                                                                                                 |
+| Redis `[ioredis] Unhandled error event`            | Subscriber connection running ioredis ready check (`INFO`) while subscribed                                                                                             |
 | API crash on startup (`seedSources`, `ECONNRESET`) | Docker Postgres port forwarding broken after unclean shutdown (Windows). `docker exec … psql` works; host/`localhost` does not. **`docker restart jobfinder-postgres`** |
-| Vite `http proxy error` / `ECONNREFUSED` | API not listening (crashed on startup) — fix API first, not the web app |
+| Vite `http proxy error` / `ECONNREFUSED`           | API not listening (crashed on startup) — fix API first, not the web app                                                                                                 |
 
 ### Code rules (now enforced or documented)
 

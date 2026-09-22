@@ -101,7 +101,8 @@ npm run format              prettier --write .
 ```
 
 Run `npm run check` before committing (start infra with `npm run infra:up` first).
-CI runs the same steps via `check:quality` and `check:integration`.
+At minimum, **`npm run check:quality` must pass** (format, lint, typecheck, unit tests, build) —
+CI runs the same via `check:quality` and `check:integration`.
 
 ## Debugging empty search
 
