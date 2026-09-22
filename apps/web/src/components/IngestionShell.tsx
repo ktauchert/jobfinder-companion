@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 
+import { SourceStrip } from "@/components/SourceStrip.js";
 import { StatusBar } from "@/components/StatusBar.js";
 import { useIngestionStatus, useStartIngestion } from "@/lib/queries.js";
 import { useIngestionProgress } from "@/lib/use-ingestion-progress.js";
@@ -31,6 +32,7 @@ export function IngestionShell({ children }: IngestionShellProps) {
 
   return (
     <>
+      <SourceStrip />
       <StatusBar progress={progress} />
       {children}
     </>
