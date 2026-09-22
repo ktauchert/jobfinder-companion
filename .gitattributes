@@ -1,0 +1,2 @@
+# Normalize line endings to LF on checkout and commit (Windows + Linux + CI).
+* text=auto eol=lf
