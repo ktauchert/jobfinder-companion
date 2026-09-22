@@ -1,4 +1,5 @@
 import type { FetchJobData, IngestionEvent, IngestionRunStats } from "@jobfinder/types";
+import type { Logger } from "pino";
 
 import { computeJobContentHash } from "../domain/job-content-hash.js";
 import type { JobRepository } from "../ports/job-repository.js";
@@ -10,6 +11,7 @@ import type { RunRepository } from "../ports/run-repository.js";
 import { checkRunCompletion } from "./check-run-completion.js";
 
 const PROGRESS_BATCH = 25;
+const LOG_EVERY_N_JOBS = 10;
 
 export interface ProcessFetchDeps {
   adapters: SourceAdapterRegistry;
@@ -24,6 +26,7 @@ export interface ProcessFetchDeps {
   signal: AbortSignal;
   /** Max enrich jobs per run; null = no cap. */
   maxJobs: number | null;
+  logger?: Logger;
 }
 
 export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): Promise<void> {
@@ -50,6 +53,8 @@ export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): 
 
   let fetched = 0;
   let total: number | null = null;
+
+  deps.logger?.info({ runId: data.runId, source: data.source, query: data.query }, "Fetch started");
 
   try {
     for await (const job of adapter.fetch(data, {
@@ -94,12 +99,23 @@ export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): 
         updated: result.changed && !result.inserted ? 1 : 0,
       });
 
+      if (fetched % LOG_EVERY_N_JOBS === 0) {
+        deps.logger?.info(
+          { runId: data.runId, source: data.source, fetched, total },
+          "Fetch progress",
+        );
+      }
+
       if (fetched % PROGRESS_BATCH === 0) {
         await publishProgress(deps, data, fetched, total, "Fetching jobs…");
       }
     }
 
     const at = new Date().toISOString();
+    deps.logger?.info(
+      { runId: data.runId, source: data.source, fetched, total },
+      "Fetch completed",
+    );
     await deps.events.publish({
       type: "source.completed",
       runId: data.runId,
@@ -108,6 +124,10 @@ export async function processFetch(data: FetchJobData, deps: ProcessFetchDeps): 
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Fetch failed";
+    deps.logger?.warn(
+      { runId: data.runId, source: data.source, fetched, err: message },
+      "Fetch failed",
+    );
     await deps.events.publish({
       type: "source.failed",
       runId: data.runId,

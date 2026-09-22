@@ -74,13 +74,13 @@ block Phase 3 on them. Pick them up when adapters or scale demand it.
 
 ### Remaining in milestone (not blocking Phase 3)
 
-| Issue | Scope | Notes |
-| ----- | ----- | ----- |
-| #23 | Greenhouse adapter | **Deferred** — later |
-| #24 | Lever adapter | When needed |
-| #25 | Adzuna adapter | When keys available |
-| #26 | Skill canonicalisation | Incremental |
-| #27 | Search perf benchmark (10k, p95) | **Deferred** — later |
+| Issue | Scope                            | Notes                |
+| ----- | -------------------------------- | -------------------- |
+| #23   | Greenhouse adapter               | **Deferred** — later |
+| #24   | Lever adapter                    | When needed          |
+| #25   | Adzuna adapter                   | When keys available  |
+| #26   | Skill canonicalisation           | Incremental          |
+| #27   | Search perf benchmark (10k, p95) | **Deferred** — later |
 
 Exit criteria (core): changing an exclude removes matching jobs instantly;
 adding a must-have reorders the list — **met**. p95 search on 10k jobs (#27)

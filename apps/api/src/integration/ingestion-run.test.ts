@@ -115,12 +115,13 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
 
     await seedSources(ctx.sources);
 
-    const handlers = createWorkerHandlers(ctx);
+    const testLogger = { warn: () => {}, info: () => {}, error: () => {} } as never;
+    const handlers = createWorkerHandlers(ctx, testLogger);
     const workerRedis = redis.duplicate();
     workerBootstrap = createWorkerBootstrap({
       connection: workerRedis,
       queues,
-      logger: { warn: () => {}, info: () => {}, error: () => {} } as never,
+      logger: testLogger,
       concurrency: resolveWorkerConcurrency(env),
       handlers: {
         onFetchFree: (job) => handlers.onFetchFree(job),

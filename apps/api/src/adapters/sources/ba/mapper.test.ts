@@ -39,6 +39,23 @@ describe("mapBaListItemToPartial", () => {
     });
   });
 
+  it("rounds decimal BA salary spans to integer EUR amounts", () => {
+    const partial = mapBaListItemToPartial({
+      referenznummer: "14225-efaaeaa2ae6f9e7e-S",
+      stellenangebotsTitel: "Softwareentwickler (m/w/d)",
+      verguetungsangabe: "JAHRESGEHALT",
+      gehaltsspanneVon: 54754.68,
+      gehaltsspanneBis: 85562.23,
+    });
+
+    expect(partial?.salary).toEqual({
+      min: 54755,
+      max: 85562,
+      currency: "EUR",
+      period: "year",
+    });
+  });
+
   it("prefers externeURL when present", () => {
     const list = loadFixture<{ ergebnisliste: unknown[] }>("jobs-list-v6.json");
     const item = list.ergebnisliste[0] as Record<string, unknown>;

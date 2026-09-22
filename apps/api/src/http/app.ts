@@ -1,8 +1,6 @@
 import cors from "cors";
 import express from "express";
-import type { IncomingMessage } from "node:http";
 import type { Logger } from "pino";
-import { pinoHttp } from "pino-http";
 
 import type { Redis } from "ioredis";
 
@@ -10,6 +8,7 @@ import type { GetHealthDeps } from "../application/get-health.js";
 import type { AppContext } from "../bootstrap/context.js";
 import type { Env } from "../env.js";
 import { createErrorHandler } from "./error-handler.js";
+import { createHttpLogger } from "./http-logging.js";
 import { createHealthRouter } from "./routes/health.js";
 import { createIngestRouter } from "./routes/ingest.js";
 import { createJobsRouter } from "./routes/jobs.js";
@@ -35,14 +34,7 @@ export function createApp(options: CreateAppOptions) {
     }),
   );
   app.use(express.json({ limit: "1mb" }));
-  app.use(
-    pinoHttp({
-      logger: options.logger,
-      autoLogging: {
-        ignore: (req: IncomingMessage) => req.url === "/api/health",
-      },
-    }),
-  );
+  app.use(createHttpLogger(options.logger));
 
   app.use("/api", createHealthRouter(options.health));
   app.use(

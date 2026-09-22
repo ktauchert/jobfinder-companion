@@ -157,8 +157,9 @@ function mapSalary(row: BaListItem): Salary | null {
   }
 
   return {
-    min: row.gehaltsspanneVon ?? null,
-    max: row.gehaltsspanneBis ?? null,
+    // BA returns decimals; jobs.salary_* columns are integer EUR amounts.
+    min: row.gehaltsspanneVon != null ? Math.round(row.gehaltsspanneVon) : null,
+    max: row.gehaltsspanneBis != null ? Math.round(row.gehaltsspanneBis) : null,
     currency: "EUR",
     period: row.verguetungsangabe === "JAHRESGEHALT" ? "year" : "year",
   };
