@@ -1,6 +1,6 @@
 import type { Profile, UpdateProfileRequest } from "@jobfinder/types";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 
 import { Badge } from "@/components/ui/badge.js";
 import { Input } from "@/components/ui/input.js";
@@ -53,7 +53,7 @@ export function TagBar({ q, searchInputRef }: TagBarProps) {
           },
         });
       }}
-      onSave={(input) => updateProfile.mutate(input)}
+      updateProfile={updateProfile}
     />
   );
 }
@@ -61,38 +61,44 @@ export function TagBar({ q, searchInputRef }: TagBarProps) {
 interface TagBarLoadedProps {
   profile: Profile | undefined;
   q: string;
-  searchInputRef: React.RefObject<HTMLInputElement | null>;
+  searchInputRef: RefObject<HTMLInputElement | null>;
   onSearchChange: (value: string) => void;
-  onSave: (input: UpdateProfileRequest) => void;
+  updateProfile: ReturnType<typeof useUpdateProfile>;
 }
 
-function TagBarLoaded({ profile, q, searchInputRef, onSearchChange, onSave }: TagBarLoadedProps) {
+function TagBarLoaded({ profile, q, searchInputRef, onSearchChange, updateProfile }: TagBarLoadedProps) {
   const [draft, setDraft] = useState<ProfileDraft | null>(null);
   const [novelSkills, setNovelSkills] = useState<Set<string>>(() => new Set());
+  const { mutate } = updateProfile;
+  const profileRef = useRef(profile);
+  profileRef.current = profile;
 
   const mustHaveSkills = draft?.mustHaveSkills ?? profile?.mustHaveSkills ?? [];
   const excludeSkills = draft?.excludeSkills ?? profile?.excludeSkills ?? [];
   const ingestQueries = draft?.ingestQueries ?? profile?.ingestQueries ?? [];
 
   useEffect(() => {
-    if (!profile || !draft) {
+    const currentProfile = profileRef.current;
+    if (!currentProfile || !draft) {
       return;
     }
 
     const handle = window.setTimeout(() => {
-      onSave(
+      mutate(
         buildProfileInput(
-          profile,
+          currentProfile,
           draft.mustHaveSkills,
           draft.excludeSkills,
           draft.ingestQueries,
         ),
+        {
+          onSuccess: () => setDraft(null),
+        },
       );
-      setDraft(null);
     }, 400);
 
     return () => window.clearTimeout(handle);
-  }, [draft, onSave, profile]);
+  }, [draft, mutate]);
 
   const updateDraft = (next: ProfileDraft) => {
     setDraft(next);
