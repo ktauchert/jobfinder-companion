@@ -7,7 +7,8 @@ export function fetchJobId(runId: string, source: SourceKey, query: string): str
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 40);
-  return `fetch:${runId}:${source}:${slug || "default"}`;
+  // BullMQ custom ids must split into exactly three ':' segments (repeatable-job compat).
+  return `fetch:${runId}:${source}-${slug || "default"}`;
 }
 
 export function enrichJobId(jobId: string, stage: EnrichJobData["stage"]): string {

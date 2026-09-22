@@ -5,10 +5,10 @@ import { enrichJobId, fetchJobId } from "./job-ids.js";
 describe("BullMQ job ids", () => {
   it("builds deterministic fetch job ids", () => {
     expect(fetchJobId("run-1", "ba", "softwareentwickler")).toBe(
-      "fetch:run-1:ba:softwareentwickler",
+      "fetch:run-1:ba-softwareentwickler",
     );
     expect(fetchJobId("run-1", "ba", "Product Developer")).toBe(
-      "fetch:run-1:ba:product-developer",
+      "fetch:run-1:ba-product-developer",
     );
   });
 
