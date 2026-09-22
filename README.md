@@ -100,7 +100,7 @@ Paid sources without keys are shown greyed out and skipped. Nothing breaks.
 | `npm run infra:reset:gpu`   | Reset volumes (GPU compose files)                                |
 | `npm run db:generate`       | Generate a Drizzle migration from the schema                     |
 | `npm run db:migrate`        | Apply migrations                                                 |
-| `npm run db:seed`           | Seed canonical developer skills                                  |
+| `npm run db:seed`           | Seed canonical skills (idempotent upsert by name)                |
 | `npm run db:studio`         | Drizzle Studio                                                   |
 
 Reverse proxy (optional): `docker compose --profile proxy up -d` serves

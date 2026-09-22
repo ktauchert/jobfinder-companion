@@ -32,6 +32,8 @@ Exit criteria: `npm run infra:up && npm run dev` starts web + api;
 
 ## Phase 1 – Core Ingestion & Queue
 
+**Status (2026-09-22):** Core ingestion is on `main`. GitHub milestone stays open until #10 (skill-seed idempotency test) and #15 (greyed-out unconfigured sources) merge. Run-lifecycle unit tests (#13) moved to **Backlog – Ingestion & Search Hardening**; they do not block Phase 3.
+
 Goal: one full run for one free source, observable from the UI.
 
 - Source registry with tiers and `configured` gating from env.
@@ -58,10 +60,9 @@ without crashing the API.
 
 Goal: the profile drives a ranked list.
 
-**Status (2026-09-20):** Core slice merged in PR #49 (#17–#22 closed). Phase 2
-milestone stays open for remaining adapters and canonicalisation; **#23
-(Greenhouse) and #27 (search perf benchmark) are explicitly deferred** — do not
-block Phase 3 on them. Pick them up when adapters or scale demand it.
+**Status (2026-09-22):** Core slice met (#17–#22). Milestone closed. Adapter,
+canonicalisation, dedupe, and ops issues (#23–#27, #52, #53) live in **Backlog –
+Ingestion & Search Hardening** and do not block Phase 3.
 
 ### Done (#17–#22, PR #49)
 
@@ -71,16 +72,6 @@ block Phase 3 on them. Pick them up when adapters or scale demand it.
 - `GET /api/jobs` cursor pagination, `GET /api/jobs/:id`, hide/unhide.
 - UI: Tag bar (must-haves / excludes), job list with cards, match score and
   skill chips; URL state via TanStack Router search params.
-
-### Remaining in milestone (not blocking Phase 3)
-
-| Issue | Scope                            | Notes                |
-| ----- | -------------------------------- | -------------------- |
-| #23   | Greenhouse adapter               | **Deferred** — later |
-| #24   | Lever adapter                    | When needed          |
-| #25   | Adzuna adapter                   | When keys available  |
-| #26   | Skill canonicalisation           | Incremental          |
-| #27   | Search perf benchmark (10k, p95) | **Deferred** — later |
 
 Exit criteria (core): changing an exclude removes matching jobs instantly;
 adding a must-have reorders the list — **met**. p95 search on 10k jobs (#27)
@@ -103,7 +94,7 @@ Goal: the app is faster to use than a job board.
 - Collapsible status bar with per-source progress and Stop.
 - Job detail as an inline expandable panel in `Main` (no route change, no
   sidebar).
-- Empty, loading, error and "unconfigured source" states.
+- Empty, loading, and error states. Unconfigured sources are the greyed-out row in Main (#15).
 - Tunable score weights and `maxAgeDays` in the profile.
 - Dark mode, focus rings, reduced-motion; accessibility pass.
 - Performance: virtualised list, query prefetching, optimistic hide.
@@ -126,8 +117,9 @@ Goal: run it on a home server and forget about it.
 
 ## Backlog / Ideas (not scheduled)
 
-- **Deferred from Phase 2:** #23 Greenhouse adapter, #27 search perf benchmark
-  (see Phase 2 status above).
+- **Backlog – Ingestion & Search Hardening** (GitHub milestone): #23 Greenhouse,
+  #24 Lever, #25 Adzuna, #26 skill canonicalisation, #27 search perf, #52
+  content-hash dedupe, #53 `db:reset-ingestion`, #13 run-lifecycle unit tests.
 - Multiple profiles and quick switching.
 - Salary normalisation across currencies/periods.
 - Duplicate detection across sources (same job on BA and Adzuna).
