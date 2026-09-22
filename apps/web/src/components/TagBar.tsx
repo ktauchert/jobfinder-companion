@@ -77,7 +77,10 @@ function TagBarLoaded({
   const [novelSkills, setNovelSkills] = useState<Set<string>>(() => new Set());
   const { mutate } = updateProfile;
   const profileRef = useRef(profile);
-  profileRef.current = profile;
+
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
 
   const mustHaveSkills = draft?.mustHaveSkills ?? profile?.mustHaveSkills ?? [];
   const excludeSkills = draft?.excludeSkills ?? profile?.excludeSkills ?? [];
