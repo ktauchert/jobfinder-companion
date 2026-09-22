@@ -103,6 +103,25 @@ npm run format              prettier --write .
 Run `npm run check` before committing (start infra with `npm run infra:up` first).
 CI runs the same steps via `check:quality` and `check:integration`.
 
+## Debugging empty search
+
+Before changing search SQL or UI filters, confirm data exists:
+
+1. `GET /api/jobs` — check `total` (not just the first page).
+2. Ingestion stats — jobs need `embedded_at` set before they appear in search.
+3. Profile — `mustHaveSkills` filters on **`job_skills`**, not job title or
+   description text. See `docs/SEARCH-AND-EMBEDDINGS.md` and ADR 0006.
+
+Empty list with zero `total` is an **ingest/data** problem, not a ranking bug.
+
+## Infrastructure adapters (`apps/api`)
+
+- **BullMQ custom job ids:** no colons, or exactly three `:`-separated segments.
+  Centralise in `apps/api/src/adapters/queue/job-ids.ts` (with tests); never
+  inline ids in queue adapters.
+- **Redis pub/sub (SSE):** duplicate via `createRedisSubscriber()` in
+  `connection.ts` (`enableReadyCheck: false`).
+
 ## Coding conventions
 
 - TypeScript strict everywhere; `noUncheckedIndexedAccess` is on. No `any`,
@@ -129,6 +148,10 @@ CI runs the same steps via `check:quality` and `check:integration`.
   in the Footer from that registry.
 - Match score, skill chips (`must_have` / `excluded` / `neutral`) and the
   ingestion status bar are the core UI primitives; keep them consistent.
+- API list fields (`skillMatches`, profile skill arrays, skill search results):
+  use `?? []` before `.length` or `.map` — cache and error paths can omit them.
+- Refresh job list during ingest via SSE invalidation (`ingestion-events-context`),
+  not open-ended `refetchInterval` on `useJobsSearch` (loads Postgres under ingest).
 
 ## Working with issues
 
@@ -173,3 +196,9 @@ The five default triage labels (`needs-triage`, `needs-info`,
 
 Single-context: `CONTEXT.md` and `docs/adr/` at the repo root. See
 `docs/agents/domain.md`.
+
+### Lessons learned
+
+Dated post-incident notes (symptoms vs causes, workflow mistakes). See
+`docs/agents/lessons-learned.md`. Append after non-trivial debugging sessions;
+link the GitHub issue or PR when possible.

@@ -6,7 +6,7 @@ import { count, sql } from "drizzle-orm";
 import type { Redis } from "ioredis";
 
 import { createAppContext } from "../bootstrap/create-context.js";
-import { createRedisConnection } from "../adapters/queue/connection.js";
+import { createRedisConnection, createRedisSubscriber } from "../adapters/queue/connection.js";
 import { closeAppQueues, createAppQueues } from "../adapters/queue/queues.js";
 import { seedSources } from "../application/seed-sources.js";
 import { startIngestion } from "../application/start-ingestion.js";
@@ -38,7 +38,7 @@ describe.skipIf(!databaseUrl || !redisUrl)("integration: ingestion run", () => {
     baServer = await startFixtureBaServer();
     redis = createRedisConnection(redisUrl!);
     await resetIntegrationState(databaseUrl!, redis);
-    subscriber = redis.duplicate();
+    subscriber = createRedisSubscriber(redis);
     await subscriber.subscribe(INGESTION_EVENTS_CHANNEL);
     subscriber.on("message", (_channel, payload) => {
       events.push(JSON.parse(payload) as IngestionEvent);

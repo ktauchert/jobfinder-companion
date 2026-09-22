@@ -56,9 +56,9 @@ export const JobCard = forwardRef<HTMLElement, JobCardProps>(function JobCard(
         </div>
         <MatchScore score={match.matchScore} />
       </div>
-      {match.skillMatches.length > 0 ? (
+      {(match.skillMatches ?? []).length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-1.5">
-          {match.skillMatches.map(({ skill, state }) => (
+          {(match.skillMatches ?? []).map(({ skill, state }) => (
             <li key={skill.id}>
               <SkillChip label={skill.label} state={state} />
             </li>

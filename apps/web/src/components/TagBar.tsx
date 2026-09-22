@@ -267,7 +267,7 @@ function TagField({
             <CommandList>
               <CommandEmpty>No matching skills</CommandEmpty>
               <CommandGroup>
-                {suggestions?.skills.map((skill) => (
+                {(suggestions?.skills ?? []).map((skill) => (
                   <CommandItem
                     key={skill.id}
                     value={skill.label}

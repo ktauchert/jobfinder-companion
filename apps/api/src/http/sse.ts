@@ -4,6 +4,7 @@ import type { Redis } from "ioredis";
 
 import type { RunEventCache } from "../adapters/events/run-event-cache.js";
 import { INGESTION_EVENTS_CHANNEL } from "../adapters/events/redis-event-publisher.js";
+import { createRedisSubscriber } from "../adapters/queue/connection.js";
 import type { GetIngestionStatusDeps } from "../application/get-ingestion-status.js";
 import { getIngestionStatus } from "../application/get-ingestion-status.js";
 
@@ -33,7 +34,10 @@ export function handleIngestEvents(deps: IngestSseDeps, res: Response): void {
   res.flushHeaders?.();
   res.write(": connected\n\n");
 
-  const subscriber = deps.redis.duplicate();
+  const subscriber = createRedisSubscriber(deps.redis);
+  subscriber.on("error", () => {
+    // Non-fatal: ioredis reconnect quirks on pub/sub; client cleans up on close.
+  });
   let closed = false;
 
   const heartbeat = setInterval(() => {

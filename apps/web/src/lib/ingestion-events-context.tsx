@@ -101,8 +101,17 @@ export function IngestionEventsProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    let lastEmbedded = -1;
+
     return subscribeIngestionEvents((event) => {
       dispatch({ type: "event", event });
+      if (event.type === "run.started") {
+        void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      }
+      if (event.type === "run.progress" && event.stats.embedded > lastEmbedded) {
+        lastEmbedded = event.stats.embedded;
+        void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      }
       if (event.type === "run.completed") {
         void queryClient.invalidateQueries({ queryKey: ["ingestion", "status"] });
         void queryClient.invalidateQueries({ queryKey: ["jobs"] });
