@@ -1,5 +1,6 @@
 import type { EnrichJobData, FetchJobData, ProfileEmbedJobData } from "@jobfinder/types";
 import type { Job } from "bullmq";
+import type { Logger } from "pino";
 
 import { processEmbed } from "../application/process-embed.js";
 import { processExtract } from "../application/process-extract.js";
@@ -8,12 +9,12 @@ import { processProfileEmbed } from "../application/process-profile-embed.js";
 import { checkRunCompletion } from "../application/check-run-completion.js";
 import type { AppContext } from "../bootstrap/context.js";
 
-export function createWorkerHandlers(ctx: AppContext) {
+export function createWorkerHandlers(ctx: AppContext, logger: Logger) {
   const abortControllers = new Map<string, AbortController>();
 
   return {
-    onFetchFree: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers),
-    onFetchPaid: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers),
+    onFetchFree: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers, logger),
+    onFetchPaid: (job: Job<FetchJobData>) => handleFetch(job, ctx, abortControllers, logger),
     onExtract: (job: Job<EnrichJobData>) => handleExtract(job, ctx),
     onEmbed: (job: Job<EnrichJobData>) => handleEmbed(job, ctx),
     onProfileEmbed: (job: Job<ProfileEmbedJobData>) => handleProfileEmbed(job, ctx),
@@ -24,6 +25,7 @@ async function handleFetch(
   job: Job<FetchJobData>,
   ctx: AppContext,
   abortControllers: Map<string, AbortController>,
+  logger: Logger,
 ): Promise<void> {
   const run = await ctx.runs.findById(job.data.runId);
   if (run?.status === "cancelled") {
@@ -49,6 +51,7 @@ async function handleFetch(
     limiter,
     signal: controller.signal,
     maxJobs,
+    logger,
   });
 }
 

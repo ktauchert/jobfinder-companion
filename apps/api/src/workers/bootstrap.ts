@@ -69,7 +69,18 @@ export function createWorkerBootstrap(options: {
 
       for (const worker of workers) {
         worker.on("failed", (job, err) => {
-          options.logger.warn({ jobId: job?.id, err }, "Worker job failed");
+          const data = job?.data as FetchJobData | EnrichJobData | ProfileEmbedJobData | undefined;
+          options.logger.warn(
+            {
+              queue: worker.name,
+              jobId: job?.id,
+              runId: data && "runId" in data ? data.runId : undefined,
+              source: data && "source" in data ? data.source : undefined,
+              stage: data && "stage" in data ? data.stage : undefined,
+              err: err.message,
+            },
+            "Worker job failed",
+          );
         });
       }
 

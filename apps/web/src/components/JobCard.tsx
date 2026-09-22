@@ -39,7 +39,7 @@ export const JobCard = forwardRef<HTMLElement, JobCardProps>(function JobCard(
       ref={ref}
       tabIndex={0}
       onFocus={onFocus}
-      onMouseEnter={onFocus}
+      onClick={onFocus}
       className={cn(
         "rounded-lg border bg-card p-4 outline-none transition-colors",
         focused && "border-primary ring-2 ring-primary/30",

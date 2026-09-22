@@ -17,6 +17,7 @@ function Home() {
   const navigate = useNavigate({ from: "/" });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hideHandlerRef = useRef<(() => void) | null>(null);
+  const scrollToSelectionRef = useRef(false);
   const refreshJobs = useRefreshJobs();
 
   const jobsQuery = useJobsSearch({ ...(q ? { q } : {}), limit: 20 });
@@ -52,6 +53,7 @@ function Home() {
       const next = Math.min(Math.max(start + delta, 0), matches.length - 1);
       const nextId = matches[next]?.job.id;
       if (nextId) {
+        scrollToSelectionRef.current = true;
         setSelectedId(nextId);
       }
       if (delta > 0 && next === matches.length - 1 && jobsQuery.hasNextPage) {
@@ -114,9 +116,11 @@ function Home() {
         q={q}
         selectedId={selected}
         onSelectedIdChange={setSelectedId}
+        scrollToSelectionRef={scrollToSelectionRef}
         onHideJob={() => {
           const index = matches.findIndex((match) => match.job.id === selected);
           const next = matches[index + 1] ?? matches[index - 1];
+          scrollToSelectionRef.current = true;
           setSelectedId(next?.job.id);
         }}
         registerHideHandler={(handler) => {

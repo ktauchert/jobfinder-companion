@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 
 import { JobCard } from "@/components/JobCard.js";
 import { Button } from "@/components/ui/button.js";
@@ -10,6 +10,8 @@ interface JobListProps {
   onSelectedIdChange: (id: string | undefined) => void;
   onHideJob: () => void;
   registerHideHandler: (handler: (() => void) | null) => void;
+  /** When true, the next selectedId change scrolls the card into view (j/k, hide). */
+  scrollToSelectionRef: RefObject<boolean>;
 }
 
 export function JobList({
@@ -18,6 +20,7 @@ export function JobList({
   onSelectedIdChange,
   onHideJob,
   registerHideHandler,
+  scrollToSelectionRef,
 }: JobListProps) {
   const jobsQuery = useJobsSearch({ ...(q ? { q } : {}), limit: 20 });
   const hideJob = useHideJobWithUndo();
@@ -42,11 +45,12 @@ export function JobList({
   }, [matches, onSelectedIdChange, selectedId]);
 
   useEffect(() => {
-    if (!selectedId) {
+    if (!selectedId || !scrollToSelectionRef.current) {
       return;
     }
+    scrollToSelectionRef.current = false;
     cardRefs.current.get(selectedId)?.scrollIntoView({ block: "nearest" });
-  }, [selectedId]);
+  }, [scrollToSelectionRef, selectedId]);
 
   useEffect(() => {
     registerHideHandler(() => {

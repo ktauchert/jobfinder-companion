@@ -8,7 +8,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "vite --port ${WEB_PORT:-5173}",
+    "dev": "vite",
     "generate-routes": "tsr generate",
     "build": "vite build",
     "preview": "vite preview",

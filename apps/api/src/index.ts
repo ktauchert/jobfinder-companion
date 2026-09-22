@@ -60,7 +60,7 @@ const server = app.listen(env.API_PORT, () => {
 });
 
 if (env.WORKERS_ENABLED) {
-  const handlers = createWorkerHandlers(ctx);
+  const handlers = createWorkerHandlers(ctx, logger);
 
   const workerBootstrap = createWorkerBootstrap({
     connection: redis,
