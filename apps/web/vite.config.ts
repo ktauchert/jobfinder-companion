@@ -9,8 +9,8 @@ const monorepoRoot = path.resolve(import.meta.dirname, "../..");
 export default defineConfig(({ mode }) => {
   // Root `.env` (WEB_PORT, VITE_*) — bash `${WEB_PORT:-5173}` breaks on Windows cmd.
   const env = loadEnv(mode, monorepoRoot, "");
-  const apiProxyTarget = env.VITE_API_BASE_URL || "http://localhost:3000";
-  const port = Number(env.WEB_PORT || 5173);
+  const apiProxyTarget = env.VITE_API_BASE_URL ?? "http://localhost:3000";
+  const port = Number(env.WEB_PORT ?? 5173);
 
   return {
     envDir: monorepoRoot,
