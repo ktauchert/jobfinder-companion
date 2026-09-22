@@ -281,7 +281,13 @@ skip re-enrichment when a source re-serves an unchanged job.
 ## 8. Hybrid search
 
 Deterministic filters run in SQL first; only the survivors are ordered by
-vector distance. Excludes are a hard filter; must-haves shape the score.
+vector distance. Excludes are a hard filter; must-haves shape the score today
+(a refactor to hard-filter must-haves is tracked in [#56](https://github.com/ktauchert/jobfinder-companion/issues/56) — see
+`docs/SEARCH-AND-EMBEDDINGS.md` for the full pipeline, diagrams, and UX
+rationale).
+
+**Deep dive:** [SEARCH-AND-EMBEDDINGS.md](./SEARCH-AND-EMBEDDINGS.md) — ingest
+vs profile embeds, the top-K vector window, `q` vs must-have behaviour, scoring.
 
 ```sql
 WITH p AS (SELECT * FROM profiles WHERE id = $profileId)

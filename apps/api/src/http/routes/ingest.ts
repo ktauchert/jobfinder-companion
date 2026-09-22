@@ -54,6 +54,7 @@ export function createIngestRouter(deps: IngestRouterDeps): Router {
               APIFY_TOKEN: deps.ctx.env.APIFY_TOKEN,
             },
             sources: deps.ctx.sources,
+            profiles: deps.ctx.profiles,
             runs: deps.ctx.runs,
             queue: deps.ctx.queue,
             events: deps.ctx.events,

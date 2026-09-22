@@ -1,5 +1,6 @@
 import type { EnrichJobData } from "@jobfinder/types";
 
+import { filterExtractedSkills } from "../domain/filter-extracted-skills.js";
 import { canonicaliseSkillName } from "./canonicalise-skill.js";
 import { maybePublishRunProgress } from "./publish-run-progress.js";
 import type { checkRunCompletion } from "./check-run-completion.js";
@@ -31,7 +32,7 @@ export async function processExtract(data: EnrichJobData, deps: ProcessExtractDe
     throw new Error(`Job ${data.jobId} not found`);
   }
 
-  const extracted = await deps.extractor.extract(descriptionText);
+  const extracted = filterExtractedSkills(await deps.extractor.extract(descriptionText));
   await deps.skills.clearJobSkills(data.jobId);
 
   for (const item of extracted) {

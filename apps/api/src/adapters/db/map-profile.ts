@@ -8,6 +8,7 @@ export function mapProfileRow(row: ProfileRow): Profile {
     mustHaveSkills: row.mustHaveSkills,
     excludeSkills: row.excludeSkills,
     summary: row.summary,
+    ingestQueries: row.ingestQueries,
     remoteTypes: row.remoteTypes as Profile["remoteTypes"],
     countryCodes: row.countryCodes,
     minSalary: row.minSalary,

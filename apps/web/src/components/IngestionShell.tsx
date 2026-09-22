@@ -21,7 +21,7 @@ export function IngestionShell({ children }: IngestionShellProps) {
       }
       if (event.key === "i" && !isActive && !start.isPending) {
         event.preventDefault();
-        start.mutate({ query: "softwareentwickler", location: "Berlin" });
+        start.mutate({});
       }
     };
 

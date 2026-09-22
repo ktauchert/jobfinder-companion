@@ -13,6 +13,7 @@ export const profileInputSchema = z.object({
   mustHaveSkills: z.array(z.string()),
   excludeSkills: z.array(z.string()),
   summary: z.string(),
+  ingestQueries: z.array(z.string()),
   remoteTypes: z.array(z.enum(REMOTE_TYPES)),
   countryCodes: z.array(z.string().length(2)),
   minSalary: z.number().int().nonnegative().nullable(),

@@ -75,7 +75,6 @@ export function useUpdateProfile() {
     mutationFn: updateProfile,
     onSuccess: (data) => {
       client.setQueryData(["profile"], data);
-      void client.invalidateQueries({ queryKey: ["jobs"] });
     },
   });
 }
@@ -90,8 +89,12 @@ export function useSkillsSearch(q: string, enabled: boolean) {
 }
 
 export function useJobsSearch(query: SearchJobsQuery) {
+  const { data: profileData } = useProfile();
+  // Re-run search when profile skills/filters change (server reads profile on each request).
+  const profileStamp = profileData?.profile.updatedAt ?? "loading";
+
   return useInfiniteQuery({
-    queryKey: ["jobs", query],
+    queryKey: ["jobs", query, profileStamp],
     queryFn: ({ pageParam }) => {
       const request: SearchJobsQuery = {
         ...query,

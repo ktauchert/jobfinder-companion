@@ -13,6 +13,8 @@ export interface Profile {
   excludeSkills: string[];
   /** Free text (e.g. a short bio / what you want) that is embedded alongside skills. */
   summary: string;
+  /** Upstream role search terms for ingestion (e.g. BA `was`). */
+  ingestQueries: string[];
   /** Optional deterministic filters. Empty arrays mean "no restriction". */
   remoteTypes: RemoteType[];
   countryCodes: string[];
@@ -29,6 +31,7 @@ export type ProfileInput = Pick<
   | "mustHaveSkills"
   | "excludeSkills"
   | "summary"
+  | "ingestQueries"
   | "remoteTypes"
   | "countryCodes"
   | "minSalary"

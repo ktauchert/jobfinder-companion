@@ -10,7 +10,7 @@ export function createBullmqJobQueue(queues: IngestQueues): JobQueue {
     async enqueueFetch(data: FetchJobData, tier: SourceTier): Promise<void> {
       const queue = tier === "paid" ? queues.fetchPaid : queues.fetchFree;
       await queue.add("fetch", data, {
-        jobId: fetchJobId(data.runId, data.source),
+        jobId: fetchJobId(data.runId, data.source, data.query),
       });
     },
 
