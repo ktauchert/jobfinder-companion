@@ -12,6 +12,8 @@ export function mapProfileRow(row: ProfileRow): Profile {
     remoteTypes: (row.remoteTypes ?? []) as Profile["remoteTypes"],
     countryCodes: row.countryCodes ?? [],
     minSalary: row.minSalary,
+    similarityWeight: row.similarityWeight,
+    maxAgeDays: row.maxAgeDays,
     embeddedAt: row.embeddedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),

@@ -17,6 +17,8 @@ export const profileInputSchema = z.object({
   remoteTypes: z.array(z.enum(REMOTE_TYPES)),
   countryCodes: z.array(z.string().length(2)),
   minSalary: z.number().int().nonnegative().nullable(),
+  similarityWeight: z.number().min(0).max(1),
+  maxAgeDays: z.number().int().positive().nullable(),
 }) satisfies z.ZodType<UpdateProfileRequest>;
 
 export interface ProfileRouterDeps {

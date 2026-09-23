@@ -11,6 +11,10 @@ export const SHORTCUTS = [
   { id: "up", key: "k", label: "k", description: "Up", scope: "list" },
   { id: "open", key: "Enter", label: "Enter", description: "Open", scope: "list" },
   { id: "hide", key: "h", label: "h", description: "Hide", scope: "list" },
+  { id: "weight-down", key: "[", label: "[", description: "Less similarity", scope: "tagbar" },
+  { id: "weight-up", key: "]", label: "]", description: "More similarity", scope: "tagbar" },
+  { id: "age-down", key: ",", label: ",", description: "Shorter age", scope: "tagbar" },
+  { id: "age-up", key: ".", label: ".", description: "Longer age", scope: "tagbar" },
 ] as const;
 
 export type Shortcut = (typeof SHORTCUTS)[number];

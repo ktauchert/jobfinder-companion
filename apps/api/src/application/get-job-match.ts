@@ -31,7 +31,11 @@ export async function getJobMatch(jobId: string, deps: GetJobMatchDeps): Promise
     job,
     similarity,
     mustHaveCoverage,
-    matchScore: computeMatchScore({ similarity, mustHaveCoverage }),
+    matchScore: computeMatchScore({
+      similarity,
+      mustHaveCoverage,
+      similarityWeight: profile.similarityWeight,
+    }),
     skillMatches: buildSkillMatches(
       job.skills.map((entry) => entry.skill),
       profile,

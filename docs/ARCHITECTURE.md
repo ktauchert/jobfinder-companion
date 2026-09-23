@@ -326,10 +326,11 @@ LIMIT $limit OFFSET $offset;
 `matchScore` is computed in `search/score.ts`:
 
 ```
-matchScore = round(100 * (0.6 * similarity + 0.4 * mustHaveCoverage))
+matchScore = round(100 * (similarityWeight * similarity + (1 - similarityWeight) * mustHaveCoverage))
 ```
 
-Weights are constants for now; making them profile-tunable is a Phase 3 item.
+`similarityWeight` lives on the profile (default 0.6). `maxAgeDays` on the
+profile applies when the search request omits its own `maxAgeDays`.
 The final list is re-sorted by `matchScore` in the API after fetching the
 top-K by distance (K = 3 × page size) so the HNSW index still does the heavy
 lifting.

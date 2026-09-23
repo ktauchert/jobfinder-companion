@@ -12,6 +12,8 @@ const baseInput: ProfileInput = {
   remoteTypes: ["remote"],
   countryCodes: ["DE"],
   minSalary: 80_000,
+  similarityWeight: 0.6,
+  maxAgeDays: null,
 };
 
 describe("updateProfile", () => {
@@ -26,6 +28,8 @@ describe("updateProfile", () => {
       remoteTypes: ["remote"],
       countryCodes: ["DE"],
       minSalary: 80_000,
+      similarityWeight: 0.6,
+      maxAgeDays: null,
       embeddedAt: null,
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-02T00:00:00.000Z",
@@ -33,7 +37,19 @@ describe("updateProfile", () => {
     const enqueueEmbed = vi.fn();
 
     const result = await updateProfile(baseInput, {
-      profiles: { update },
+      profiles: {
+        update,
+        getDefault: vi.fn().mockResolvedValue({
+          id: "profile-1",
+          ...baseInput,
+          summary: "previous summary",
+          mustHaveSkills: ["typescript"],
+          excludeSkills: ["java"],
+          embeddedAt: null,
+          createdAt: "2026-01-01T00:00:00.000Z",
+          updatedAt: "2026-01-01T00:00:00.000Z",
+        }),
+      },
       skills: {
         findByNameOrAlias: vi
           .fn()
@@ -61,5 +77,43 @@ describe("updateProfile", () => {
     });
     expect(enqueueEmbed).toHaveBeenCalledWith("profile-1");
     expect(result.profile.mustHaveSkills).toEqual(["typescript"]);
+  });
+
+  it("skips embedding when only the score weight changes", async () => {
+    const saved = {
+      id: "profile-1",
+      ...baseInput,
+      mustHaveSkills: ["typescript"],
+      excludeSkills: ["java"],
+      embeddedAt: "2026-01-01T00:00:00.000Z",
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-02T00:00:00.000Z",
+    };
+    const enqueueEmbed = vi.fn();
+
+    await updateProfile(
+      { ...baseInput, similarityWeight: 1 },
+      {
+        profiles: {
+          getDefault: vi.fn().mockResolvedValue(saved),
+          update: vi.fn().mockResolvedValue({ ...saved, similarityWeight: 1 }),
+        },
+        skills: {
+          findByNameOrAlias: vi
+            .fn()
+            .mockResolvedValueOnce({
+              id: "1",
+              name: "typescript",
+              label: "TypeScript",
+              aliases: [],
+            })
+            .mockResolvedValueOnce({ id: "2", name: "java", label: "Java", aliases: [] }),
+          findSimilar: vi.fn(),
+        },
+        profileQueue: { enqueueEmbed },
+      },
+    );
+
+    expect(enqueueEmbed).not.toHaveBeenCalled();
   });
 });

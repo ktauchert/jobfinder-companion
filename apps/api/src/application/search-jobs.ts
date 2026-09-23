@@ -83,10 +83,12 @@ async function buildSearchQuery(
       profile.embedding != null ? averageEmbeddings(profile.embedding, qVector) : qVector;
   }
 
+  const maxAgeDays = resolveMaxAgeDays(query.maxAgeDays, profile.maxAgeDays);
+
   return {
     profileId: profile.id,
     queryEmbedding,
-    ...(query.maxAgeDays != null ? { maxAgeDays: query.maxAgeDays } : {}),
+    ...(maxAgeDays != null ? { maxAgeDays } : {}),
     ...(query.includeHidden != null ? { includeHidden: query.includeHidden } : {}),
   };
 }
@@ -101,7 +103,11 @@ function toJobMatch(
     job,
     similarity,
     mustHaveCoverage,
-    matchScore: computeMatchScore({ similarity, mustHaveCoverage }),
+    matchScore: computeMatchScore({
+      similarity,
+      mustHaveCoverage,
+      similarityWeight: profile.similarityWeight,
+    }),
     skillMatches: buildSkillMatches(
       job.skills.map((entry) => entry.skill),
       profile,
@@ -114,6 +120,16 @@ function compareJobMatches(a: JobMatch, b: JobMatch): number {
     return b.matchScore - a.matchScore;
   }
   return a.job.id.localeCompare(b.job.id);
+}
+
+function resolveMaxAgeDays(
+  requested: number | undefined,
+  profileMaxAgeDays: number | null,
+): number | undefined {
+  if (requested != null) {
+    return requested;
+  }
+  return profileMaxAgeDays ?? undefined;
 }
 
 function clampLimit(limit: number | undefined): number {

@@ -63,6 +63,8 @@ describe("searchJobs", () => {
             remoteTypes: [],
             countryCodes: [],
             minSalary: null,
+            similarityWeight: 0.6,
+            maxAgeDays: null,
           }),
         },
         search: {
@@ -88,5 +90,46 @@ describe("searchJobs", () => {
     expect(response.items.map((item: JobMatch) => item.job.id)).toEqual(["high", "low"]);
     expect(response.items[0]?.matchScore).toBeGreaterThan(response.items[1]?.matchScore ?? 0);
     expect(response.total).toBe(2);
+  });
+
+  it("uses the profile similarity weight and max age when the request omits them", async () => {
+    const searchCandidates = vi
+      .fn()
+      .mockResolvedValue([{ jobId: "only", similarity: 1, mustHaveCoverage: 0 }]);
+
+    const response = await searchJobs(
+      {},
+      {
+        profiles: {
+          getSearchContext: vi.fn().mockResolvedValue({
+            id: "profile-1",
+            embedding: [0.1],
+            mustHaveSkills: [],
+            excludeSkills: [],
+            remoteTypes: [],
+            countryCodes: [],
+            minSalary: null,
+            similarityWeight: 1,
+            maxAgeDays: 14,
+          }),
+        },
+        search: {
+          searchCandidates,
+          countMatching: vi.fn().mockResolvedValue(1),
+          loadJobsByIds: vi.fn().mockResolvedValue([makeJob("only", [])]),
+          findEnrichedJobById: vi.fn(),
+          computeCandidateMetrics: vi.fn(),
+        },
+        embedder: {
+          embedQuery: vi.fn(),
+          embedDocument: vi.fn(),
+          model: "nomic-embed-text",
+          dimensions: 1,
+        },
+      },
+    );
+
+    expect(searchCandidates).toHaveBeenCalledWith(expect.objectContaining({ maxAgeDays: 14 }), 60);
+    expect(response.items[0]?.matchScore).toBe(100);
   });
 });

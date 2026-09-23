@@ -6,7 +6,7 @@ import type { ProfileRepository } from "../ports/profile-repository.js";
 import type { SkillRepository } from "../ports/skill-repository.js";
 
 export interface UpdateProfileDeps {
-  profiles: Pick<ProfileRepository, "update">;
+  profiles: Pick<ProfileRepository, "update" | "getDefault">;
   skills: Pick<SkillRepository, "findByNameOrAlias" | "findSimilar">;
   profileQueue: Pick<ProfileQueue, "enqueueEmbed">;
 }
@@ -20,13 +20,26 @@ export async function updateProfile(
     canonicaliseProfileSkillNames(input.excludeSkills, deps),
   ]);
 
+  const previous = await deps.profiles.getDefault();
   const profile = await deps.profiles.update({
     ...input,
     mustHaveSkills,
     excludeSkills,
   });
 
-  await deps.profileQueue.enqueueEmbed(profile.id);
+  const skillsUnchanged =
+    sameNames(previous.mustHaveSkills, mustHaveSkills) &&
+    sameNames(previous.excludeSkills, excludeSkills);
+  if (previous.summary !== input.summary || !skillsUnchanged) {
+    await deps.profileQueue.enqueueEmbed(profile.id);
+  }
 
   return { profile };
+}
+
+function sameNames(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+  return left.every((name, index) => name === right[index]);
 }
