@@ -12,5 +12,5 @@ Row order is the working sequence. Status rules: `docs/agents/cloud-ledger.md`.
 | #30   | Inline job detail panel in Main (no route change, no sidebar)            | #65 | ready-to-close |
 | #31   | Empty, loading, error and unconfigured-source states                     | #66 | ready-to-close |
 | #32   | Tunable score weights and maxAgeDays in the profile                      | #64 | ready-to-close |
-| #33   | Dark mode, focus rings, reduced motion, accessibility pass               |     | open           |
+| #33   | Dark mode, focus rings, reduced motion, accessibility pass               | #67 | ready-to-close |
 | #34   | Performance: virtualised job list, query prefetching, optimistic updates |     | open           |
