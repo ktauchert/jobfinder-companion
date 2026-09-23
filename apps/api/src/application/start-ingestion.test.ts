@@ -83,4 +83,30 @@ describe("startIngestion", () => {
       "free",
     );
   });
+
+  it("uses the profile country code when the request omits location", async () => {
+    const enqueueFetch = vi.fn();
+    const deps = {
+      env: { ADZUNA_APP_ID: undefined, ADZUNA_APP_KEY: undefined, APIFY_TOKEN: undefined },
+      sources: { findAll: vi.fn().mockResolvedValue([{ key: "ba", enabled: true }]) },
+      profiles: {
+        getDefault: vi.fn().mockResolvedValue({ ...defaultProfile, countryCodes: ["DE"] }),
+      },
+      runs: {
+        findActiveRun: vi.fn().mockResolvedValue(null),
+        createRun: vi.fn().mockResolvedValue({ id: "run-1", status: "running" }),
+      },
+      queue: { enqueueFetch },
+      events: { publish: vi.fn() },
+      defaultQuery: "fallback",
+      defaultLocation: "Berlin",
+    } as unknown as StartIngestionDeps;
+
+    await startIngestion({}, deps);
+
+    expect(enqueueFetch).toHaveBeenCalledWith(
+      { runId: "run-1", source: "ba", query: "softwareentwickler", location: "DE" },
+      "free",
+    );
+  });
 });
