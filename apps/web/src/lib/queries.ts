@@ -6,6 +6,7 @@ import {
   useQueryClient,
   type InfiniteData,
 } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 import {
@@ -95,6 +96,20 @@ export function useSkillsSearch(q: string, enabled: boolean) {
     enabled: enabled && q.trim().length > 0,
     staleTime: 60_000,
   });
+}
+
+export function usePrefetchJobDetail(id: string | undefined) {
+  const client = useQueryClient();
+
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    void client.prefetchQuery({
+      queryKey: ["jobs", "detail", id],
+      queryFn: () => fetchJob(id),
+    });
+  }, [client, id]);
 }
 
 export function useJob(id: string | undefined) {
