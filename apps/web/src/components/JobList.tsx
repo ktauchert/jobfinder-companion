@@ -1,10 +1,17 @@
-import { useEffect, useMemo, useRef, type RefObject } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 
 import { JobCard } from "@/components/JobCard.js";
 import { JobDetail } from "@/components/JobDetail.js";
 import { Button } from "@/components/ui/button.js";
 import { emptyListReason, filteredEmptyMessage } from "@/lib/empty-list-reason.js";
-import { useHideJobWithUndo, useJobsSearch, useProfile } from "@/lib/queries.js";
+import { shouldPrefetchNextPage } from "@/lib/list-prefetch.js";
+import {
+  useHideJobWithUndo,
+  useJobsSearch,
+  usePrefetchJobDetail,
+  useProfile,
+} from "@/lib/queries.js";
 
 interface JobListProps {
   q: string | undefined;
@@ -33,7 +40,8 @@ export function JobList({
   const profileQuery = useProfile();
   const hideJob = useHideJobWithUndo();
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef(new Map<string, HTMLElement>());
+  const listRef = useRef<HTMLDivElement>(null);
+  const [scrollMargin, setScrollMargin] = useState(0);
 
   const matches = useMemo(
     () => jobsQuery.data?.pages.flatMap((page) => page.items) ?? [],
@@ -41,6 +49,13 @@ export function JobList({
   );
 
   const selectedIndex = matches.findIndex((match) => match.job.id === selectedId);
+  const virtualizer = useWindowVirtualizer({
+    count: matches.length,
+    estimateSize: () => (detailId ? 220 : 128),
+    overscan: 6,
+    scrollMargin,
+  });
+  usePrefetchJobDetail(selectedId);
 
   useEffect(() => {
     if (matches.length === 0) {
@@ -53,12 +68,28 @@ export function JobList({
   }, [matches, onSelectedIdChange, selectedId]);
 
   useEffect(() => {
-    if (!selectedId || !scrollToSelectionRef.current) {
+    setScrollMargin(listRef.current?.offsetTop ?? 0);
+  }, [matches.length]);
+
+  useEffect(() => {
+    if (selectedIndex < 0 || !scrollToSelectionRef.current) {
       return;
     }
     scrollToSelectionRef.current = false;
-    cardRefs.current.get(selectedId)?.scrollIntoView({ block: "nearest" });
-  }, [scrollToSelectionRef, selectedId]);
+    virtualizer.scrollToIndex(selectedIndex, { align: "auto" });
+  }, [scrollToSelectionRef, selectedIndex, virtualizer]);
+
+  const lastVirtualIndex = virtualizer.getVirtualItems().at(-1)?.index ?? -1;
+
+  useEffect(() => {
+    if (
+      shouldPrefetchNextPage(lastVirtualIndex, matches.length) &&
+      jobsQuery.hasNextPage &&
+      !jobsQuery.isFetchingNextPage
+    ) {
+      void jobsQuery.fetchNextPage();
+    }
+  }, [jobsQuery, lastVirtualIndex, matches.length]);
 
   useEffect(() => {
     registerHideHandler(() => {
@@ -131,23 +162,32 @@ export function JobList({
           </Button>
         </div>
       ) : null}
-      {matches.map((match, index) => (
-        <div key={match.job.id} className="flex flex-col gap-2">
-          <JobCard
-            ref={(node) => {
-              if (node) {
-                cardRefs.current.set(match.job.id, node);
-              } else {
-                cardRefs.current.delete(match.job.id);
-              }
-            }}
-            match={match}
-            focused={index === selectedIndex}
-            onFocus={() => onSelectedIdChange(match.job.id)}
-          />
-          {detailId === match.job.id ? <JobDetail jobId={match.job.id} /> : null}
+      <div ref={listRef}>
+        <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
+          {virtualizer.getVirtualItems().map((virtualRow) => {
+            const match = matches[virtualRow.index];
+            if (!match) {
+              return null;
+            }
+            return (
+              <div
+                key={match.job.id}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                className="absolute top-0 left-0 w-full pb-3"
+                style={{ transform: `translateY(${virtualRow.start - scrollMargin}px)` }}
+              >
+                <JobCard
+                  match={match}
+                  focused={virtualRow.index === selectedIndex}
+                  onFocus={() => onSelectedIdChange(match.job.id)}
+                />
+                {detailId === match.job.id ? <JobDetail jobId={match.job.id} /> : null}
+              </div>
+            );
+          })}
         </div>
-      ))}
+      </div>
       <div ref={loadMoreRef} className="h-4" />
       {jobsQuery.hasNextPage ? (
         <Button
