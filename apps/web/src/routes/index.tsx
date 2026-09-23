@@ -1,12 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { JobList } from "@/components/JobList.js";
-import { useShortcutHandler } from "@/lib/use-shortcuts.js";
 import { TagBar } from "@/components/TagBar.js";
 import { validateHomeSearch } from "@/lib/home-search.js";
 import { openSelectedJob } from "@/lib/job-navigation.js";
 import { useJobsSearch, useRefreshJobs } from "@/lib/queries.js";
+import {
+  useRegisterShortcutClose,
+  useSetShortcutScope,
+  useShortcutHandler,
+} from "@/lib/use-shortcuts.js";
 
 export const Route = createFileRoute("/")({
   validateSearch: validateHomeSearch,
@@ -14,12 +18,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { q, selected } = Route.useSearch();
+  const { q, selected, detail } = Route.useSearch();
   const navigate = useNavigate({ from: "/" });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hideHandlerRef = useRef<(() => void) | null>(null);
   const scrollToSelectionRef = useRef(false);
   const refreshJobs = useRefreshJobs();
+  const setShortcutScope = useSetShortcutScope();
 
   const jobsQuery = useJobsSearch({ ...(q ? { q } : {}), limit: 20 });
   const matches = useMemo(
@@ -43,6 +48,27 @@ function Home() {
     },
     [navigate],
   );
+
+  const setDetailId = useCallback(
+    (id: string | undefined) => {
+      void navigate({
+        search: (prev) => {
+          const next = { ...prev };
+          if (id) {
+            next.detail = id;
+          } else {
+            delete next.detail;
+          }
+          return next;
+        },
+      });
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    setShortcutScope(detail ? "detail" : "list");
+  }, [detail, setShortcutScope]);
 
   const moveSelection = useCallback(
     (delta: number) => {
@@ -77,10 +103,24 @@ function Home() {
     moveSelection(-1);
   });
   useShortcutHandler("open", () => {
+    if (!selected) {
+      return;
+    }
+    setDetailId(detail === selected ? undefined : selected);
+  });
+  useShortcutHandler("original", () => {
     openSelectedJob(matches, selected);
   });
   useShortcutHandler("hide", () => {
     hideHandlerRef.current?.();
+  });
+  useRegisterShortcutClose(() => {
+    if (!detail) {
+      return false;
+    }
+    setDetailId(undefined);
+    document.querySelector<HTMLElement>(`[data-job-id="${CSS.escape(detail)}"]`)?.focus();
+    return true;
   });
 
   return (
@@ -89,6 +129,7 @@ function Home() {
       <JobList
         q={q}
         selectedId={selected}
+        detailId={detail}
         onSelectedIdChange={setSelectedId}
         scrollToSelectionRef={scrollToSelectionRef}
         onHideJob={() => {

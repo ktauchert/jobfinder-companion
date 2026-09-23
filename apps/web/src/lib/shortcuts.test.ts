@@ -38,6 +38,15 @@ describe("resolveShortcut", () => {
     ).toBe("close");
   });
 
+  it("keeps list navigation when the detail scope is active", () => {
+    expect(
+      resolveShortcut({ key: "j", inTextField: false, activeScope: "detail", helpOpen: false })?.id,
+    ).toBe("down");
+    expect(
+      resolveShortcut({ key: "o", inTextField: false, activeScope: "detail", helpOpen: false })?.id,
+    ).toBe("original");
+  });
+
   it("keeps global ingest available in the list scope", () => {
     expect(
       resolveShortcut({ key: "i", inTextField: false, activeScope: "list", helpOpen: false })?.id,

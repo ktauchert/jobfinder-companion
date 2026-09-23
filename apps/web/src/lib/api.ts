@@ -1,5 +1,6 @@
 import type {
   HideJobResponse,
+  JobResponse,
   IngestionStatusResponse,
   ProfileResponse,
   SearchJobsQuery,
@@ -88,6 +89,10 @@ export function updateProfile(body: UpdateProfileRequest): Promise<ProfileRespon
     method: "PUT",
     body: JSON.stringify(body),
   });
+}
+
+export function fetchJob(id: string): Promise<JobResponse> {
+  return apiFetch(`/api/jobs/${id}`);
 }
 
 export function fetchJobs(query: SearchJobsQuery = {}): Promise<SearchJobsResponse> {

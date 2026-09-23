@@ -11,6 +11,12 @@ export const SHORTCUTS = [
   { id: "up", key: "k", label: "k", description: "Up", scope: "list" },
   { id: "open", key: "Enter", label: "Enter", description: "Open", scope: "list" },
   { id: "hide", key: "h", label: "h", description: "Hide", scope: "list" },
+  { id: "original", key: "o", label: "o", description: "Original", scope: "list" },
+  { id: "down", key: "j", label: "j", description: "Down", scope: "detail" },
+  { id: "up", key: "k", label: "k", description: "Up", scope: "detail" },
+  { id: "open", key: "Enter", label: "Enter", description: "Open", scope: "detail" },
+  { id: "hide", key: "h", label: "h", description: "Hide", scope: "detail" },
+  { id: "original", key: "o", label: "o", description: "Original", scope: "detail" },
   { id: "weight-down", key: "[", label: "[", description: "Less similarity", scope: "tagbar" },
   { id: "weight-up", key: "]", label: "]", description: "More similarity", scope: "tagbar" },
   { id: "age-down", key: ",", label: ",", description: "Shorter age", scope: "tagbar" },
@@ -38,7 +44,10 @@ export function resolveShortcut(event: ShortcutEvent): Shortcut | null {
     return null;
   }
 
-  const shortcut = SHORTCUTS.find((entry) => entry.key === event.key);
+  const matches = SHORTCUTS.filter((entry) => entry.key === event.key);
+  const shortcut =
+    matches.find((entry) => entry.scope === event.activeScope) ??
+    matches.find((entry) => entry.scope === "global");
   if (!shortcut) {
     return null;
   }
@@ -48,10 +57,6 @@ export function resolveShortcut(event: ShortcutEvent): Shortcut | null {
   }
 
   if (event.inTextField && shortcut.id !== "close") {
-    return null;
-  }
-
-  if (shortcut.scope !== "global" && shortcut.scope !== event.activeScope) {
     return null;
   }
 

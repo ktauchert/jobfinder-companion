@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 
 import { JobCard } from "@/components/JobCard.js";
+import { JobDetail } from "@/components/JobDetail.js";
 import { Button } from "@/components/ui/button.js";
 import { useHideJobWithUndo, useJobsSearch } from "@/lib/queries.js";
 
 interface JobListProps {
   q: string | undefined;
   selectedId: string | undefined;
+  detailId: string | undefined;
   onSelectedIdChange: (id: string | undefined) => void;
   onHideJob: () => void;
   registerHideHandler: (handler: (() => void) | null) => void;
@@ -17,6 +19,7 @@ interface JobListProps {
 export function JobList({
   q,
   selectedId,
+  detailId,
   onSelectedIdChange,
   onHideJob,
   registerHideHandler,
@@ -103,19 +106,21 @@ export function JobList({
   return (
     <div className="flex flex-col gap-3 px-4 py-4">
       {matches.map((match, index) => (
-        <JobCard
-          key={match.job.id}
-          ref={(node) => {
-            if (node) {
-              cardRefs.current.set(match.job.id, node);
-            } else {
-              cardRefs.current.delete(match.job.id);
-            }
-          }}
-          match={match}
-          focused={index === selectedIndex}
-          onFocus={() => onSelectedIdChange(match.job.id)}
-        />
+        <div key={match.job.id} className="flex flex-col gap-2">
+          <JobCard
+            ref={(node) => {
+              if (node) {
+                cardRefs.current.set(match.job.id, node);
+              } else {
+                cardRefs.current.delete(match.job.id);
+              }
+            }}
+            match={match}
+            focused={index === selectedIndex}
+            onFocus={() => onSelectedIdChange(match.job.id)}
+          />
+          {detailId === match.job.id ? <JobDetail jobId={match.job.id} /> : null}
+        </div>
       ))}
       <div ref={loadMoreRef} className="h-4" />
       {jobsQuery.hasNextPage ? (
