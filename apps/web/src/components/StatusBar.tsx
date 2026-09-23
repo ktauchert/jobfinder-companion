@@ -27,6 +27,7 @@ export function StatusBar({
   return (
     <section
       aria-label="Ingestion status"
+      aria-live="polite"
       tabIndex={0}
       className="min-h-10 border-b px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
       onKeyDown={(event) => {
