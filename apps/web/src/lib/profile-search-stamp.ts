@@ -7,5 +7,5 @@ export function profileSearchStamp(profile: Profile | undefined): string {
   }
   const must = [...profile.mustHaveSkills].sort().join(",");
   const exclude = [...profile.excludeSkills].sort().join(",");
-  return `${profile.updatedAt}|must:${must}|exclude:${exclude}`;
+  return `${profile.updatedAt}|must:${must}|exclude:${exclude}|w:${profile.similarityWeight}|age:${profile.maxAgeDays ?? ""}`;
 }

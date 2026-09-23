@@ -77,6 +77,8 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
         remoteTypes: (row.remoteTypes ?? []) as Profile["remoteTypes"],
         countryCodes: row.countryCodes ?? [],
         minSalary: row.minSalary,
+        similarityWeight: row.similarityWeight,
+        maxAgeDays: row.maxAgeDays,
       };
     },
 
@@ -94,6 +96,8 @@ export function createDrizzleProfileRepositoryFromDb(db: Database): ProfileRepos
           remoteTypes: input.remoteTypes,
           countryCodes: input.countryCodes,
           minSalary: input.minSalary,
+          similarityWeight: input.similarityWeight,
+          maxAgeDays: input.maxAgeDays,
           updatedAt: new Date(),
         })
         .where(eq(profiles.id, current.id))

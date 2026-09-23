@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/command.js";
 import { Popover, PopoverContent, PopoverAnchor } from "@/components/ui/popover.js";
 import type { HomeSearch } from "@/lib/home-search.js";
+import { stepMaxAgeDays, stepSimilarityWeight } from "@/lib/profile-tuning.js";
 import { useProfile, useSkillsSearch, useUpdateProfile } from "@/lib/queries.js";
+import { useShortcutHandler } from "@/lib/use-shortcuts.js";
 import { cn } from "@/lib/utils.js";
 
 interface TagBarProps {
@@ -26,6 +28,8 @@ interface ProfileDraft {
   mustHaveSkills: string[];
   excludeSkills: string[];
   ingestQueries: string[];
+  similarityWeight: number;
+  maxAgeDays: number | null;
 }
 
 export function TagBar({ q, searchInputRef }: TagBarProps) {
@@ -86,6 +90,8 @@ function TagBarLoaded({
   const mustHaveSkills = draft?.mustHaveSkills ?? profile?.mustHaveSkills ?? [];
   const excludeSkills = draft?.excludeSkills ?? profile?.excludeSkills ?? [];
   const ingestQueries = draft?.ingestQueries ?? profile?.ingestQueries ?? [];
+  const similarityWeight = draft?.similarityWeight ?? profile?.similarityWeight ?? 0.6;
+  const maxAgeDays = draft?.maxAgeDays ?? profile?.maxAgeDays ?? null;
 
   useEffect(() => {
     const currentProfile = profileRef.current;
@@ -94,17 +100,9 @@ function TagBarLoaded({
     }
 
     const handle = window.setTimeout(() => {
-      mutate(
-        buildProfileInput(
-          currentProfile,
-          draft.mustHaveSkills,
-          draft.excludeSkills,
-          draft.ingestQueries,
-        ),
-        {
-          onSuccess: () => setDraft(null),
-        },
-      );
+      mutate(buildProfileInput(currentProfile, draft), {
+        onSuccess: () => setDraft(null),
+      });
     }, 400);
 
     return () => window.clearTimeout(handle);
@@ -114,6 +112,20 @@ function TagBarLoaded({
     setDraft(next);
   };
   const tagbarScope = useShortcutScope("tagbar");
+  const tuning = { mustHaveSkills, excludeSkills, ingestQueries, similarityWeight, maxAgeDays };
+
+  useShortcutHandler("weight-down", () => {
+    updateDraft({ ...tuning, similarityWeight: stepSimilarityWeight(similarityWeight, -1) });
+  });
+  useShortcutHandler("weight-up", () => {
+    updateDraft({ ...tuning, similarityWeight: stepSimilarityWeight(similarityWeight, 1) });
+  });
+  useShortcutHandler("age-down", () => {
+    updateDraft({ ...tuning, maxAgeDays: stepMaxAgeDays(maxAgeDays, -1) });
+  });
+  useShortcutHandler("age-up", () => {
+    updateDraft({ ...tuning, maxAgeDays: stepMaxAgeDays(maxAgeDays, 1) });
+  });
 
   return (
     <section
@@ -133,11 +145,25 @@ function TagBarLoaded({
           onChange={(event) => onSearchChange(event.target.value)}
         />
       </div>
+      <div
+        tabIndex={0}
+        className="flex items-center gap-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <span>Similarity {Math.round(similarityWeight * 100)}%</span>
+        <span>Age {maxAgeDays == null ? "any" : `${maxAgeDays}d`}</span>
+        <span className="text-xs text-muted-foreground">[ ] weight · , . age</span>
+      </div>
       <SimpleTagField
         label="Ingest"
         tags={ingestQueries}
         onTagsChange={(ingestQueries) =>
-          updateDraft({ mustHaveSkills, excludeSkills, ingestQueries })
+          updateDraft({
+            mustHaveSkills,
+            excludeSkills,
+            ingestQueries,
+            similarityWeight,
+            maxAgeDays,
+          })
         }
         placeholder="Role search term (e.g. softwareentwickler)"
       />
@@ -146,7 +172,13 @@ function TagBarLoaded({
         tags={mustHaveSkills}
         novelSkills={novelSkills}
         onTagsChange={(mustHaveSkills) =>
-          updateDraft({ mustHaveSkills, excludeSkills, ingestQueries })
+          updateDraft({
+            mustHaveSkills,
+            excludeSkills,
+            ingestQueries,
+            similarityWeight,
+            maxAgeDays,
+          })
         }
         onMarkNovel={(tag) => setNovelSkills((current) => new Set(current).add(tag))}
         placeholder="Must-have skill"
@@ -156,7 +188,13 @@ function TagBarLoaded({
         tags={excludeSkills}
         novelSkills={novelSkills}
         onTagsChange={(excludeSkills) =>
-          updateDraft({ mustHaveSkills, excludeSkills, ingestQueries })
+          updateDraft({
+            mustHaveSkills,
+            excludeSkills,
+            ingestQueries,
+            similarityWeight,
+            maxAgeDays,
+          })
         }
         onMarkNovel={(tag) => setNovelSkills((current) => new Set(current).add(tag))}
         placeholder="Exclude skill"
@@ -361,20 +399,17 @@ function SimpleTagField({ label, tags, onTagsChange, placeholder }: SimpleTagFie
   );
 }
 
-function buildProfileInput(
-  profile: Profile,
-  mustHaveSkills: string[],
-  excludeSkills: string[],
-  ingestQueries: string[],
-): UpdateProfileRequest {
+function buildProfileInput(profile: Profile, draft: ProfileDraft): UpdateProfileRequest {
   return {
     name: profile.name,
-    mustHaveSkills,
-    excludeSkills,
+    mustHaveSkills: draft.mustHaveSkills,
+    excludeSkills: draft.excludeSkills,
     summary: profile.summary,
-    ingestQueries,
+    ingestQueries: draft.ingestQueries,
     remoteTypes: profile.remoteTypes,
     countryCodes: profile.countryCodes,
     minSalary: profile.minSalary,
+    similarityWeight: draft.similarityWeight,
+    maxAgeDays: draft.maxAgeDays,
   };
 }

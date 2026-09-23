@@ -10,6 +10,18 @@ describe("computeMatchScore", () => {
     expect(computeMatchScore({ similarity: 0, mustHaveCoverage: 1 })).toBe(40);
   });
 
+  it("uses the profile similarity weight and its complement for coverage", () => {
+    expect(computeMatchScore({ similarity: 1, mustHaveCoverage: 0, similarityWeight: 1 })).toBe(
+      100,
+    );
+    expect(computeMatchScore({ similarity: 0, mustHaveCoverage: 1, similarityWeight: 0 })).toBe(
+      100,
+    );
+    expect(computeMatchScore({ similarity: 1, mustHaveCoverage: 0, similarityWeight: 0.25 })).toBe(
+      25,
+    );
+  });
+
   it("ranks a must-have match above equal-similarity job without coverage", () => {
     const withMustHave = computeMatchScore({ similarity: 0.8, mustHaveCoverage: 1 });
     const without = computeMatchScore({ similarity: 0.8, mustHaveCoverage: 0 });

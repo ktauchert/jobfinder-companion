@@ -19,6 +19,10 @@ export interface Profile {
   remoteTypes: RemoteType[];
   countryCodes: string[];
   minSalary: number | null;
+  /** 0..1. Coverage weight is `1 - similarityWeight`. */
+  similarityWeight: number;
+  /** Null means no age limit. */
+  maxAgeDays: number | null;
   /** Timestamp of the embedding currently stored for this profile. */
   embeddedAt: string | null;
   createdAt: string;
@@ -35,6 +39,8 @@ export type ProfileInput = Pick<
   | "remoteTypes"
   | "countryCodes"
   | "minSalary"
+  | "similarityWeight"
+  | "maxAgeDays"
 >;
 
 /** BullMQ queue for async profile embedding after a save. */

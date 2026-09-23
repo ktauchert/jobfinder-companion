@@ -13,6 +13,8 @@ const baseProfile: Profile = {
   remoteTypes: [],
   countryCodes: [],
   minSalary: null,
+  similarityWeight: 0.6,
+  maxAgeDays: null,
   embeddedAt: null,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
@@ -25,6 +27,12 @@ describe("profileSearchStamp", () => {
       ...baseProfile,
       mustHaveSkills: ["react"],
     });
+    expect(after).not.toBe(before);
+  });
+
+  it("changes when the similarity weight changes", () => {
+    const before = profileSearchStamp(baseProfile);
+    const after = profileSearchStamp({ ...baseProfile, similarityWeight: 1 });
     expect(after).not.toBe(before);
   });
 

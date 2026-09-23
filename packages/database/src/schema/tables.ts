@@ -165,6 +165,9 @@ export const profiles = pgTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     minSalary: integer("min_salary"),
+    /** Blend of vector similarity vs must-have coverage. Coverage weight is the complement. */
+    similarityWeight: real("similarity_weight").notNull().default(0.6),
+    maxAgeDays: integer("max_age_days"),
     embedding: embeddingColumn("embedding"),
     embeddedAt: timestamp("embedded_at", { withTimezone: true, mode: "date" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),

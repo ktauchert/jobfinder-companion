@@ -17,4 +17,21 @@ describe("profileInputSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("rejects a similarity weight outside 0..1", () => {
+    const result = profileInputSchema.safeParse({
+      name: "default",
+      mustHaveSkills: [],
+      excludeSkills: [],
+      summary: "",
+      ingestQueries: [],
+      remoteTypes: [],
+      countryCodes: [],
+      minSalary: null,
+      similarityWeight: 1.5,
+      maxAgeDays: null,
+    });
+
+    expect(result.success).toBe(false);
+  });
 });

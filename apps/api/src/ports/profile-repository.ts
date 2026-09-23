@@ -13,6 +13,8 @@ export interface ProfileSearchContext {
   remoteTypes: RemoteType[];
   countryCodes: string[];
   minSalary: number | null;
+  similarityWeight: number;
+  maxAgeDays: number | null;
 }
 
 export interface ProfileRepository {
