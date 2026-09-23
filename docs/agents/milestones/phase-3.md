@@ -10,7 +10,7 @@ Row order is the working sequence. Status rules: `docs/agents/cloud-ledger.md`.
 | #50   | Profile-driven ingest queries: multi-term role search                    | #62 | ready-to-close |
 | #29   | Collapsible status bar with per-source progress and Stop                 | #63 | ready-to-close |
 | #30   | Inline job detail panel in Main (no route change, no sidebar)            | #65 | ready-to-close |
-| #31   | Empty, loading, error and unconfigured-source states                     |     | open           |
+| #31   | Empty, loading, error and unconfigured-source states                     | #66 | ready-to-close |
 | #32   | Tunable score weights and maxAgeDays in the profile                      | #64 | ready-to-close |
 | #33   | Dark mode, focus rings, reduced motion, accessibility pass               |     | open           |
 | #34   | Performance: virtualised job list, query prefetching, optimistic updates |     | open           |

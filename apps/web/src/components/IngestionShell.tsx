@@ -1,3 +1,4 @@
+import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { useShortcutHandler } from "@/lib/use-shortcuts.js";
@@ -16,6 +17,15 @@ export function IngestionShell({ children }: IngestionShellProps) {
   const start = useStartIngestion();
   const stop = useStopIngestion();
   const isActive = Boolean(status?.active);
+  const preview = useRouterState({
+    select: (routerState) => {
+      if (!import.meta.env.DEV) {
+        return undefined;
+      }
+      const search = routerState.location.search as { states?: string };
+      return search.states;
+    },
+  });
 
   useShortcutHandler("ingest", () => {
     if (!isActive && !start.isPending) {
@@ -35,6 +45,7 @@ export function IngestionShell({ children }: IngestionShellProps) {
         progress={progress}
         canStop={isActive && !stop.isPending}
         onStop={() => stop.mutate()}
+        previewDisconnected={preview === "sse"}
       />
       {children}
     </>

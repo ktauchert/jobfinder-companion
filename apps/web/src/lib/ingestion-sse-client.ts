@@ -1,5 +1,7 @@
 import type { IngestionEvent } from "@jobfinder/types";
 
+import { setSseConnectionState } from "./sse-connection.js";
+
 const SSE_URL = "/api/ingest/events";
 /** Survives React Strict Mode unmount/remount without opening a new stream. */
 const DISCONNECT_GRACE_MS = 2_000;
@@ -52,6 +54,7 @@ function ensureConnected(): void {
 
   source.onopen = () => {
     backoffMs = 1_000;
+    setSseConnectionState("open");
   };
 
   source.onmessage = (message) => {
@@ -66,6 +69,7 @@ function ensureConnected(): void {
   };
 
   source.onerror = () => {
+    setSseConnectionState("disconnected");
     teardownConnection();
     if (listeners.size === 0) {
       return;
