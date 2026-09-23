@@ -187,6 +187,13 @@ See `docs/agent-skills.md` for which skills fit this project and how.
 Issues live in GitHub Issues (`ktauchert/jobfinder-companion`), operated via
 `gh`. See `docs/agents/issue-tracker.md`.
 
+### Cloud ledger
+
+A cloud agent with read-only `gh` records issue completion in the milestone
+ledger. Read `docs/agents/cloud-ledger.md` when starting a milestone, updating
+a ledger row, or closing issues a cloud agent marked ready. GitHub stays the
+issue tracker.
+
 ### Triage labels
 
 The five default triage labels (`needs-triage`, `needs-info`,
