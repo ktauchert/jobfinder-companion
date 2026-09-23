@@ -3,12 +3,15 @@ import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { JobCard } from "@/components/JobCard.js";
 import { JobDetail } from "@/components/JobDetail.js";
 import { Button } from "@/components/ui/button.js";
-import { useHideJobWithUndo, useJobsSearch } from "@/lib/queries.js";
+import { emptyListReason, filteredEmptyMessage } from "@/lib/empty-list-reason.js";
+import { useHideJobWithUndo, useJobsSearch, useProfile } from "@/lib/queries.js";
 
 interface JobListProps {
   q: string | undefined;
   selectedId: string | undefined;
   detailId: string | undefined;
+  /** Dev-only state preview: empty, filtered, or error. */
+  preview?: string | undefined;
   onSelectedIdChange: (id: string | undefined) => void;
   onHideJob: () => void;
   registerHideHandler: (handler: (() => void) | null) => void;
@@ -20,12 +23,14 @@ export function JobList({
   q,
   selectedId,
   detailId,
+  preview,
   onSelectedIdChange,
   onHideJob,
   registerHideHandler,
   scrollToSelectionRef,
 }: JobListProps) {
   const jobsQuery = useJobsSearch({ ...(q ? { q } : {}), limit: 20 });
+  const profileQuery = useProfile();
   const hideJob = useHideJobWithUndo();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef(new Map<string, HTMLElement>());
@@ -84,27 +89,48 @@ export function JobList({
     return () => observer.disconnect();
   }, [jobsQuery]);
 
-  if (jobsQuery.isLoading) {
+  const profile = profileQuery.data?.profile;
+  const filters = {
+    q,
+    mustHaveSkills: profile?.mustHaveSkills ?? [],
+    excludeSkills: profile?.excludeSkills ?? [],
+  };
+  const showError = preview === "error" || jobsQuery.isError;
+  const showEmpty = preview === "empty" || preview === "filtered" || matches.length === 0;
+  const reason =
+    preview === "filtered" ? "filtered" : preview === "empty" ? "corpus" : emptyListReason(filters);
+
+  if (jobsQuery.isLoading && matches.length === 0 && preview == null) {
     return <p className="px-4 py-6 text-sm text-muted-foreground">Loading jobs…</p>;
   }
 
-  if (jobsQuery.isError) {
-    return <p className="px-4 py-6 text-sm text-destructive">Failed to load jobs.</p>;
-  }
-
-  if (matches.length === 0) {
+  if (showEmpty && !showError) {
     return (
       <div className="flex flex-col items-start gap-3 px-4 py-8">
-        <p className="text-sm text-muted-foreground">
-          No matching jobs yet. Press <kbd className="rounded border px-1">i</kbd> or use Run in the
-          header to ingest jobs.
-        </p>
+        {reason === "corpus" ? (
+          <p className="text-sm text-muted-foreground">
+            No jobs yet. Press <kbd className="rounded border px-1">i</kbd> to ingest.
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground">{filteredEmptyMessage(filters)}</p>
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3 px-4 py-4">
+      {showError ? (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive"
+        >
+          <span>The API is unreachable.</span>
+          <Button size="sm" variant="outline" onClick={() => void jobsQuery.refetch()}>
+            Retry
+          </Button>
+        </div>
+      ) : null}
       {matches.map((match, index) => (
         <div key={match.job.id} className="flex flex-col gap-2">
           <JobCard

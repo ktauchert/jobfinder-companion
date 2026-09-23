@@ -3,16 +3,25 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button.js";
 import type { IngestionProgressView, PipelineRow } from "@/lib/ingestion-progress.js";
 import { useIngestionEvents } from "@/lib/use-ingestion-events.js";
+import { useSseConnection } from "@/lib/use-sse-connection.js";
 
 interface StatusBarProps {
   progress: IngestionProgressView;
   canStop: boolean;
   onStop: () => void;
+  previewDisconnected?: boolean;
 }
 
-export function StatusBar({ progress, canStop, onStop }: StatusBarProps) {
+export function StatusBar({
+  progress,
+  canStop,
+  onStop,
+  previewDisconnected = false,
+}: StatusBarProps) {
   const [expanded, setExpanded] = useState(false);
   const { dismissSourceFailure } = useIngestionEvents();
+  const connection = useSseConnection();
+  const livePaused = previewDisconnected || connection === "disconnected";
   const showDetails = expanded && progress.visible;
 
   return (
@@ -41,6 +50,7 @@ export function StatusBar({ progress, canStop, onStop }: StatusBarProps) {
       ) : (
         <p className="sr-only">Ingestion idle</p>
       )}
+      {livePaused ? <p className="text-xs text-muted-foreground">Live updates paused</p> : null}
 
       {progress.sourceFailures.map((failure) => (
         <div

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { q, selected, detail } = Route.useSearch();
+  const { q, selected, detail, states } = Route.useSearch();
   const navigate = useNavigate({ from: "/" });
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hideHandlerRef = useRef<(() => void) | null>(null);
@@ -130,6 +130,7 @@ function Home() {
         q={q}
         selectedId={selected}
         detailId={detail}
+        preview={states}
         onSelectedIdChange={setSelectedId}
         scrollToSelectionRef={scrollToSelectionRef}
         onHideJob={() => {
