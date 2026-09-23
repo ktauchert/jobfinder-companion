@@ -41,5 +41,21 @@ describe("ingestion progress view", () => {
       active: true,
     });
     expect(view.rows[2]).toMatchObject({ stage: "embed", done: 5, active: true });
+    expect(view.collapsedSummary).toBe("Fetch 251/251 · Extract 12/251 · Embed 5/251");
+  });
+
+  it("stays visible while a source failure is waiting to be dismissed", () => {
+    const view = buildIngestionProgress({
+      active: false,
+      stats: null,
+      sources: {},
+      lastMessage: null,
+      summary: null,
+      sourceFailures: [{ source: "ba", message: "timeout" }],
+    });
+
+    expect(view.visible).toBe(true);
+    expect(view.sourceFailures).toEqual([{ source: "ba", message: "timeout" }]);
+    expect(view.collapsedSummary).toBe("ba failed: timeout");
   });
 });

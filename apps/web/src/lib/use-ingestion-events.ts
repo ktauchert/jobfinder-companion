@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
-import { IngestionEventsContext, type IngestionUiState } from "./ingestion-events-context.js";
+import { IngestionEventsContext } from "./ingestion-events-context.js";
 
-export function useIngestionEvents(): IngestionUiState {
+export function useIngestionEvents() {
   return useContext(IngestionEventsContext);
 }

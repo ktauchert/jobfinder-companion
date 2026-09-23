@@ -22,6 +22,7 @@ export function useIngestionProgress(): IngestionProgressView {
       sources: events.sources,
       lastMessage: events.lastMessage,
       summary: events.summary,
+      sourceFailures: events.sourceFailures,
     });
   }, [events, status]);
 }

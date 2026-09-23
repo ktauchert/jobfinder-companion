@@ -1,45 +1,78 @@
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button.js";
 import type { IngestionProgressView, PipelineRow } from "@/lib/ingestion-progress.js";
+import { useIngestionEvents } from "@/lib/use-ingestion-events.js";
 
 interface StatusBarProps {
   progress: IngestionProgressView;
+  canStop: boolean;
+  onStop: () => void;
 }
 
-export function StatusBar({ progress }: StatusBarProps) {
-  if (!progress.visible) {
-    return null;
-  }
+export function StatusBar({ progress, canStop, onStop }: StatusBarProps) {
+  const [expanded, setExpanded] = useState(false);
+  const { dismissSourceFailure } = useIngestionEvents();
+  const showDetails = expanded && progress.visible;
 
   return (
-    <div className="space-y-1.5 border-b bg-muted/30 px-4 py-2 text-sm">
-      <div className="font-medium text-muted-foreground">
-        Ingestion {progress.active ? "· running" : "· finished"}
-      </div>
+    <section
+      aria-label="Ingestion status"
+      tabIndex={0}
+      className="min-h-10 border-b px-4 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      onKeyDown={(event) => {
+        if (event.key !== " " || event.target !== event.currentTarget) {
+          return;
+        }
+        event.preventDefault();
+        setExpanded((value) => !value);
+      }}
+    >
+      {progress.visible ? (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-muted-foreground">
+            {progress.active ? "Running · " : ""}
+            {progress.collapsedSummary}
+          </p>
+          <Button size="sm" variant="outline" disabled={!canStop} onClick={onStop}>
+            Stop
+          </Button>
+        </div>
+      ) : (
+        <p className="sr-only">Ingestion idle</p>
+      )}
 
-      {progress.rows.map((row) => (
-        <PipelineRowView key={row.stage} row={row} />
-      ))}
-
-      {progress.fetchSources.map((line) => (
-        <div key={line.source} className="font-mono text-xs text-muted-foreground">
-          {line.source.toUpperCase()} · {line.message}
+      {progress.sourceFailures.map((failure) => (
+        <div
+          key={failure.source}
+          className="mt-1 flex items-center justify-between gap-3 text-destructive"
+        >
+          <span>
+            {failure.source.toUpperCase()} failed: {failure.message}
+          </span>
+          <Button size="sm" variant="ghost" onClick={() => dismissSourceFailure(failure.source)}>
+            Dismiss
+          </Button>
         </div>
       ))}
 
-      {progress.lastMessage ? (
-        <div className="text-xs text-muted-foreground">{progress.lastMessage}</div>
-      ) : null}
-
-      {progress.active ? (
-        <div className="text-xs text-muted-foreground">
-          Pending enrich: {progress.pendingEnrich}
-          {progress.failed > 0 ? ` · Failed: ${progress.failed}` : ""}
+      {showDetails ? (
+        <div className="mt-2 space-y-1.5">
+          {progress.rows.map((row) => (
+            <PipelineRowView key={row.stage} row={row} />
+          ))}
+          {progress.fetchSources.map((line) => (
+            <div key={line.source} className="font-mono text-xs text-muted-foreground">
+              {line.source.toUpperCase()} · {line.stage} · {line.done}
+              {line.total !== null ? `/${line.total}` : ""} · {line.message}
+            </div>
+          ))}
+          {progress.lastMessage ? (
+            <div className="text-xs text-muted-foreground">{progress.lastMessage}</div>
+          ) : null}
         </div>
       ) : null}
-
-      {progress.summary ? (
-        <div className="text-muted-foreground">Run: {progress.summary}</div>
-      ) : null}
-    </div>
+    </section>
   );
 }
 
