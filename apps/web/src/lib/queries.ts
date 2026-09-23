@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import {
   fetchIngestionStatus,
+  fetchJob,
   fetchJobs,
   fetchProfile,
   fetchSources,
@@ -93,6 +94,19 @@ export function useSkillsSearch(q: string, enabled: boolean) {
     queryFn: () => searchSkills(q),
     enabled: enabled && q.trim().length > 0,
     staleTime: 60_000,
+  });
+}
+
+export function useJob(id: string | undefined) {
+  return useQuery({
+    queryKey: ["jobs", "detail", id],
+    queryFn: () => {
+      if (!id) {
+        throw new Error("Job id is required");
+      }
+      return fetchJob(id);
+    },
+    enabled: Boolean(id),
   });
 }
 

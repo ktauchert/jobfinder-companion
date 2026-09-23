@@ -6,6 +6,8 @@ export interface ShortcutContextValue {
   activeScope: ShortcutScope;
   setActiveScope: (scope: ShortcutScope) => void;
   register: (id: ShortcutId, handler: () => void) => () => void;
+  /** Return true when the handler consumed Esc. */
+  registerClose: (handler: () => boolean) => () => void;
 }
 
 export const ShortcutContext = createContext<ShortcutContextValue | null>(null);
@@ -47,4 +49,19 @@ export function useShortcutScope(scope: ShortcutScope) {
 
 export function useActiveShortcutScope(): ShortcutScope {
   return useShortcutContext().activeScope;
+}
+
+export function useSetShortcutScope(): (scope: ShortcutScope) => void {
+  return useShortcutContext().setActiveScope;
+}
+
+export function useRegisterShortcutClose(handler: () => boolean) {
+  const { registerClose } = useShortcutContext();
+  const handlerRef = useRef(handler);
+
+  useEffect(() => {
+    handlerRef.current = handler;
+  }, [handler]);
+
+  useEffect(() => registerClose(() => handlerRef.current()), [registerClose]);
 }

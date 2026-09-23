@@ -23,6 +23,8 @@ export function ShortcutProvider({ children }: ShortcutProviderProps) {
   const [activeScope, setActiveScope] = useState<ShortcutScope>("list");
   const [helpOpen, setHelpOpen] = useState(false);
   const handlersRef = useRef(new Map<ShortcutId, () => void>());
+  const closeHandlersRef = useRef<(() => boolean)[]>([]);
+  const helpOpenRef = useRef(helpOpen);
 
   const register = useCallback((id: ShortcutId, handler: () => void) => {
     handlersRef.current.set(id, handler);
@@ -33,13 +35,31 @@ export function ShortcutProvider({ children }: ShortcutProviderProps) {
     };
   }, []);
 
+  const registerClose = useCallback((handler: () => boolean) => {
+    closeHandlersRef.current.push(handler);
+    return () => {
+      closeHandlersRef.current = closeHandlersRef.current.filter((entry) => entry !== handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    helpOpenRef.current = helpOpen;
+  }, [helpOpen]);
+
   useEffect(() => {
     return register("help", () => setHelpOpen(true));
   }, [register]);
 
   useEffect(() => {
     return register("close", () => {
-      setHelpOpen(false);
+      if (helpOpenRef.current) {
+        setHelpOpen(false);
+        return;
+      }
+      const consumed = closeHandlersRef.current.some((handler) => handler());
+      if (consumed) {
+        return;
+      }
       const active = document.activeElement;
       if (active instanceof HTMLElement && active !== document.body) {
         active.blur();
@@ -76,7 +96,10 @@ export function ShortcutProvider({ children }: ShortcutProviderProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeScope, helpOpen]);
 
-  const value = useMemo(() => ({ activeScope, setActiveScope, register }), [activeScope, register]);
+  const value = useMemo(
+    () => ({ activeScope, setActiveScope, register, registerClose }),
+    [activeScope, register, registerClose],
+  );
 
   return (
     <ShortcutContext.Provider value={value}>
@@ -91,7 +114,10 @@ export function ShortcutProvider({ children }: ShortcutProviderProps) {
           </DialogHeader>
           <ul className="flex flex-col gap-1.5">
             {SHORTCUTS.map((shortcut) => (
-              <li key={shortcut.id} className="flex items-center justify-between gap-4">
+              <li
+                key={`${shortcut.id}-${shortcut.scope}`}
+                className="flex items-center justify-between gap-4"
+              >
                 <span>{shortcut.description}</span>
                 <kbd className="rounded border bg-muted px-1.5 py-0.5 font-mono text-xs">
                   {shortcut.label}

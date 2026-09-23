@@ -37,6 +37,7 @@ export const JobCard = forwardRef<HTMLElement, JobCardProps>(function JobCard(
   return (
     <article
       ref={ref}
+      data-job-id={job.id}
       tabIndex={0}
       onFocus={onFocus}
       onClick={onFocus}
