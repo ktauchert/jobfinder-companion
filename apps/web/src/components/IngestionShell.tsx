@@ -1,8 +1,9 @@
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
+import { useShortcutHandler } from "@/lib/use-shortcuts.js";
 import { SourceStrip } from "@/components/SourceStrip.js";
 import { StatusBar } from "@/components/StatusBar.js";
-import { useIngestionStatus, useStartIngestion } from "@/lib/queries.js";
+import { useIngestionStatus, useStartIngestion, useStopIngestion } from "@/lib/queries.js";
 import { useIngestionProgress } from "@/lib/use-ingestion-progress.js";
 
 interface IngestionShellProps {
@@ -13,22 +14,19 @@ export function IngestionShell({ children }: IngestionShellProps) {
   const progress = useIngestionProgress();
   const { data: status } = useIngestionStatus();
   const start = useStartIngestion();
+  const stop = useStopIngestion();
   const isActive = Boolean(status?.active);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-      if (event.key === "i" && !isActive && !start.isPending) {
-        event.preventDefault();
-        start.mutate({});
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isActive, start]);
+  useShortcutHandler("ingest", () => {
+    if (!isActive && !start.isPending) {
+      start.mutate({});
+    }
+  });
+  useShortcutHandler("stop", () => {
+    if (isActive && !stop.isPending) {
+      stop.mutate();
+    }
+  });
 
   return (
     <>

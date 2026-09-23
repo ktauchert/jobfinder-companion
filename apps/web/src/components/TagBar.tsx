@@ -2,6 +2,7 @@ import type { Profile, UpdateProfileRequest } from "@jobfinder/types";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
 
+import { useShortcutScope } from "@/lib/use-shortcuts.js";
 import { Badge } from "@/components/ui/badge.js";
 import { Input } from "@/components/ui/input.js";
 import {
@@ -112,9 +113,14 @@ function TagBarLoaded({
   const updateDraft = (next: ProfileDraft) => {
     setDraft(next);
   };
+  const tagbarScope = useShortcutScope("tagbar");
 
   return (
-    <section className="flex flex-col gap-3 border-b px-4 py-3" aria-label="Search profile">
+    <section
+      className="flex flex-col gap-3 border-b px-4 py-3"
+      aria-label="Search profile"
+      {...tagbarScope}
+    >
       <div className="flex flex-col gap-1">
         <label htmlFor="job-search-q" className="text-xs font-medium text-muted-foreground">
           Search
