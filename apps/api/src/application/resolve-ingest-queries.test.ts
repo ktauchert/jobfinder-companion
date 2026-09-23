@@ -37,11 +37,18 @@ describe("resolveIngestQueries", () => {
 });
 
 describe("resolveIngestLocation", () => {
-  it("prefers request location over default", () => {
-    expect(resolveIngestLocation({ location: " Hamburg " }, "Berlin")).toBe("Hamburg");
+  it("prefers request location over the profile and the default", () => {
+    expect(
+      resolveIngestLocation({ location: " Hamburg " }, { countryCodes: ["DE"] }, "Berlin"),
+    ).toBe("Hamburg");
   });
 
-  it("uses default when request location is empty", () => {
-    expect(resolveIngestLocation({}, "Berlin")).toBe("Berlin");
+  it("uses the profile country code when the request omits location", () => {
+    expect(resolveIngestLocation({}, { countryCodes: [" de "] }, "Berlin")).toBe("de");
+  });
+
+  it("falls back to the default when the profile has no country code", () => {
+    expect(resolveIngestLocation({}, { countryCodes: ["", " "] }, "Berlin")).toBe("Berlin");
+    expect(resolveIngestLocation({}, { countryCodes: [] }, null)).toBeNull();
   });
 });

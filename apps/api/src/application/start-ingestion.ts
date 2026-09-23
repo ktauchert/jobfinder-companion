@@ -45,7 +45,7 @@ export async function startIngestion(
 
   const profile = await deps.profiles.getDefault();
   const queries = resolveIngestQueries(input, profile, deps.defaultQuery);
-  const location = resolveIngestLocation(input, deps.defaultLocation);
+  const location = resolveIngestLocation(input, profile, deps.defaultLocation);
 
   const run = await deps.runs.createRun({
     sources: selected,

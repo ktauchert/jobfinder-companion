@@ -20,12 +20,21 @@ export function resolveIngestQueries(
 
 export function resolveIngestLocation(
   input: Pick<StartIngestionRequest, "location">,
+  profile: { countryCodes: string[] },
   defaultLocation: string | null,
 ): string | null {
   const explicit = input.location?.trim();
   if (explicit) {
     return explicit;
   }
+
+  const fromProfile = profile.countryCodes
+    .map((code) => code.trim())
+    .find((code) => code.length > 0);
+  if (fromProfile) {
+    return fromProfile;
+  }
+
   return defaultLocation;
 }
 
