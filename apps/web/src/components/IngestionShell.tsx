@@ -31,7 +31,11 @@ export function IngestionShell({ children }: IngestionShellProps) {
   return (
     <>
       <SourceStrip />
-      <StatusBar progress={progress} />
+      <StatusBar
+        progress={progress}
+        canStop={isActive && !stop.isPending}
+        onStop={() => stop.mutate()}
+      />
       {children}
     </>
   );

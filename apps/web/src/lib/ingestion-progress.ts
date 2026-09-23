@@ -1,6 +1,6 @@
 import type { IngestionRunStats } from "@jobfinder/types";
 
-import type { SourceProgress } from "./ingestion-events-context.js";
+import type { SourceFailure, SourceProgress } from "./ingestion-ui-state.js";
 
 export interface PipelineRow {
   stage: "fetch" | "extract" | "embed";
@@ -19,6 +19,8 @@ export interface IngestionProgressView {
   failed: number;
   pendingEnrich: number;
   summary: string | null;
+  collapsedSummary: string;
+  sourceFailures: SourceFailure[];
 }
 
 export function mergeRunStats(
@@ -75,11 +77,13 @@ export function buildIngestionProgress(input: {
   sources: Record<string, SourceProgress>;
   lastMessage: string | null;
   summary: string | null;
+  sourceFailures?: SourceFailure[];
 }): IngestionProgressView {
   const fetchSources = Object.values(input.sources);
+  const sourceFailures = input.sourceFailures ?? [];
   const stats = input.stats;
 
-  if (!stats && fetchSources.length === 0 && !input.summary) {
+  if (!stats && fetchSources.length === 0 && !input.summary && sourceFailures.length === 0) {
     return {
       visible: false,
       active: false,
@@ -89,6 +93,8 @@ export function buildIngestionProgress(input: {
       failed: 0,
       pendingEnrich: 0,
       summary: null,
+      collapsedSummary: "",
+      sourceFailures: [],
     };
   }
 
@@ -132,8 +138,20 @@ export function buildIngestionProgress(input: {
     },
   ];
 
+  const stageSummary = rows
+    .filter((row) => row.done > 0 || row.active)
+    .map((row) => `${row.label} ${row.done}${row.total !== null ? `/${row.total}` : ""}`)
+    .join(" · ");
+  const failureSummary = sourceFailures
+    .map((failure) => `${failure.source} failed: ${failure.message}`)
+    .join(" · ");
+
   return {
-    visible: input.active || fetchSources.length > 0 || Boolean(input.summary),
+    visible:
+      input.active ||
+      fetchSources.length > 0 ||
+      Boolean(input.summary) ||
+      sourceFailures.length > 0,
     active: input.active,
     rows,
     fetchSources,
@@ -141,5 +159,16 @@ export function buildIngestionProgress(input: {
     failed: safeStats.failed,
     pendingEnrich: safeStats.pendingEnrich,
     summary: input.summary,
+    collapsedSummary: firstText(stageSummary, input.summary, failureSummary, input.lastMessage),
+    sourceFailures,
   };
+}
+
+function firstText(...parts: (string | null | undefined)[]): string {
+  for (const part of parts) {
+    if (part) {
+      return part;
+    }
+  }
+  return "";
 }
