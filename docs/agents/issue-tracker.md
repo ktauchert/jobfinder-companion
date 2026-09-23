@@ -14,6 +14,12 @@ Issues and specs for this repo live as GitHub issues in
 
 Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
 
+## Cloud agents
+
+When `gh` can read issues and pull requests but cannot edit or close them,
+record completion in the milestone ledger (`cloud-ledger.md`). A token that
+can write still creates issues with `gh issue create`.
+
 ## Repo-specific labels
 
 Every issue carries one `area:*` label (`area:api`, `area:web`, `area:database`,
