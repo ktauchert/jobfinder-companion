@@ -7,6 +7,7 @@ export const SHORTCUTS = [
   { id: "stop", key: "s", label: "s", description: "Stop", scope: "global" },
   { id: "help", key: "?", label: "?", description: "Help", scope: "global" },
   { id: "close", key: "Escape", label: "Esc", description: "Close", scope: "global" },
+  { id: "theme", key: "t", label: "t", description: "Theme", scope: "global" },
   { id: "down", key: "j", label: "j", description: "Down", scope: "list" },
   { id: "up", key: "k", label: "k", description: "Up", scope: "list" },
   { id: "open", key: "Enter", label: "Enter", description: "Open", scope: "list" },

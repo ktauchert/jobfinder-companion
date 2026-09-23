@@ -267,7 +267,7 @@ function TagField({
               ) : null}
               <button
                 type="button"
-                className="ml-1 text-muted-foreground hover:text-foreground"
+                className="ml-1 rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`Remove ${tag}`}
                 onClick={() => onTagsChange(tags.filter((entry) => entry !== tag))}
               >
@@ -369,7 +369,7 @@ function SimpleTagField({ label, tags, onTagsChange, placeholder }: SimpleTagFie
             {tag}
             <button
               type="button"
-              className="ml-1 text-muted-foreground hover:text-foreground"
+              className="ml-1 rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={`Remove ${tag}`}
               onClick={() => onTagsChange(tags.filter((entry) => entry !== tag))}
             >
