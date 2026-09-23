@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 import { JobList } from "@/components/JobList.js";
+import { useShortcutHandler } from "@/lib/use-shortcuts.js";
 import { TagBar } from "@/components/TagBar.js";
 import { validateHomeSearch } from "@/lib/home-search.js";
 import { openSelectedJob } from "@/lib/job-navigation.js";
@@ -63,51 +64,24 @@ function Home() {
     [jobsQuery, matches, selected, setSelectedId],
   );
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target;
-      const inTextField =
-        target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
-
-      if (event.key === "/" && !inTextField) {
-        event.preventDefault();
-        searchInputRef.current?.focus();
-        return;
-      }
-
-      if (inTextField) {
-        return;
-      }
-
-      if (event.key === "r") {
-        event.preventDefault();
-        void refreshJobs();
-        return;
-      }
-      if (event.key === "j") {
-        event.preventDefault();
-        moveSelection(1);
-        return;
-      }
-      if (event.key === "k") {
-        event.preventDefault();
-        moveSelection(-1);
-        return;
-      }
-      if (event.key === "Enter") {
-        event.preventDefault();
-        openSelectedJob(matches, selected);
-        return;
-      }
-      if (event.key === "h") {
-        event.preventDefault();
-        hideHandlerRef.current?.();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [matches, moveSelection, refreshJobs, selected]);
+  useShortcutHandler("search", () => {
+    searchInputRef.current?.focus();
+  });
+  useShortcutHandler("refresh", () => {
+    void refreshJobs();
+  });
+  useShortcutHandler("down", () => {
+    moveSelection(1);
+  });
+  useShortcutHandler("up", () => {
+    moveSelection(-1);
+  });
+  useShortcutHandler("open", () => {
+    openSelectedJob(matches, selected);
+  });
+  useShortcutHandler("hide", () => {
+    hideHandlerRef.current?.();
+  });
 
   return (
     <div className="flex flex-col">
